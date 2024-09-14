@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 // Import your components
 import Checkout from './App/Checkout'; // Ensure this path is correct
-
+import Category from './App/Category';
 
 const Stack = createStackNavigator();
 
@@ -21,10 +21,15 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={backgroundStyle}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Checkout">
+        <Stack.Navigator initialRouteName="category">
           <Stack.Screen
             name="Checkout"
             component={Checkout}
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen
+            name="category"
+            component={Category}
             options={{ headerShown: false }} 
           />
           
