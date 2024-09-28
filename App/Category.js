@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Modal, TextInput } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';  // Ensure you have installed vector-icons
+import { RadioButton } from 'react-native-paper';  // Install react-native-paper if needed
 
 const Category = () => {
   const [selectedTab, setSelectedTab] = useState('Upcoming');
-  const [showReviewModal, setShowReviewModal] = useState(false); // State to control modal visibility
-  const [selectedTicket, setSelectedTicket] = useState(null); // State to keep track of selected ticket for review
-  const [rating, setRating] = useState(0); // State to handle the rating
+  const [showCancelModal, setShowCancelModal] = useState(false); // State to control modal visibility
+  const [selectedTicket, setSelectedTicket] = useState(null); // State to keep track of selected ticket for cancellation
+  const [cancelReason, setCancelReason] = useState(''); // State to track selected reason
+  const [otherReason, setOtherReason] = useState(''); // State for custom reason
 
   // Dummy data for tickets in different categories
   const upcomingTickets = [
@@ -55,7 +56,7 @@ const Category = () => {
               style={styles.cancelButton}
               onPress={() => {
                 setSelectedTicket(ticket); // Set the selected ticket
-                setShowReviewModal(true); // Show the modal
+                setShowCancelModal(true); // Show the modal
               }}
             >
               <Text style={styles.buttonText}>Cancel Booking</Text>
@@ -66,64 +67,105 @@ const Category = () => {
     ));
   };
 
-  // Render Modal for Review
-  const renderReviewModal = () => {
+  // Render Modal for Cancel Booking
+  const renderCancelModal = () => {
     return (
       <Modal
         transparent={true}
-        visible={showReviewModal}
+        visible={showCancelModal}
         animationType="slide"
-        onRequestClose={() => setShowReviewModal(false)}
+        onRequestClose={() => setShowCancelModal(false)}
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Leave a Review</Text>
-            <Text style={styles.modalSubtitle}>Please share your valuable review</Text>
+            <Text style={styles.modalTitle}>Cancel Booking</Text>
+            <Text style={styles.modalSubtitle}>Please select the reason for cancellation</Text>
 
-            {/* Selected Ticket Information */}
-            {selectedTicket && (
-              <View style={styles.selectedTicket}>
-                <Image source={require('../Img/anhspidermen.png')} style={styles.image} />
-                <View style={styles.ticketInfo}>
-                  <Text style={styles.title}>{selectedTicket.title}</Text>
-                  <Text style={styles.subtitle}>Bollywood Movie</Text>
-                  <Text style={styles.subtitle}>Language: {selectedTicket.language}</Text>
-                </View>
-              </View>
-            )}
-
-            {/* Rating Section */}
-            <Text style={styles.modalSubtitle}>Please give your rating with us</Text>
-            <View style={styles.starsContainer}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <TouchableOpacity key={star} onPress={() => setRating(star)}>
-                  <Icon
-                    name={star <= rating ? 'star' : 'star-o'}
-                    size={30}
-                    color={star <= rating ? '#ff3366' : '#ccc'}
-                    style={styles.star}
+            {/* Reason for cancellation */}
+            <View>
+              <TouchableOpacity onPress={() => setCancelReason('I have better deal')}>
+                <View style={styles.radioButtonContainer}>
+                  <RadioButton
+                    value="I have better deal"
+                    status={cancelReason === 'I have better deal' ? 'checked' : 'unchecked'}
+                    onPress={() => setCancelReason('I have better deal')}
+                    color="#ff3366"
                   />
-                </TouchableOpacity>
-              ))}
+                  <Text style={styles.radioButtonText}>I have better deal</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setCancelReason('Some other work, can’t come')}>
+                <View style={styles.radioButtonContainer}>
+                  <RadioButton
+                    value="Some other work, can’t come"
+                    status={cancelReason === 'Some other work, can’t come' ? 'checked' : 'unchecked'}
+                    onPress={() => setCancelReason('Some other work, can’t come')}
+                    color="#ff3366"
+                  />
+                  <Text style={styles.radioButtonText}>Some other work, can’t come</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setCancelReason('I want to book another movie')}>
+                <View style={styles.radioButtonContainer}>
+                  <RadioButton
+                    value="I want to book another movie"
+                    status={cancelReason === 'I want to book another movie' ? 'checked' : 'unchecked'}
+                    onPress={() => setCancelReason('I want to book another movie')}
+                    color="#ff3366"
+                  />
+                  <Text style={styles.radioButtonText}>I want to book another movie</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setCancelReason('location is too far')}>
+                <View style={styles.radioButtonContainer}>
+                  <RadioButton
+                    value="location is too far"
+                    status={cancelReason === 'location is too far' ? 'checked' : 'unchecked'}
+                    onPress={() => setCancelReason('location is too far')}
+                    color="#ff3366"
+                  />
+                  <Text style={styles.radioButtonText}>Location is too far from my location</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setCancelReason('Other reason')}>
+                <View style={styles.radioButtonContainer}>
+                  <RadioButton
+                    value="Other reason"
+                    status={cancelReason === 'Other reason' ? 'checked' : 'unchecked'}
+                    onPress={() => setCancelReason('Other reason')}
+                    color="#ff3366"
+                  />
+                  <Text style={styles.radioButtonText}>Another reason</Text>
+                </View>
+              </TouchableOpacity>
+
+              {cancelReason === 'Other reason' && (
+                <TextInput
+                  style={styles.input}
+                  placeholder="Tell us reason"
+                  placeholderTextColor="#aaa"
+                  multiline={true}
+                  value={otherReason}
+                  onChangeText={(text) => setOtherReason(text)}
+                />
+              )}
             </View>
 
-            {/* Comment Section */}
-            <TextInput
-              style={styles.input}
-              placeholder="Add a Comment"
-              placeholderTextColor="#aaa"
-              multiline={true}
-            />
-
-            {/* Buttons */}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.cancelButtonModal} onPress={() => setShowReviewModal(false)}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.submitButton}>
-                <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-            </View>
+            {/* Submit Button */}
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={() => {
+                // Handle cancellation here
+                console.log(`Cancellation Reason: ${cancelReason}, Other Reason: ${otherReason}`);
+                setShowCancelModal(false); // Close modal after submission
+              }}
+            >
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -160,8 +202,8 @@ const Category = () => {
       {/* Ticket List */}
       <ScrollView>{renderTickets()}</ScrollView>
 
-      {/* Review Modal */}
-      {renderReviewModal()}
+      {/* Cancel Modal */}
+      {renderCancelModal()}
     </SafeAreaView>
   );
 };
@@ -284,20 +326,14 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 10,
   },
-  selectedTicket: {
+  radioButtonContainer: {
     flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 15,
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  starsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 15,
-  },
-  star: {
-    marginHorizontal: 5,
+  radioButtonText: {
+    fontSize: 16,
+    color: '#333',
   },
   input: {
     height: 100,
@@ -306,21 +342,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginBottom: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  cancelButtonModal: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  cancelButtonText: {
-    color: '#333',
-    fontWeight: 'bold',
   },
   submitButton: {
     backgroundColor: '#ff3366',
@@ -331,6 +352,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
