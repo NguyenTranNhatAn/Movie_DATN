@@ -21,7 +21,7 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={backgroundStyle}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Checkout">
+        <Stack.Navigator initialRouteName="category">
           <Stack.Screen
             name="Checkout"
             component={Checkout}
