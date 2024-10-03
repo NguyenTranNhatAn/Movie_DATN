@@ -67,12 +67,7 @@ const Search = ({ navigation }) => {
             />
 
             {/* Thanh điều hướng dưới cùng */}
-            <View style={styles.footer}>
-                <TouchableOpacity style={styles.footerButton}>
-                    <Text style={styles.footerText}>Search</Text>
-                </TouchableOpacity>
-                {/* Các nút khác có thể được thêm vào đây */}
-            </View>
+          
         </View>
     );
 };
