@@ -14,6 +14,7 @@ import {
 import Latest from './src/Latest'
 import Favour from './src/Favour'
 import Search from './src/Search';
+import Profile from './src/Profile';
 function App(): React.JSX.Element {
   return (
   
@@ -23,7 +24,7 @@ function App(): React.JSX.Element {
 
 
 </View>
-<Search></Search>
+<Profile></Profile>
 
     </SafeAreaView>
     
