@@ -8,35 +8,35 @@ const Search = ({ navigation }) => {
             name: 'Sultan',
             originer: 'Bollywood Movie',
             language: 'Language: Hindi',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
         {
             _id: '2',
             name: 'Doctor Strange',
             originer: 'Hollywood Movie',
             language: 'Language: English, Hindi',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
         {
             _id: '3',
             name: 'Fast & Furious 7',
             originer: 'Hollywood Movie',
             language: 'Language: English, Hindi',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
         {
             _id: '4',
             name: 'Spider Man',
             originer: 'Hollywood Movie',
             language: 'Language: English, Hindi',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
         {
             _id: '5',
             name: '3 Idiots',
             originer: 'Bollywood Movie',
             language: 'Language: English, Hindi',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
     ];
 
@@ -55,7 +55,7 @@ const Search = ({ navigation }) => {
         <View style={styles.container}>
             {/* Thanh tìm kiếm */}
             <View style={styles.searchContainer}>
-                <Image source={require('../accsets/arrow-left.png')} style={styles.searchIcon} />
+                <Image source={require('../../assets/image/arrow-left.png')} style={styles.searchIcon} />
                 <TextInput style={styles.searchInput} placeholder="Search" />
             </View>
 

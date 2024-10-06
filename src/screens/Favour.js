@@ -9,42 +9,42 @@ const Favour = ({ navigation }) => {
             name: 'Avengers: Infinity War',
             price: '$12.99',
             originer: 'Hollywood',
-            images: require('../accsets/Anhmau.png'), // Thay đổi cách lấy ảnh bằng require
+            images: require('../../assets/image/Anhmau.png'), // Thay đổi cách lấy ảnh bằng require
         },
         {
             _id: '2',
             name: 'Doctor Strange',
             price: '$11.99',
             originer: 'Hollywood',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
         {
             _id: '3',
             name: 'Jumanji',
             price: '$9.99',
             originer: 'Hollywood',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
         {
             _id: '4',
             name: 'Pathaan',
             price: '$8.99',
             originer: 'Bollywood',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
         {
             _id: '5',
             name: '3 Idiots',
             price: '$7.99',
             originer: 'Bollywood',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
         {
             _id: '6',
             name: 'Pyaar Ka Punchnama',
             price: '$6.99',
             originer: 'Bollywood',
-            images: require('../accsets/Anhmau.png'),
+            images: require('../../assets/image/Anhmau.png'),
         },
     ];
 
@@ -62,9 +62,9 @@ const Favour = ({ navigation }) => {
     return (
         <View style={styles.container_Tong}>
             <View style={styles.head}>
-                <Image style={styles.img} source={require('../accsets/arrow-left.png')} />
+                <Image style={styles.img} source={require('../../assets/image/arrow-left.png')} />
                 <Text style={styles.text}>Favourite Movies</Text>
-                <Image style={styles.img} source={require('../accsets/arrow-left.png')} />
+                <Image style={styles.img} source={require('../../assets/image/arrow-left.png')} />
             </View>
 
             <FlatList

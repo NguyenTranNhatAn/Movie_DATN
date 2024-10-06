@@ -11,10 +11,11 @@ import {
   View,
 } from 'react-native';
 
-import Latest from './src/Latest'
-import Favour from './src/Favour'
-import Search from './src/Search';
-import Profile from './src/Profile';
+import Latest from './src/screens/Latest'
+import Favour from './src/screens/Favour'
+import Search from './src/screens/Search';
+import Profile from './src/screens/Profile';
+import Detail from './src/screens/Detail';
 function App(): React.JSX.Element {
   return (
   
