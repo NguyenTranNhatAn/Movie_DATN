@@ -54,7 +54,7 @@ const Latest = ({ navigation }) => {
                 <Image source={item.images} style={styles.image_flat} />
                 <Text style={styles.text1}>{item.name}</Text>
                
-                <Text style={styles.text1}>{item.originer}</Text>
+                <Text style={styles.text1}>{item.originer}  </Text>
             </TouchableOpacity>
         </View>
     );

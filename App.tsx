@@ -25,7 +25,7 @@ function App(): React.JSX.Element {
 
 
 </View>
-<Profile></Profile>
+<Latest></Latest>
 
     </SafeAreaView>
     
