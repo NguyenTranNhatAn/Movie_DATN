@@ -6,6 +6,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 // Import your components
 import Checkout from './App/Checkout'; // Ensure this path is correct
 import Category from './App/Category';
+import Profile from './App/Profile';
+import Editprofile from './App/Editprofile';
 
 const Stack = createStackNavigator();
 
@@ -21,7 +23,7 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={backgroundStyle}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="category">
+        <Stack.Navigator initialRouteName="profile">
           <Stack.Screen
             name="Checkout"
             component={Checkout}
@@ -30,6 +32,16 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="category"
             component={Category}
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen
+            name="profile"
+            component={Profile}
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen
+            name="editprofile"
+            component={Editprofile}
             options={{ headerShown: false }} 
           />
           
