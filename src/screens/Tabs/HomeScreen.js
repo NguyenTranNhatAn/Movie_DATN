@@ -8,7 +8,7 @@ import Animated, {
     useAnimatedStyle,
     useSharedValue,
 } from "react-native-reanimated";
-import Carousel from 'react-native-reanimated-carousel';
+import Carousel, { Pagination } from 'react-native-reanimated-carousel';
 const HomeScreen = () => {
     const PAGE_WIDTH = Dimensions.get('window').width;
     const [isVertical, setIsVertical] = useState(false);
@@ -130,7 +130,7 @@ const HomeScreen = () => {
                     </View>
                 </View>
                 {/*  */}
-                <View style={{flexDirection:'row',alignItems:'center', justifyContent:'space-between',paddingHorizontal:23,marginTop:20}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
                     <Text >See All</Text>
                 </View>
@@ -158,23 +158,32 @@ const HomeScreen = () => {
                         <View
                             style={{
 
-                              
-                                
                                 flex: 1,
                                 width: 350,
                                 alignSelf: "center",
-                                backgroundColor: item?.color
+                                backgroundColor: "white"
                             }}
                         >
-                            <Image style={styles.img} source={item.img} />
+                            <Image style={styles.imgMovie} source={item.img} />
                             <View  >
-                               <Text style={styles.title}>Avenger Infinity War</Text> 
-                               <Text style={styles.title}>2h29m • Action, adventure, sci-fi</Text> 
+                                <Text style={styles.nameMovie}>Avenger - Infinity War</Text>
+                                <Text style={styles.des}>2h29m • Action, adventure, sci-fi</Text>
+                                <View style={styles.ratingCon}>
+                                    <Image style={{ width: 20, height: 20 }} source={require('../../../assets/image/star.png')} />
+                                    <Text style={{ fontSize: 20, color: 'black' }}>
+                                        4.9
+                                    </Text>
+                                    <Text style={{ fontSize: 16, color: 'gray', }}>
+                                        (1,222)
+                                    </Text>
+                                </View>
                             </View>
                         </View>
                     )}
                 />
-                 <View style={{flexDirection:'row',alignItems:'center', justifyContent:'space-between',paddingHorizontal:23,marginTop:20}}>
+               
+                
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
                     <Text >See All</Text>
                 </View>
@@ -186,11 +195,32 @@ const HomeScreen = () => {
 
 export default HomeScreen
 const styles = StyleSheet.create({
-    img: {
-       resizeMode:'contain',
-       height:500,
-       width:'100%'
-        
+    ratingCon: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 5
+    },
+    des: {
+        fontSize: 16,
+        fontWeight: 'regular',
+        color: "#615D5E",
+        textAlign: 'center'
+
+    },
+    nameMovie: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#000000',
+        textAlign: 'center',
+        marginBottom: 5,
+    },
+    imgMovie: {
+        resizeMode: 'contain',
+        height: 500,
+        width: '100%',
+        borderRadius: 16,
+
 
     },
     menuImg: {
