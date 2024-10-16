@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
-const Details = () => {
+const Details = ({ route }) => {
+  const { item } = route.params;
   return (
     <View style={styles.container}>
       
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity  >
           <Image 
             source={require('../../assets/image/arrow-left.png')} // Đường dẫn icon mũi tên quay lại
             style={styles.arrowIcon}
@@ -21,36 +22,48 @@ const Details = () => {
       <View style={styles.posterInfoContainer}>
         {/* Movie Poster */}
         <Image
-          source={require('../../assets/image/Anhmau.png')} // Đường dẫn ảnh của bộ phim
+          source={{ uri: item.images[0] }} // Đường dẫn ảnh của bộ phim
           style={styles.moviePoster}
         />
         
         {/* Movie Info */}
         <View style={styles.infoContainer}>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Type</Text>
+          <Image 
+            source={require('../../assets/icon/videocam.png')} 
+            style={styles.arrowIcon}
+          />
+          
+            <Text style={styles.infoLabel}>Type </Text>
             <Text style={styles.infoValue}>Comedy</Text>
           </View>
           <View style={styles.infoBox}>
-            <Text style={styles.infoLabel}>Duration</Text>
+          <Image 
+            source={require('../../assets/icon/clock.png')} 
+            style={styles.arrowIcon}
+          />
+            <Text style={styles.infoLabel}>Duration </Text>
             <Text style={styles.infoValue}>2h 30m</Text>
           </View>
           <View style={styles.infoBox}>
+          <Image 
+            source={require('../../assets/icon/star.png')} 
+            style={styles.arrowIcon}
+          />
             <Text style={styles.infoLabel}>Rating</Text>
-            <Text style={styles.infoValue}>9.0/10</Text>
+            <Text style={styles.infoValue}>{item.rating}</Text>
           </View>
         </View>
       </View>
 
       {/* Movie Title and Description */}
       <View style={styles.movieDetails}>
-        <Text style={styles.movieTitle}>Avengers: Infinity War</Text>
+        <Text style={styles.movieTitle}> {item.name}</Text>
         <Text style={styles.movieType}>Hollywood Movie</Text>
 
         <Text style={styles.descriptionTitle}>Descriptions</Text>
         <Text style={styles.descriptionText}>
-          It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using Content here, content here.
-        </Text>
+        {item.description} </Text>
       </View>
 
       {/* Select Seat Button */}
@@ -82,15 +95,16 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 20,
+  
+    color: '#000',
   },
   posterInfoContainer: {
     flexDirection: 'row', // Hiển thị movie poster và info theo hàng ngang
     marginTop: 20,
   },
   moviePoster: {
-    width: 220,  // Đặt lại chiều rộng của poster
-    height: 270, // Đặt lại chiều cao của poster
+    width: 240,  // Đặt lại chiều rộng của poster
+    height: 300, // Đặt lại chiều cao của poster
     borderRadius: 15,
     marginRight: 20, // Khoảng cách giữa poster và info
   },
@@ -98,20 +112,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   infoBox: {
-    backgroundColor: '#FEEAEA',
+    backgroundColor: '#F5EFF7',
     padding: 10,
+    margin:10,
     borderRadius: 10,
-    width: 100,  // Chiều rộng cố định cho mỗi box
+    width: 80,  // Chiều rộng cố định cho mỗi box
     alignItems: 'center',
   },
   infoLabel: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#999',
   },
   infoValue: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
     marginTop: 5,
+    color: '#000',
   },
   movieDetails: {
     marginTop: 20,

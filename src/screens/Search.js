@@ -1,73 +1,59 @@
-import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, TextInput } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, View, Image, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { SearchMovie } from '../reducers/SearchSlice';
 
-const Search = ({ navigation }) => {
-    const productData = [
-        {
-            _id: '1',
-            name: 'Sultan',
-            originer: 'Bollywood Movie',
-            language: 'Language: Hindi',
-            images: require('../../assets/image/Anhmau.png'),
-        },
-        {
-            _id: '2',
-            name: 'Doctor Strange',
-            originer: 'Hollywood Movie',
-            language: 'Language: English, Hindi',
-            images: require('../../assets/image/Anhmau.png'),
-        },
-        {
-            _id: '3',
-            name: 'Fast & Furious 7',
-            originer: 'Hollywood Movie',
-            language: 'Language: English, Hindi',
-            images: require('../../assets/image/Anhmau.png'),
-        },
-        {
-            _id: '4',
-            name: 'Spider Man',
-            originer: 'Hollywood Movie',
-            language: 'Language: English, Hindi',
-            images: require('../../assets/image/Anhmau.png'),
-        },
-        {
-            _id: '5',
-            name: '3 Idiots',
-            originer: 'Bollywood Movie',
-            language: 'Language: English, Hindi',
-            images: require('../../assets/image/Anhmau.png'),
-        },
-    ];
+const Search = (props) => {
+    const { navigation } = props
+    const dispatch = useDispatch();
+    const { searchData, searchStatus } = useSelector((state) => state.search);
+    const [searchTerm, setSearchTerm] = useState(''); // Biến lưu từ khóa tìm kiếm
+
+    useEffect(() => {
+        if (searchTerm) {
+            dispatch(SearchMovie(searchTerm)); // Gọi API khi có từ khóa tìm kiếm
+        }
+    }, [dispatch, searchTerm]);
 
     const renderItem = ({ item }) => (
-        <View style={styles.productContainer}>
-            <Image source={item.images} style={styles.productImage} />
+        <TouchableOpacity   onPress={()=> navigation.navigate('detail', { item })}>
+       <View style={styles.productContainer}>
+         
+            <Image source={{ uri: item.images[0] }} style={styles.productImage} />
             <View style={styles.productInfo}>
                 <Text style={styles.productName}>{item.name}</Text>
-                <Text style={styles.productOrigin}>{item.originer}</Text>
-                <Text style={styles.productLanguage}>{item.language}</Text>
+                <Text style={styles.productOrigin}>Rating: {item.rating}</Text>
+                <Text style={styles.productLanguage}>Language : English </Text>
             </View>
-        </View>
+            
+        </View></TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
             {/* Thanh tìm kiếm */}
             <View style={styles.searchContainer}>
-                <Image source={require('../../assets/image/arrow-left.png')} style={styles.searchIcon} />
-                <TextInput style={styles.searchInput} placeholder="Search" />
+                <Image source={require('../../assets/icon/search.png')} style={styles.searchIcon} />
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search "
+                    value={searchTerm}  // Giá trị từ state searchTerm
+                    onChangeText={(text) => setSearchTerm(text)}  // Cập nhật state khi người dùng nhập
+                />
             </View>
 
-            {/* Danh sách sản phẩm */}
-            <FlatList
-                data={productData}
-                keyExtractor={(item) => item._id}
-                renderItem={renderItem}
-            />
-
-            {/* Thanh điều hướng dưới cùng */}
-          
+            {/* Kiểm tra trạng thái và hiển thị dữ liệu */}
+            {searchStatus === 'loading' ? (
+                <Text>Loading...</Text>
+            ) : searchData.length > 0 ? (
+                <FlatList
+                    data={searchData}
+                    keyExtractor={(item) => item._id}
+                    renderItem={renderItem}
+                />
+            ) : (
+                <Text>No movies found</Text>
+            )}
         </View>
     );
 };
@@ -84,8 +70,8 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f5f5f5',
-        borderRadius: 20,
+        backgroundColor: '#F7F2FA',
+        borderRadius: 40,
         padding: 10,
         marginBottom: 20,
     },
@@ -97,7 +83,8 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 16,
-        color: '#333',
+        fontWeight: '700',
+        color: '#000',
     },
     productContainer: {
         flexDirection: 'row',
@@ -112,8 +99,8 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     productImage: {
-        width: 60,
-        height: 60,
+        width: 90,
+        height: 90,
         borderRadius: 10,
         marginRight: 10,
     },
@@ -131,27 +118,8 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     productLanguage: {
-        fontSize: 12,
-        color: '#666',
-        marginTop: 2,
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        paddingVertical: 10,
-        borderTopWidth: 1,
-        borderTopColor: '#eee',
-    },
-    footerButton: {
-        backgroundColor: '#ff5757',
-        borderRadius: 30,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-    },
-    footerText: {
-        color: '#fff',
         fontSize: 16,
-        fontWeight: 'bold',
+        color: '#000',
+        marginTop: 2,
     },
 });
