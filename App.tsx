@@ -8,6 +8,8 @@ import Checkout from './App/Checkout'; // Ensure this path is correct
 import Category from './App/Category';
 import Profile from './App/Profile';
 import Editprofile from './App/Editprofile';
+import { Provider } from 'react-redux';
+import { store } from './App/store/store';
 
 const Stack = createStackNavigator();
 
@@ -21,7 +23,8 @@ function App(): React.JSX.Element {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <Provider store={store}>
+       <SafeAreaView style={backgroundStyle}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="profile">
           <Stack.Screen
@@ -49,6 +52,8 @@ function App(): React.JSX.Element {
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
+    </Provider>
+   
   );
 }
 
