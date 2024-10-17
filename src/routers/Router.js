@@ -43,7 +43,7 @@ const TabArr = [
       label: 'Search', 
       focusedImage: require('../../assets/image/search-f.png'), 
       unfocusedImage: require('../../assets/image/search-normal.png'), 
-      component: View, 
+      component: Search, 
       color: "#FF515A", 
       
     },

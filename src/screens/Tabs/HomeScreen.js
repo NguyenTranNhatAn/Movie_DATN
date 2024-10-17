@@ -3,12 +3,20 @@ import React, { useState } from 'react'
 import { color } from '../../constants/color'
 
 import Animated, {
-
+    configureReanimatedLogger,
+    ReanimatedLogLevel,
     interpolate,
     useAnimatedStyle,
     useSharedValue,
 } from "react-native-reanimated";
-import Carousel, { Pagination } from 'react-native-reanimated-carousel';
+import Carousel from 'react-native-reanimated-carousel'
+
+
+
+configureReanimatedLogger({
+level: ReanimatedLogLevel.warn,
+strict: false,
+});
 const HomeScreen = () => {
     const PAGE_WIDTH = Dimensions.get('window').width;
     const [isVertical, setIsVertical] = useState(false);
