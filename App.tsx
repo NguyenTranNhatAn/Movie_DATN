@@ -4,7 +4,7 @@ import HomeScreen from './src/screens/Tabs/HomeScreen';
 import SeatSelection from './src/screens/Stack/Test';
 import { NavigationContainer } from '@react-navigation/native';
 import Router from './src/routers/Router';
-import AnimTab1 from './src/screens/BottomTab';
+
 
 function App(): React.JSX.Element {
 
