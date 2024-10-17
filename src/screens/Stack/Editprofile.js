@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { EditProfile } from './Reducer/EditProfileSlide';
+import { EditProfile } from '../../reducers/EditProfileSlide';
 
 const EditProfileComponent = () => {
-  const { editprofileData, editprofileStatus, error } = useSelector((state) => state.EditProfile); // Lấy thêm state error từ slice
+  const { editprofileData, editprofileStatus, error } = useSelector((state) => state.editProfile); // Lấy thêm state error từ slice
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [email, setgmail] = useState('');
   const [_id, setUserId] = useState('670b8eff0f8b420fd4c56a6f'); // _id của người dùng
-  
+
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     console.log(editprofileStatus)
 
@@ -55,7 +55,7 @@ const EditProfileComponent = () => {
         <Text style={styles.label}>Enter Address</Text>
         <TextInput style={styles.input} value={address} onChangeText={setAddress} />
       </View>
-      
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Enter Email</Text>
         <TextInput style={styles.input} value={email} onChangeText={setgmail} />

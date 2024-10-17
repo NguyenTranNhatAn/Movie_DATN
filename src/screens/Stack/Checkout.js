@@ -97,7 +97,7 @@ const Checkout = () => {
       <ScrollView>
         <View style={styles.headerContainer}>
           <Image
-            source={require('../Img/vectorphai.png')}
+            source={require('../../../Img/vectorphai.png')}
             style={styles.arrow}
           />
           <Text style={styles.headerText}>Checkout</Text>
@@ -105,7 +105,7 @@ const Checkout = () => {
 
         <View style={styles.detailsContainer}>
           <Image
-            source={require('../Img/anhspidermen.png')}
+            source={require('../../../Img/anhspidermen.png')}
             style={styles.movieImage}
           />
           <View style={styles.textDetails}>
@@ -120,7 +120,7 @@ const Checkout = () => {
         </View>
 
         <View style={styles.paymentContainer}>
-          <Image source={require('../Img/mastercard.png')} />
+          <Image source={require('../../../Img/mastercard.png')} />
           <View style={styles.stylemaster}>
             <Text>Master Card</Text>
             <Text>5689 4700 2589 9658</Text>
@@ -149,7 +149,7 @@ const Checkout = () => {
 
         {/* PayPal Section */}
         <View style={styles.paymentContainer}>
-          <Image source={require('../Img/paypal.png')} />
+          <Image source={require('../../../Img/paypal.png')} />
           <View style={styles.stylemaster1}>
             <Text>PayPal</Text>
           </View>

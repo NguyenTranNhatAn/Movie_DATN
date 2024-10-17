@@ -110,7 +110,7 @@ const Category = () => {
     return ticketsToRender.map((ticket, index) => (
       <View key={index}>
         <View style={styles.ticketContainer}>
-          <Image source={require('../Img/anhspidermen.png')} style={styles.image} />
+          <Image source={require('../../../Img/anhspidermen.png')} style={styles.image} />
           <View style={styles.ticketInfo}>
             <Text style={styles.title}>{ticket.title}</Text>
             <Text style={styles.subtitle}>Bollywood Movie</Text>
