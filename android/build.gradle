@@ -12,10 +12,17 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle")
+        classpath("com.android.tools.build:gradle:8.0.2") // Thêm phiên bản cụ thể
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// Bạn cần thêm một phần nữa để bật Hermes ở file android/app/build.gradle:
+
+project.ext.react = [
+    enableHermes: true  // Bật Hermes để cải thiện hiệu năng JavaScript nếu cần
+]
+
