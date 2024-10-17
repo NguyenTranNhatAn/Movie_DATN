@@ -50,7 +50,7 @@ const SignupScreen = ({navigation}) => {
     >
       {/* Logo */}
       <View style={styles.logoContainer}>
-        <Image source={require('../../image/logo.png')} />
+        <Image source={require('../../../image/logo.png')} />
       </View>
 
       {/* Title */}
@@ -96,7 +96,7 @@ const SignupScreen = ({navigation}) => {
           onChangeText={setPassword}
         />
         <TouchableOpacity onPress={togglePasswordVisibility}>
-          <Image source={require('../../image/Union.png')} />
+          <Image source={require('../../../image/Union.png')} />
         </TouchableOpacity>
       </View>
 
@@ -110,7 +110,7 @@ const SignupScreen = ({navigation}) => {
           onChangeText={setConfirmPassword}
         />
         <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
-          <Image source={require('../../image/Union.png')} />
+          <Image source={require('../../../image/Union.png')} />
         </TouchableOpacity>
       </View>
 
@@ -156,7 +156,7 @@ const SignupScreen = ({navigation}) => {
       {/* Login Link */}
       <View style={styles.loginContainer}>
         <Text style={styles.loginText}>Already have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')} >
+        <TouchableOpacity onPress={() => navigation.navigate('Login')} >
           <Text style={styles.loginLink}> Login</Text>
         </TouchableOpacity>
       

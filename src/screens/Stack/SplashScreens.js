@@ -7,7 +7,7 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     // Thời gian chờ 5 giây (5000ms) trước khi chuyển màn hình
     const timer = setTimeout(() => {
-      navigation.navigate('LoginScreen'); // Điều hướng tới màn hình chính (Home)
+      navigation.navigate('Login'); // Điều hướng tới màn hình chính (Home)
     }, 5000); // 5000ms = 5 giây
 
     // Hủy bộ đếm thời gian khi component bị hủy
@@ -17,7 +17,7 @@ const SplashScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../image/logo.png')} // Đường dẫn tới logo của bạn
+        source={require('../../../image/logo.png')} // Đường dẫn tới logo của bạn
         style={styles.logo}
       />
     </View>

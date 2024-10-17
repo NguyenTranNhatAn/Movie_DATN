@@ -15,6 +15,9 @@ import Category from '../screens/Tabs/Category';
 import Checkout from '../screens/Stack/Checkout';
 import { EditProfile } from '../reducers/EditProfileSlide';
 import EditProfileComponent from '../screens/Stack/Editprofile';
+import LoginScreen from '../screens/Stack/LoginScreens';
+import SplashScreen from '../screens/Stack/SplashScreens';
+import SignupScreen from '../screens/Stack/SignupScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -27,6 +30,7 @@ const AuthRouter = <Stack.Navigator screenOptions={{ headerShown: false }}>
 const MainStackNavigation = (props) => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="Tab" component={MainTabNavigation} />
       <Stack.Screen name="History" component={History} />
       <Stack.Screen name="Test" component={SeatSelection} />
@@ -35,6 +39,8 @@ const MainStackNavigation = (props) => {
     
       <Stack.Screen name="Checkout" component={Checkout} />
       <Stack.Screen name="Editprofile" component={EditProfileComponent} />
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
 
 
     </Stack.Navigator>

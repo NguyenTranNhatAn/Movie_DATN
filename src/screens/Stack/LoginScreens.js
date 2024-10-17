@@ -13,7 +13,7 @@ const LoginScreen = ({navigation}) => {
   const handleLogin = async () => {
     try {
       const response = await axios.post('https://be-movie-sooty.vercel.app/api/login', { phone, password });
-        navigation.navigate ('HomeScreens');
+        navigation.navigate ('Tab');
       console.log('Token:', response.data.token);
       
     } catch (err) {
@@ -30,7 +30,7 @@ const LoginScreen = ({navigation}) => {
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       {/* Logo */}
       <View style={styles.logoContainer}>
-      <Image source={require('../../image/logo.png')}/>
+      <Image source={require('../../../image/logo.png')}/>
       </View>
 
       {/* Title */}
@@ -39,13 +39,13 @@ const LoginScreen = ({navigation}) => {
 
       {/* Login with Apple */}
       <TouchableOpacity style={styles.socialButtonApple}>
-      <Image source={require('../../image/iconAP.png')}/>
+      <Image source={require('../../../image/iconAP.png')}/>
         <Text style={styles.socialButtonText}>Login with Apple</Text>
       </TouchableOpacity>
 
       {/* Login with Google */}
       <TouchableOpacity style={styles.socialButtonGoogle}>
-      <Image source={require('../../image/iconGG.png')}/>
+      <Image source={require('../../../image/iconGG.png')}/>
         <Text style={styles.socialButtonText}>Login with Google</Text>
       </TouchableOpacity>
 
@@ -76,7 +76,7 @@ const LoginScreen = ({navigation}) => {
           
         />
         <TouchableOpacity onPress={togglePasswordVisibility}>
-        <Image source={require('../../image/Union.png')}/>
+        <Image source={require('../../../image/Union.png')}/>
         </TouchableOpacity>
       </View>
 
@@ -95,7 +95,7 @@ const LoginScreen = ({navigation}) => {
         <Text style={styles.registerText}>Didn't have an account?</Text>
 
         <TouchableOpacity
-         onPress={() => navigation.navigate('SignupScreen')}>
+         onPress={() => navigation.navigate('Signup')}>
             <Text style={styles.registerLink}> Register</Text>
         </TouchableOpacity>
        
