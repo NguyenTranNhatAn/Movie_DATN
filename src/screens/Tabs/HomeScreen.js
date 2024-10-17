@@ -17,7 +17,8 @@ configureReanimatedLogger({
 level: ReanimatedLogLevel.warn,
 strict: false,
 });
-const HomeScreen = () => {
+const HomeScreen = (props) => {
+    const {navigation}=props
     const PAGE_WIDTH = Dimensions.get('window').width;
     const [isVertical, setIsVertical] = useState(false);
     const [autoPlay, setAutoPlay] = useState(true);
@@ -140,7 +141,7 @@ const HomeScreen = () => {
                 {/*  */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
-                    <Text >See All</Text>
+                    <Text   onPress={()=>navigation.navigate('Lastest')}  >See All</Text>
                 </View>
                 <Carousel
                     loop
@@ -193,7 +194,7 @@ const HomeScreen = () => {
                 
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
-                    <Text >See All</Text>
+                    <Text>See All</Text>
                 </View>
             </ScrollView>
 

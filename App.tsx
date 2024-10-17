@@ -4,6 +4,8 @@ import HomeScreen from './src/screens/Tabs/HomeScreen';
 import SeatSelection from './src/screens/Stack/Test';
 import { NavigationContainer } from '@react-navigation/native';
 import Router from './src/routers/Router';
+import { Provider } from 'react-redux';
+import { store } from './src/store/store';
 
 
 function App(): React.JSX.Element {
@@ -12,7 +14,8 @@ function App(): React.JSX.Element {
 
 
 
-    <SafeAreaView style={{ flex: 1 }}>
+   <Provider store={store}>
+ <SafeAreaView style={{ flex: 1 }}>
       <StatusBar
 
         barStyle={'dark-content'}
@@ -26,6 +29,7 @@ function App(): React.JSX.Element {
 
 
     </SafeAreaView>
+   </Provider>
 
 
 

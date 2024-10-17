@@ -8,6 +8,9 @@ import History from '../screens/Stack/History';
 import Search from '../screens/Tabs/Search';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Image } from 'react-native-animatable';
+import Details from '../screens/Stack/Detail';
+import Profile from '../screens/Tabs/Profile';
+import Latest from '../screens/Stack/Latest';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -23,6 +26,9 @@ const MainStackNavigation = (props) => {
             <Stack.Screen name="Tab" component={MainTabNavigation} />
             <Stack.Screen name="History" component={History} />
             <Stack.Screen name="Test" component={SeatSelection} />
+            <Stack.Screen name="Detail" component={Details} />
+            <Stack.Screen name="Lastest" component={Latest} />
+          
 
         </Stack.Navigator>
     )
@@ -70,7 +76,7 @@ const TabArr = [
       label: 'Profile', 
       focusedImage: require('../../assets/image/user-square-f.png'), 
       unfocusedImage: require('../../assets/image/user-square.png'), 
-      component: View, 
+      component: Profile, 
       color: "#FF515A", 
       
     },

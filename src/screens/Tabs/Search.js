@@ -16,7 +16,7 @@ const Search = (props) => {
     }, [dispatch, searchTerm]);
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity   onPress={()=> navigation.navigate('detail', { item })}>
+        <TouchableOpacity   onPress={()=> navigation.navigate('Detail', { item })}>
        <View style={styles.productContainer}>
          
             <Image source={{ uri: item.images[0] }} style={styles.productImage} />

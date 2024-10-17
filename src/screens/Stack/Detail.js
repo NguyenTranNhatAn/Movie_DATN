@@ -10,7 +10,7 @@ const Details = ({ route, navigation }) => {
       <View style={styles.header}>
         <TouchableOpacity  onPress={() => navigation.goBack()} >
           <Image 
-            source={require('../../assets/image/arrow-left.png')} // Đường dẫn icon mũi tên quay lại
+            source={require('../../../assets/image/arrow-left.png')} // Đường dẫn icon mũi tên quay lại
             style={styles.arrowIcon}
           />
         </TouchableOpacity>
@@ -30,7 +30,7 @@ const Details = ({ route, navigation }) => {
         <View style={styles.infoContainer}>
           <View style={styles.infoBox}>
           <Image 
-            source={require('../../assets/icon/videocam.png')} 
+            source={require('../../../assets/icon/videocam.png')} 
             style={styles.arrowIcon}
           />
           
@@ -39,7 +39,7 @@ const Details = ({ route, navigation }) => {
           </View>
           <View style={styles.infoBox}>
           <Image 
-            source={require('../../assets/icon/clock.png')} 
+            source={require('../../../assets/icon/clock.png')} 
             style={styles.arrowIcon}
           />
             <Text style={styles.infoLabel}>Duration </Text>
@@ -47,7 +47,7 @@ const Details = ({ route, navigation }) => {
           </View>
           <View style={styles.infoBox}>
           <Image 
-            source={require('../../assets/icon/star.png')} 
+            source={require('../../../assets/icon/star.png')} 
             style={styles.arrowIcon}
           />
             <Text style={styles.infoLabel}>Rating</Text>
