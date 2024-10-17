@@ -298,6 +298,7 @@ const styles = StyleSheet.create({
     },
     container: {
         paddingTop: 40,
+        backgroundColor:'white'
 
     }
 })

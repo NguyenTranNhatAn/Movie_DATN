@@ -1,11 +1,13 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/Tabs/HomeScreen';
 import SeatSelection from '../screens/Stack/Test';
 import History from '../screens/Stack/History';
 import Search from '../screens/Tabs/Search';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { Image } from 'react-native-animatable';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -25,15 +27,136 @@ const MainStackNavigation = (props) => {
         </Stack.Navigator>
     )
 }
+
+const TabArr = [
+    { 
+      route: 'Home', 
+      label: 'Home', 
+      focusedImage: require('../../assets/image/homeFocus.png'), 
+      unfocusedImage: require('../../assets/image/home.png'), 
+      component: HomeScreen, 
+      color: "#FF515A", 
+     
+    },
+    { 
+      route: 'Search', 
+      label: 'Search', 
+      focusedImage: require('../../assets/image/search-f.png'), 
+      unfocusedImage: require('../../assets/image/search-normal.png'), 
+      component: View, 
+      color: "#FF515A", 
+      
+    },
+    { 
+      route: 'Favorite', 
+      label: 'Favorite', 
+      focusedImage: require('../../assets/image/heart-f.png'), 
+      unfocusedImage: require('../../assets/image/heart.png'), 
+      component: View, 
+      color: "#FF515A", 
+     
+    },
+    { 
+      route: 'Ticket', 
+      label: 'Ticket', 
+      focusedImage: require('../../assets/image/ticket-f.png'), 
+      unfocusedImage: require('../../assets/image/ticket.png'), 
+      component: View, 
+      color: "#FF515A", 
+      
+    },
+    { 
+      route: 'Profile', 
+      label: 'Profile', 
+      focusedImage: require('../../assets/image/user-square-f.png'), 
+      unfocusedImage: require('../../assets/image/user-square.png'), 
+      component: View, 
+      color: "#FF515A", 
+      
+    },
+    // Thêm các tab khác tương tự
+  ];
+  const TabButton = (props) => {
+    const { item, onPress, accessibilityState } = props;
+    const focused = accessibilityState.selected;
+  
+    // Sử dụng shared values để tạo animation
+    const scale = useSharedValue(focused ? 1 : 0);
+    const textScale = useSharedValue(focused ? 1 : 0);
+  
+    useEffect(() => {
+      scale.value = withTiming(focused ? 1 : 0, { duration: 300 });
+      textScale.value = withTiming(focused ? 1 : 0, { duration: 300 });
+    }, [focused]);
+  
+    // Style động cho icon và text
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        transform: [{ scale: scale.value }],
+      };
+    });
+  
+    const animatedTextStyle = useAnimatedStyle(() => {
+      return {
+        transform: [{ scale: textScale.value }],
+      };
+    });
+  
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={1}
+        style={[styles.container, { flex: focused ? 1 : 0.65 }]}
+      >
+        <View>
+          <Animated.View
+            style={[StyleSheet.absoluteFillObject, { backgroundColor: item.color, borderRadius: 16 }, animatedStyle]}
+          />
+          <View style={[styles.btn, { backgroundColor: focused ? null : item.alphaClr }]}>
+            {/* Thay thế Feather icon bằng Image */}
+            <Image
+              source={focused ? item.focusedImage : item.unfocusedImage}
+              style={{ width: 24, height: 24 }} // Điều chỉnh kích thước theo nhu cầu
+            />
+            <Animated.View style={animatedTextStyle}>
+              {focused && (
+                <Text style={{fontSize:14, color: "white",marginLeft:8 }}>{item.label}</Text>
+              )}
+            </Animated.View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 const MainTabNavigation = (props) => {
 
 
     return (
-        <Tab.Navigator screenOptions={{headerShown:false}}>
-            <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Search" component={Search} />
-
-        </Tab.Navigator>
+        <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: {
+            height: 60,
+            position: 'absolute',
+            paddingHorizontal:20
+            
+          },
+        }}
+      >
+        {TabArr.map((item, index) => {
+          return (
+            <Tab.Screen
+              key={index}
+              name={item.route}
+              component={item.component}
+              options={{
+                tabBarShowLabel: false,
+                tabBarButton: (props) => <TabButton {...props} item={item} />,
+              }}
+            />
+          );
+        })}
+      </Tab.Navigator>
     )
 }
 
@@ -43,5 +166,21 @@ const Router = (props) => {
         <MainStackNavigation />
     );
 }
-
+const styles = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 60,
+    },
+    btn: {
+      flexDirection: 'row',
+      
+      paddingVertical: 5,
+      paddingHorizontal:10,
+      borderRadius: 16,
+      alignItems: 'center',
+      justifyContent:'center'
+      
+    },
+  });
 export default Router

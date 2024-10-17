@@ -4,7 +4,7 @@ import HomeScreen from './src/screens/Tabs/HomeScreen';
 import SeatSelection from './src/screens/Stack/Test';
 import { NavigationContainer } from '@react-navigation/native';
 import Router from './src/routers/Router';
-import AnimTab3 from './src/screens/BottomTab';
+import AnimTab1 from './src/screens/BottomTab';
 
 function App(): React.JSX.Element {
 
@@ -18,10 +18,10 @@ function App(): React.JSX.Element {
         barStyle={'dark-content'}
         backgroundColor="rgba(255, 255, 255, 1)"
       />
-     {/* <NavigationContainer>
+     <NavigationContainer>
       <Router/>
-     </NavigationContainer> */}
-     <AnimTab3/>
+     </NavigationContainer>
+     
 
 
 
