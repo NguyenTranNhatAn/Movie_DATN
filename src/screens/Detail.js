@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
-const Details = ({ route }) => {
+const Details = ({ route, navigation }) => {
   const { item } = route.params;
   return (
     <View style={styles.container}>
       
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity  >
+        <TouchableOpacity  onPress={() => navigation.goBack()} >
           <Image 
             source={require('../../assets/image/arrow-left.png')} // Đường dẫn icon mũi tên quay lại
             style={styles.arrowIcon}
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   movieTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-
+    color: '#000',
   },
   movieType: {
     fontSize: 16,
@@ -143,9 +143,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   descriptionTitle: {
-    fontSize: 16,
+    fontSize: 25,
     fontWeight: 'bold',
     marginTop: 20,
+    color: '#000',
   },
   descriptionText: {
     fontSize: 18,
