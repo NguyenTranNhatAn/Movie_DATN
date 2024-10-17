@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet,Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet,Image,Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import axios from 'axios';
 
 const LoginScreen = ({navigation}) => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phone, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  
+
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('https://be-movie-sooty.vercel.app/api/login', { phone, password });
+        navigation.navigate ('HomeScreens');
+      console.log('Token:', response.data.token);
+      
+    } catch (err) {
+      Alert.alert( '','Đăng nhập thất bại!');
+     
+    }
+  };
 
   const togglePasswordVisibility = () => {
     setSecureTextEntry(!secureTextEntry);
@@ -15,7 +30,7 @@ const LoginScreen = ({navigation}) => {
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       {/* Logo */}
       <View style={styles.logoContainer}>
-      <Image source={require('../image/logo.png')}/>
+      <Image source={require('../../image/logo.png')}/>
       </View>
 
       {/* Title */}
@@ -24,13 +39,13 @@ const LoginScreen = ({navigation}) => {
 
       {/* Login with Apple */}
       <TouchableOpacity style={styles.socialButtonApple}>
-      <Image source={require('../image/iconAP.png')}/>
+      <Image source={require('../../image/iconAP.png')}/>
         <Text style={styles.socialButtonText}>Login with Apple</Text>
       </TouchableOpacity>
 
       {/* Login with Google */}
       <TouchableOpacity style={styles.socialButtonGoogle}>
-      <Image source={require('../image/iconGG.png')}/>
+      <Image source={require('../../image/iconGG.png')}/>
         <Text style={styles.socialButtonText}>Login with Google</Text>
       </TouchableOpacity>
 
@@ -45,7 +60,7 @@ const LoginScreen = ({navigation}) => {
       <TextInput
         style={styles.input}
         placeholder="Mobile Number"
-        value={phoneNumber}
+        value={phone}
         onChangeText={setPhoneNumber}
         keyboardType="phone-pad"
       />
@@ -58,9 +73,10 @@ const LoginScreen = ({navigation}) => {
           secureTextEntry={secureTextEntry}
           value={password}
           onChangeText={setPassword}
+          
         />
         <TouchableOpacity onPress={togglePasswordVisibility}>
-        <Image source={require('../image/Union.png')}/>
+        <Image source={require('../../image/Union.png')}/>
         </TouchableOpacity>
       </View>
 
@@ -70,16 +86,19 @@ const LoginScreen = ({navigation}) => {
       </TouchableOpacity>
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.loginButton}>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
-
+      
       {/* Register Link */}
       <View style={styles.registerContainer}>
         <Text style={styles.registerText}>Didn't have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-          <Text style={styles.registerLink}> Register</Text>
+
+        <TouchableOpacity
+         onPress={() => navigation.navigate('SignupScreen')}>
+            <Text style={styles.registerLink}> Register</Text>
         </TouchableOpacity>
+       
       </View>
     </KeyboardAwareScrollView>
   );
@@ -110,6 +129,7 @@ const styles = StyleSheet.create({
   },
   socialButtonApple: {
     backgroundColor: '#FFF',
+    height: 60,
     padding: 15,
     borderRadius: 8,
     flexDirection: 'row',
@@ -120,6 +140,7 @@ const styles = StyleSheet.create({
     borderColor: '#EDEDED',
   },
   socialButtonGoogle: {
+    height: 60,
     backgroundColor: '#FFF',
     padding: 15,
     borderRadius: 8,

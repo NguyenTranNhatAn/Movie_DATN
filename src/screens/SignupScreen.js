@@ -1,17 +1,37 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Modal,Alert  } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Import thư viện
-
+import axios from 'axios';
 
 const SignupScreen = ({navigation}) => {
-  const [username, setUsername] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [name, setUsername] = useState('');
+  const [phone, setPhoneNumber] = useState('');
+   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('');
+  const [address, setAddress] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [secureConfirmTextEntry, setSecureConfirmTextEntry] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+
+
+  const handleSignUp = async () => {
+    if (password === confirmPassword) {
+     try {
+      // "raw": "{\n  \"name\": \"hao\",\n  \"phone\": 12,\n  \"email\": \"nhatan\",\n  \"password\": \"gg\",\n  \"address\":\"Lamdong\"\n}\n"
+      const response = await axios.post('https://be-movie-sooty.vercel.app/user/register', {name,phone,email,password,address});
+      Alert.alert( '','Đăng kí thanh cong!');
+      console.log('Token:', response.data.token);
+    } catch (err) {
+      Alert.alert( '','Đăng kí thất bại!');
+    }
+    } else {
+      Alert.alert('', 'Mật khẩu không trùng khớp hãy nhập lại!'); // Hiển thị thông báo khi mật khẩu không khớp
+    }
+
+    
+  };
 
   const togglePasswordVisibility = () => {
     setSecureTextEntry(!secureTextEntry);
@@ -30,7 +50,7 @@ const SignupScreen = ({navigation}) => {
     >
       {/* Logo */}
       <View style={styles.logoContainer}>
-        <Image source={require('../image/logo.png')} />
+        <Image source={require('../../image/logo.png')} />
       </View>
 
       {/* Title */}
@@ -41,7 +61,7 @@ const SignupScreen = ({navigation}) => {
       <TextInput
         style={styles.input}
         placeholder="Mark Willions"
-        value={username}
+        value={name}
         onChangeText={setUsername}
       />
 
@@ -49,9 +69,21 @@ const SignupScreen = ({navigation}) => {
       <TextInput
         style={styles.input}
         placeholder="(+84) 999-999-999"
-        value={phoneNumber}
+        value={phone}
         onChangeText={setPhoneNumber}
         keyboardType="phone-pad"
+      />
+       <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+      />
+       <TextInput
+        style={styles.input}
+        placeholder="Address"
+        value={address}
+        onChangeText={setAddress}
       />
 
       {/* Password Input */}
@@ -64,7 +96,7 @@ const SignupScreen = ({navigation}) => {
           onChangeText={setPassword}
         />
         <TouchableOpacity onPress={togglePasswordVisibility}>
-          <Image source={require('../image/Union.png')} />
+          <Image source={require('../../image/Union.png')} />
         </TouchableOpacity>
       </View>
 
@@ -78,12 +110,12 @@ const SignupScreen = ({navigation}) => {
           onChangeText={setConfirmPassword}
         />
         <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
-          <Image source={require('../image/Union.png')} />
+          <Image source={require('../../image/Union.png')} />
         </TouchableOpacity>
       </View>
 
       {/* Signup Button */}
-      <TouchableOpacity style={styles.signupButton} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity style={styles.signupButton} onPress={() => handleSignUp()}>
         <Text style={styles.signupButtonText}>Signup</Text>
       </TouchableOpacity>
 
@@ -124,9 +156,10 @@ const SignupScreen = ({navigation}) => {
       {/* Login Link */}
       <View style={styles.loginContainer}>
         <Text style={styles.loginText}>Already have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} >
+        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')} >
           <Text style={styles.loginLink}> Login</Text>
         </TouchableOpacity>
+      
       </View>
     </KeyboardAwareScrollView>
   );
@@ -143,12 +176,13 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     marginVertical: 20,
+   marginTop:-5,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
     color: 'black'
   },
   subtitle: {
@@ -163,7 +197,7 @@ const styles = StyleSheet.create({
     borderColor: '#FF3D3D',
     padding: 12,
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 10,
     fontSize: 16,
     color :'black'
   },
