@@ -3,4 +3,7 @@
     "jsx": "react"
   },
   "extends": "@react-native/typescript-config/tsconfig.json"
+ 
+
+
 }
