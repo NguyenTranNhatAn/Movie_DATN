@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { converTime } from '../../utils/convertTime';
 
 const Details = ({ route, navigation }) => {
   const { item } = route.params;
@@ -35,7 +36,7 @@ const Details = ({ route, navigation }) => {
           />
           
             <Text style={styles.infoLabel}>Type </Text>
-            <Text style={styles.infoValue}>Comedy</Text>
+            <Text style={styles.infoValue}>{item.genreName}</Text>
           </View>
           <View style={styles.infoBox}>
           <Image 
@@ -43,7 +44,7 @@ const Details = ({ route, navigation }) => {
             style={styles.arrowIcon}
           />
             <Text style={styles.infoLabel}>Duration </Text>
-            <Text style={styles.infoValue}>2h 30m</Text>
+            <Text style={styles.infoValue}>{converTime(item.duration)}</Text>
           </View>
           <View style={styles.infoBox}>
           <Image 
@@ -59,10 +60,10 @@ const Details = ({ route, navigation }) => {
       {/* Movie Title and Description */}
       <View style={styles.movieDetails}>
         <Text style={styles.movieTitle}> {item.name}</Text>
-        <Text style={styles.movieType}>Hollywood Movie</Text>
+        {/* <Text style={styles.movieType}>Hollywood Movie</Text> */}
 
-        <Text style={styles.descriptionTitle}>Descriptions</Text>
-        <Text style={styles.descriptionText}>
+        <Text  style={styles.descriptionTitle}>Descriptions</Text>
+        <Text numberOfLines={7} style={styles.descriptionText}>
         {item.description} </Text>
       </View>
 

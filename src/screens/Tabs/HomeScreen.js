@@ -1,5 +1,5 @@
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useCallback, useEffect, useState, } from 'react'
 import { color } from '../../constants/color'
 
 import Animated, {
@@ -10,15 +10,26 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import Carousel from 'react-native-reanimated-carousel'
+import { useDispatch, useSelector } from 'react-redux';
+import { GetMovieList } from '../../reducers/MovieSlice';
+import { converTime } from '../../utils/convertTime';
+import { GetMovieDeatil } from '../../reducers/Genre/GenreDetailSlice';
+import { GenreList } from '../../reducers/Genre/GenreListSlice';
+
 
 
 
 configureReanimatedLogger({
-level: ReanimatedLogLevel.warn,
-strict: false,
+    level: ReanimatedLogLevel.warn,
+    strict: false,
 });
 const HomeScreen = (props) => {
-    const {navigation}=props
+    const dispatch = useDispatch();
+    const { genreData, genreStatus } = useSelector((state) => state.genreList);
+    const { movieData, movieStatus } = useSelector((state) => state.movieList);
+    const [listMovie, setListMovie] = useState([]);
+
+    const { navigation } = props;
     const PAGE_WIDTH = Dimensions.get('window').width;
     const [isVertical, setIsVertical] = useState(false);
     const [autoPlay, setAutoPlay] = useState(true);
@@ -36,44 +47,55 @@ const HomeScreen = (props) => {
             height: PAGE_WIDTH * 0.6,
         };
 
-    const list = [
-        {
-            id: '1',
-            title: 'First Item',
-            color: '#26292E',
-            img: require('../../../assets/image/avenger.png')
-        },
-        {
-            id: '2',
-            title: 'Second Item',
-            color: '#899F9C',
-            color: '#899F9C',
-            img: require('../../../assets/image/avenger.png')
-        },
-        {
-            id: '3',
-            title: 'Third Item',
-            color: '#B3C680',
-            img: require('../../../assets/image/avenger.png')
-        },
-        {
-            id: '4',
-            title: 'Fourth Item',
-            color: '#5C6265',
-            img: require('../../../assets/image/avenger.png')
-        },
-        {
-            id: '5',
-            title: 'Fifth Item',
-            color: '#F5D399',
-            img: require('../../../assets/image/avenger.png')
-        }
-    ];
+
+        useEffect(()=>{
+            if (movieData.length === 0) {
+                dispatch(GetMovieList());
+            }
+
+            if (genreData.length === 0) {
+                dispatch(GenreList());
+            }
+
+            if (movieData.length > 0 && genreData.length > 0) {
+                const updatedMovies = movieData.map(movie => {
+                    const genre = genreData.find(genre => genre._id === movie.genreId);
+                    return {
+                        ...movie,
+                        genreName: genre ? genre.name : "Unknown"
+                    };
+                });
+
+                setListMovie(updatedMovies);
+            }
+        },[dispatch,movieData,genreData])
+    const renderComingSoon = ({ item }) => {
+        return (
+            <TouchableOpacity  onPress={()=> navigation.navigate('Detail', { item })} style={{ width: 173, paddingHorizontal: 10, alignItems: 'flex-start' }}>
+                <Image style={{ width: '100%',height:244,  borderRadius: 16 }} source={{ uri: item.images[0] }} />
+            <Text  style={[styles.nameMovie,{textAlign:'left'}]}>
+                {item.name}
+               </Text>
+               <Text  style={[styles.desc,{textAlign:'left'}]}>
+                {item.genreName}
+               </Text>
+               <Text  style={[styles.desc,{textAlign:'left'}]}>
+                {item.duration}
+               </Text>
+
+
+
+            </TouchableOpacity>
+        )
+
+    }
+
 
 
     return (
         <View style={styles.container}>
-            <ScrollView>
+            <ScrollView style={{ flex: 1, }}>
+
                 {/* header */}
                 <View style={styles.header}>
                     <View>
@@ -86,12 +108,12 @@ const HomeScreen = (props) => {
                 </View>
                 {/* search bar */}
                 <View style={styles.searchBar}>
-                    <View style={styles.leftSearch}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Search')} style={styles.leftSearch}>
                         <TouchableOpacity>
                             <Image style={{ height: 24, width: 24 }} source={require('../../../assets/image/ss.png')} />
                         </TouchableOpacity>
                         <Text style={{ marginLeft: 12, fontSize: 18, fontWeight: 'regular' }}>Search</Text>
-                    </View>
+                    </TouchableOpacity>
                     <View style={styles.rightSearch}>
                         <Image style={{ height: 24, width: 24 }} source={require('../../../assets/image/adj.png')} />
                     </View>
@@ -105,44 +127,27 @@ const HomeScreen = (props) => {
                             <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
                         </View>
                         <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
+                            <Image style={styles.menuImg} source={require('../../../assets/image/imax.png')} />
+                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Imax</Text>
                         </View>
                         <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
+                            <Image style={styles.menuImg} source={require('../../../assets/image/4d.png')} />
+                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>4kxmax</Text>
                         </View>
                         <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
+                            <Image style={styles.menuImg} source={require('../../../assets/image/sweet.png')} />
+                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Sweet Box</Text>
                         </View>
 
                     </View>
-                    <View style={styles.menuList}>
-                        <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
-                        </View>
-                        <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
-                        </View>
-                        <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
-                        </View>
-                        <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
-                        </View>
 
-                    </View>
                 </View>
                 {/*  */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
-                    <Text   onPress={()=>navigation.navigate('Lastest')}  >See All</Text>
+                    <Text onPress={() => navigation.navigate('Lastest')}  >See All</Text>
                 </View>
+
                 <Carousel
                     loop
                     width={PAGE_WIDTH}
@@ -161,10 +166,11 @@ const HomeScreen = (props) => {
                         parallaxScrollingOffset: 70,
                     }}
 
-                    data={list}
+                    data={listMovie}
                     scrollAnimationDuration={1000}
                     renderItem={({ item }) => (
-                        <View
+                        <TouchableOpacity
+                        onPress={()=> navigation.navigate('Detail', { item })}
                             style={{
 
                                 flex: 1,
@@ -173,31 +179,40 @@ const HomeScreen = (props) => {
                                 backgroundColor: "white"
                             }}
                         >
-                            <Image style={styles.imgMovie} source={item.img} />
+                            <Image style={styles.imgMovie} source={{ uri: item.images[0] }} />
                             <View  >
-                                <Text style={styles.nameMovie}>Avenger - Infinity War</Text>
-                                <Text style={styles.des}>2h29m • Action, adventure, sci-fi</Text>
+                                <Text style={styles.nameMovie}>{item.name}</Text>
+                                <Text style={styles.des}>{converTime(item.duration)} • <Text>{item.genreName}</Text></Text>
                                 <View style={styles.ratingCon}>
                                     <Image style={{ width: 20, height: 20 }} source={require('../../../assets/image/star.png')} />
-                                    <Text style={{ fontSize: 20, color: 'black' }}>
-                                        4.9
+                                    <Text style={{ fontSize: 20, color: 'black', marginRight: 5 }}>
+                                        {item.rating}
                                     </Text>
                                     <Text style={{ fontSize: 16, color: 'gray', }}>
                                         (1,222)
                                     </Text>
                                 </View>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     )}
                 />
-               
-                
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
-                    <Text style={styles.title}>Now Playing</Text>
+
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20, marginBottom: 24 }}>
+                    <Text style={styles.title}>Coming Soon</Text>
                     <Text>See All</Text>
                 </View>
-            </ScrollView>
+                <FlatList
+                    data={listMovie}
+                    style={{ marginLeft: 13, paddingRight: 23, flex: 1}}
 
+                    renderItem={renderComingSoon}
+                    horizontal={true}
+                    keyExtractor={item => item._id}
+                />
+
+
+            </ScrollView>
         </View>
     )
 }
@@ -228,7 +243,7 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         height: 500,
         width: '100%',
-        borderRadius: 16,
+        borderRadius: 30,
 
 
     },
@@ -307,7 +322,10 @@ const styles = StyleSheet.create({
     },
     container: {
         paddingTop: 40,
-        backgroundColor:'white'
+        backgroundColor: 'white',
+        flex: 1,
+        paddingBottom:60
+
 
     }
 })

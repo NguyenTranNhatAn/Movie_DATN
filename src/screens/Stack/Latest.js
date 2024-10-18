@@ -1,60 +1,44 @@
 import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { GetMovieList } from '../../reducers/MovieSlice';
+import { GenreList } from '../../reducers/Genre/GenreListSlice';
 
 const Latest = ({ navigation }) => {
     // Dữ liệu mẫu cho sản phẩm (products)
-    const productData = [
-        {
-            _id: '1',
-            name: 'Avengers: Infinity War',
-            price: '$12.99',
-            originer: 'Hollywood',
-            images: require('../../../assets/image/Anhmau.png'), // Thay đổi cách lấy ảnh bằng require
-        },
-        {
-            _id: '2',
-            name: 'Doctor Strange',
-            price: '$11.99',
-            originer: 'Hollywood',
-            images: require('../../../assets/image/Anhmau.png'),
-        },
-        {
-            _id: '3',
-            name: 'Jumanji',
-            price: '$9.99',
-            originer: 'Hollywood',
-            images: require('../../../assets/image/Anhmau.png'),
-        },
-        {
-            _id: '4',
-            name: 'Pathaan',
-            price: '$8.99',
-            originer: 'Bollywood',
-            images: require('../../../assets/image/Anhmau.png'),
-        },
-        {
-            _id: '5',
-            name: '3 Idiots',
-            price: '$7.99',
-            originer: 'Bollywood',
-            images: require('../../../assets/image/Anhmau.png'),
-        },
-        {
-            _id: '6',
-            name: 'Pyaar Ka Punchnama',
-            price: '$6.99',
-            originer: 'Bollywood',
-            images: require('../../../assets/image/Anhmau.png'),
-        },
-    ];
+    const dispatch = useDispatch();
+    const { genreData, genreStatus } = useSelector((state) => state.genreList);
+    const { movieData, movieStatus } = useSelector((state) => state.movieList);
+    const [listMovie, setListMovie] = useState([]);
+    useEffect(()=>{
+        if (movieData.length === 0) {
+            dispatch(GetMovieList());
+        }
+
+        if (genreData.length === 0) {
+            dispatch(GenreList());
+        }
+
+        if (movieData.length > 0 && genreData.length > 0) {
+            const updatedMovies = movieData.map(movie => {
+                const genre = genreData.find(genre => genre._id === movie.genreId);
+                return {
+                    ...movie,
+                    genreName: genre ? genre.name : "Unknown"
+                };
+            });
+
+            setListMovie(updatedMovies);
+        }
+    },[dispatch,movieData,genreData])
 
     const renderItem = ({ item }) => (
         <View style={styles.container_flat}>
             <TouchableOpacity onPress={() => navigation.navigate('Detail', { item })}>
-                <Image source={item.images} style={styles.image_flat} />
+                <Image source={{uri:item.images[0]}} style={styles.image_flat} />
                 <Text style={styles.text1}>{item.name}</Text>
                
-                <Text style={styles.text1}>{item.originer}  </Text>
+                <Text style={styles.text1}>{item.genreName}  </Text>
             </TouchableOpacity>
         </View>
     );
@@ -68,7 +52,7 @@ const Latest = ({ navigation }) => {
             </View>
 
             <FlatList
-                data={productData}
+                data={listMovie}
                 keyExtractor={(item) => item._id}
                 numColumns={2}
                 renderItem={renderItem}
