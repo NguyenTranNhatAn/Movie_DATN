@@ -109,6 +109,7 @@ const Category = () => {
 
     return ticketsToRender.map((ticket, index) => (
       <View key={index}>
+        <View>
         <View style={styles.ticketContainer}>
           <Image source={require('../Img/anhspidermen.png')} style={styles.image} />
           <View style={styles.ticketInfo}>
@@ -119,8 +120,12 @@ const Category = () => {
           <View style={styles.statusContainer}>
             <Text style={styles.statusText}>{ticket.status}</Text>
           </View>
+          
         </View>
-        <View style={styles.buttonRow}>
+        
+        </View>
+        
+        <View style={styles.ticketContainer1}>
         {selectedTab === 'Upcoming' && (
             <TouchableOpacity
             style={styles.viewButton}
@@ -140,6 +145,7 @@ const Category = () => {
               <Text style={styles.cancelButtonText}>View Details</Text>
             </TouchableOpacity>
           )}
+        
           {selectedTab === 'Past' && (
             
             <TouchableOpacity  style={styles.viewButton}>
@@ -251,13 +257,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     margin: 10,
     borderRadius: 10,
-    padding: 10,
+    padding: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 2,
     alignItems: 'center',
+  },
+  ticketContainer1: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    margin: 10,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+    alignItems: 'center',
+    marginTop:-23,
+    borderEndEndRadius:10,
+    borderStartEndRadius:10
   },
   image: {
     width: 80,

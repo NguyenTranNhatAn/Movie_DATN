@@ -1,31 +1,80 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert,ActivityIndicator } from 'react-native';
 import { EditProfile } from './Reducer/EditProfileSlide';
+import { UploadUsers } from './Reducer/UploadUserslide';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EditProfileComponent = () => {
+  const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers); // Lấy thêm state error từ slice
   const { editprofileData, editprofileStatus, error } = useSelector((state) => state.EditProfile); // Lấy thêm state error từ slice
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [email, setgmail] = useState('');
-  const [_id, setUserId] = useState('670b8eff0f8b420fd4c56a6f'); // _id của người dùng
+  
   
   const dispatch = useDispatch();
   
-  useEffect(() => {
-    console.log(editprofileStatus)
-
-    if (error) {
-      Alert.alert('Lỗi', error); // Hiển thị lỗi nếu có
+ // Gọi API lấy thông tin người dùng khi component mount và cập nhật form
+useEffect(() => {
+  const loadUserInfo = async () => {
+    try {
+      console.log('Gọi API UploadUsers');
+      await dispatch(UploadUsers()); // Gọi API lấy thông tin người dùng
+    } catch (error) {
+      console.error('Lỗi khi gọi API UploadUsers:', error);
     }
-  }, [editprofileStatus, editprofileData, error]); // Lắng nghe thay đổi của error
-
-  const commit = () => {
-    const data = { name, phone, address, email, _id };
-    console.log("Data to send:", data); // Kiểm tra dữ liệu trước khi gửi
-    dispatch(EditProfile(data));
   };
+
+  loadUserInfo(); // Chạy khi component mount
+}, [dispatch]);
+
+// Cập nhật form với dữ liệu người dùng sau khi API trả về thành công
+useEffect(() => {
+  if (UploadUsersData) {
+    console.log('Dữ liệu người dùng:', UploadUsersData); // Log dữ liệu để kiểm tra
+    setName(UploadUsersData.name || '');
+    setPhone(UploadUsersData.phone || '');
+    setAddress(UploadUsersData.address || '');
+    setgmail(UploadUsersData.email || '');
+  }
+
+  if (error) {
+    Alert.alert('Lỗi', error); // Hiển thị lỗi nếu có
+  }
+}, [UploadUsersData, error]); // Chỉ theo dõi UploadUsersData và error
+
+const commit = async () => {
+  try {
+    const token = await AsyncStorage.getItem('authToken');
+    if (!token) {
+      Alert.alert('Lỗi', 'Token không tồn tại. Vui lòng đăng nhập lại.');
+      return;
+    }
+
+    const data = { name, phone, address, email };
+    console.log('Data to send:', data);
+
+    // Gọi API và nhận phản hồi từ Redux
+    const result = await dispatch(EditProfile({ data, token }));
+    console.log('Kết quả cập nhật:', result);
+
+    // Kiểm tra phản hồi và lấy thông báo lỗi chính xác
+    if (result.error) {
+      const errorMessage =
+        result.error.message || // Nếu message tồn tại
+        JSON.stringify(result.error); // Nếu không, chuyển object thành chuỗi
+
+      Alert.alert('Lỗi', errorMessage || 'Cập nhật thất bại');
+    } else {
+      Alert.alert('Thành công', 'Cập nhật thông tin thành công');
+    }
+  } catch (error) {
+    console.error('Lỗi khi gửi thông tin:', error);
+    Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra');
+  }
+};
 
   return (
     <View style={styles.container}>

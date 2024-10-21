@@ -6,9 +6,11 @@ const Profile = () => {
   const navigation = useNavigation();
   return (
     <ScrollView style={styles.container}>
+      <Text style={styles.profileName1}>Profile</Text>
       <View style={styles.profileSection}>
+      
         <Image
-          source={{ uri: 'https://via.placeholder.com/100' }} // Replace this with your profile image
+          source={require('../Img/anhspidermen.png')}
           style={styles.profileImage}
         />
         <Text style={styles.profileName}>Mark Willions</Text>
@@ -20,28 +22,31 @@ const Profile = () => {
       style={styles.optionRow}
       onPress={() => navigation.navigate('editprofile')} // Chuyển hướng đến màn hình ProfileEditScreen
     >
-      <Text style={styles.optionText}>Edit Profile</Text>
-      <Text style={styles.icon}>+</Text>
+      <Text style={styles.optionText}> Edit Profile</Text>
+      <Image source={require('../Img/Vector.png')}/>
     </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}>
-          <Text style={styles.optionText}>My Tickets</Text>
-          <Text style={styles.icon}>+</Text>
+        <View style={styles.editicon} >
+      <Image source={require('../Img/ticket.png')}/>
+      <Text style={styles.optionText}> My tickets</Text>
+      </View>
+          <Image source={require('../Img/Vector.png')}/>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}>
           <Text style={styles.optionText}>Change Password</Text>
-          <Text style={styles.icon}>+</Text>
+          <Image source={require('../Img/Vector.png')}/>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}>
           <Text style={styles.optionText}>Privacy Policy</Text>
-          <Text style={styles.icon}>+</Text>
+          <Image source={require('../Img/Vector.png')}/>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}>
           <Text style={styles.optionText}>Terms & Conditions</Text>
-          <Text style={styles.icon}>+</Text>
+          <Image source={require('../Img/Vector.png')}/>
         </TouchableOpacity>
       </View>
 
@@ -65,13 +70,21 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: 25,
     marginBottom: 10,
   },
   profileName: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#000',
+  },
+  profileName1: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#000',
+    
+    alignSelf:'center'
+    
   },
   profilePhone: {
     fontSize: 16,
@@ -108,6 +121,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  editicon:{
+    flexDirection:'row'
+  }
 });
 
 export default Profile;

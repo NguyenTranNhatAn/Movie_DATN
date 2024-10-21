@@ -10,6 +10,7 @@ import Profile from './App/Profile';
 import Editprofile from './App/Editprofile';
 import { Provider } from 'react-redux';
 import { store } from './App/store/store';
+import LoginScreen from './App/Login';
 
 const Stack = createStackNavigator();
 
@@ -45,6 +46,12 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="editprofile"
             component={Editprofile}
+            
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen
+            name="login"
+            component={LoginScreen}
             options={{ headerShown: false }} 
           />
           
