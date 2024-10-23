@@ -1,16 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { WebView } from 'react-native-webview'; // Thêm import WebView
 import { converTime } from '../../utils/convertTime';
 
 const Details = ({ route, navigation }) => {
   const { item } = route.params;
   return (
     <View style={styles.container}>
-      
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity  onPress={() => navigation.goBack()} >
-          <Image 
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image
             source={require('../../../assets/image/arrow-left.png')} // Đường dẫn icon mũi tên quay lại
             style={styles.arrowIcon}
           />
@@ -19,53 +19,52 @@ const Details = ({ route, navigation }) => {
         <View></View>
       </View>
       
-      {/* Movie Poster and Info in one row */}
-      <View style={styles.posterInfoContainer}>
-        {/* Movie Poster */}
-        <Image
-          source={{ uri: item.images[0] }} // Đường dẫn ảnh của bộ phim
-          style={styles.moviePoster}
-        />
-        
-        {/* Movie Info */}
-        <View style={styles.infoContainer}>
-          <View style={styles.infoBox}>
-          <Image 
-            source={require('../../../assets/icon/videocam.png')} 
-            style={styles.arrowIcon}
+      <ScrollView>
+        {/* Movie Poster and Info in one row */}
+        <View style={styles.posterInfoContainer}>
+          {/* Movie Poster */}
+          <Image
+            source={{ uri: item.images[0] }} // Đường dẫn ảnh của bộ phim
+            style={styles.moviePoster}
           />
           
-            <Text style={styles.infoLabel}>Type </Text>
-            <Text style={styles.infoValue}>{item.genreName}</Text>
-          </View>
-          <View style={styles.infoBox}>
-          <Image 
-            source={require('../../../assets/icon/clock.png')} 
-            style={styles.arrowIcon}
-          />
-            <Text style={styles.infoLabel}>Duration </Text>
-            <Text style={styles.infoValue}>{converTime(item.duration)}</Text>
-          </View>
-          <View style={styles.infoBox}>
-          <Image 
-            source={require('../../../assets/icon/star.png')} 
-            style={styles.arrowIcon}
-          />
-            <Text style={styles.infoLabel}>Rating</Text>
-            <Text style={styles.infoValue}>{item.rating}</Text>
+          {/* Movie Info */}
+          <View style={styles.infoContainer}>
+            <View style={styles.infoBox}>
+              <Image source={require('../../../assets/icon/videocam.png')} style={styles.arrowIcon} />
+              <Text style={styles.infoLabel}>Type </Text>
+              <Text style={styles.infoValue}>{item.genreName}</Text>
+            </View>
+            <View style={styles.infoBox}>
+              <Image source={require('../../../assets/icon/clock.png')} style={styles.arrowIcon} />
+              <Text style={styles.infoLabel}>Duration </Text>
+              <Text style={styles.infoValue}>{converTime(item.duration)}</Text>
+            </View>
+            <View style={styles.infoBox}>
+              <Image source={require('../../../assets/icon/star.png')} style={styles.arrowIcon} />
+              <Text style={styles.infoLabel}>Rating</Text>
+              <Text style={styles.infoValue}>{item.rating}</Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Movie Title and Description */}
-      <View style={styles.movieDetails}>
-        <Text style={styles.movieTitle}> {item.name}</Text>
-        {/* <Text style={styles.movieType}>Hollywood Movie</Text> */}
+        {/* Movie Title and Description */}
+        <View style={styles.movieDetails}>
+          <Text style={styles.movieTitle}>{item.name}</Text>
+          <Text style={styles.descriptionTitle}>Descriptions</Text>
+          <Text numberOfLines={7} style={styles.descriptionText}>{item.description}</Text>
+        </View>
 
-        <Text  style={styles.descriptionTitle}>Descriptions</Text>
-        <Text numberOfLines={7} style={styles.descriptionText}>
-        {item.description} </Text>
-      </View>
+        {/* Trailer Video */}
+        <Text style={styles.trailerTitle}>Trailer</Text>
+        <View style={styles.videoContainer}>
+          <WebView
+            source={{ uri: item.trailer }} // Trailer video URL
+            style={styles.webview}
+            allowsFullscreenVideo={true} // Cho phép fullscreen
+          />
+        </View>
+      </ScrollView>
 
       {/* Select Seat Button */}
       <TouchableOpacity style={styles.selectButton}>
@@ -86,28 +85,27 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     paddingVertical: 20,
   },
   arrowIcon: {
     width: 24,
-    height: 24,  // Kích thước icon mũi tên quay lại
+    height: 24,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-  
     color: '#000',
   },
   posterInfoContainer: {
-    flexDirection: 'row', // Hiển thị movie poster và info theo hàng ngang
+    flexDirection: 'row',
     marginTop: 20,
   },
   moviePoster: {
-    width: 240,  // Đặt lại chiều rộng của poster
-    height: 300, // Đặt lại chiều cao của poster
+    width: 240,
+    height: 300,
     borderRadius: 15,
-    marginRight: 20, // Khoảng cách giữa poster và info
+    marginRight: 20,
   },
   infoContainer: {
     justifyContent: 'space-around',
@@ -115,9 +113,9 @@ const styles = StyleSheet.create({
   infoBox: {
     backgroundColor: '#F5EFF7',
     padding: 10,
-    margin:10,
+    margin: 10,
     borderRadius: 10,
-    width: 80,  // Chiều rộng cố định cho mỗi box
+    width: 80,
     alignItems: 'center',
   },
   infoLabel: {
@@ -138,11 +136,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  movieType: {
-    fontSize: 16,
-    color: '#999',
-    marginTop: 5,
-  },
   descriptionTitle: {
     fontSize: 25,
     fontWeight: 'bold',
@@ -154,15 +147,30 @@ const styles = StyleSheet.create({
     color: '#000',
     marginTop: 10,
   },
+  trailerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+    color: '#000',
+  },
+  videoContainer: {
+    height: 200,
+    marginTop: 10,
+    borderRadius: 10,
+    overflow: 'hidden', // Để tránh video ra ngoài đường biên
+  },
+  webview: {
+    flex: 1,
+  },
   selectButton: {
     backgroundColor: '#FF515A',
     paddingVertical: 15,
     borderRadius: 10,
-    marginTop: 30,
-    position: 'absolute',  // Đặt nút ở vị trí tuyệt đối
-    bottom: 20,            // Cách mép dưới màn hình 20 đơn vị
-    left: 20,              // Căn lề trái
-    right: 20,   
+    marginTop: 10,
+    // position: 'absolute',
+    bottom: 5,
+    // left: 20,
+    // right: 20,
     alignItems: 'center',
   },
   selectButtonText: {
