@@ -18,6 +18,10 @@ import EditProfileComponent from '../screens/Stack/Editprofile';
 import LoginScreen from '../screens/Stack/LoginScreens';
 import SplashScreen from '../screens/Stack/SplashScreens';
 import SignupScreen from '../screens/Stack/SignupScreen';
+import SeatBookingScreen from '../screens/SeatBookingScreen';
+import TicketScreenDemo from '../screens/Stack/TicketDemo';
+import TicketScreen from '../screens/Stack/TicketScreen';
+import SeatBookScreen from '../screens/Stack/SeatBook';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -36,7 +40,10 @@ const MainStackNavigation = (props) => {
       <Stack.Screen name="Test" component={SeatSelection} />
       <Stack.Screen name="Detail" component={Details} />
       <Stack.Screen name="Lastest" component={Latest} />
-    
+      <Stack.Screen name="Seat" component={SeatBookScreen} />
+      <Stack.Screen name="ticket" component={TicketScreen} />
+      <Stack.Screen name="Ticket" component={TicketScreenDemo} />
+
       <Stack.Screen name="Checkout" component={Checkout} />
       <Stack.Screen name="Editprofile" component={EditProfileComponent} />
       <Stack.Screen name="Login" component={LoginScreen} />

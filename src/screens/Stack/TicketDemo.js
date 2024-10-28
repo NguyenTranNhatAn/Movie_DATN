@@ -197,16 +197,16 @@ import {
     ImageBackground,
     Image,
 } from 'react-native';
-import AppHeader from '../components/AppHeader';
+import AppHeader from '../../components/AppHeader';
 import {
     BORDERRADIUS,
     COLORS,
     FONTFAMILY,
     FONTSIZE,
     SPACING,
-} from '../theme/theme';
+} from '../../theme/theme';
 import LinearGradient from 'react-native-linear-gradient';
-import CustomIcon from '../components/CustomIcon';
+import CustomIcon from '../../components/CustomIcon';
 import { blue } from 'react-native-reanimated/lib/typescript/Colors';
 
 const TicketScreenDemo = ({ navigation }) => {
@@ -221,65 +221,65 @@ const TicketScreenDemo = ({ navigation }) => {
     });
 
     return (
-        <View style={ styles.container }>
+        <View style={styles.container}>
             <StatusBar hidden />
-            <View style={ styles.appHeaderContainer }>
+            <View style={styles.appHeaderContainer}>
                 <AppHeader
                     name="close"
                     header="My Tickets"
-                    action={ () => navigation.goBack() }
+                    action={() => navigation.goBack()}
                 />
             </View>
 
-            <View style={ styles.ticketContainer }>
+            <View style={styles.ticketContainer}>
                 <ImageBackground
-                    source={ { uri: ticketData.ticketImage } }
-                    style={ styles.ticketBGImage }>
+                    source={{ uri: ticketData.ticketImage }}
+                    style={styles.ticketBGImage}>
                     <LinearGradient
-                        colors={ [COLORS.OrangeRGBA0, COLORS.Orange] }
-                        style={ styles.linearGradient }>
-                        <View style={ [styles.blackCircle, { position: 'absolute', bottom: -40, left: -40 }] } />
-                        <View style={ [styles.blackCircle, { position: 'absolute', bottom: -40, right: -40 }] } />
+                        colors={[COLORS.OrangeRGBA0, COLORS.Orange]}
+                        style={styles.linearGradient}>
+                        <View style={[styles.blackCircle, { position: 'absolute', bottom: -40, left: -40 }]} />
+                        <View style={[styles.blackCircle, { position: 'absolute', bottom: -40, right: -40 }]} />
                     </LinearGradient>
                 </ImageBackground>
-                <View style={ styles.linear } />
+                <View style={styles.linear} />
 
-                <View style={ styles.ticketFooter }>
+                <View style={styles.ticketFooter}>
                     {/* <View style={ [styles.blackCircle, { position: 'absolute', top: -40, left: -40 }] } />
                     <View style={ [styles.blackCircle, { position: 'absolute', top: -40, right: -40 }] } /> */}
-                    <View style={ [styles.blackCircle, { position: 'absolute', top: -40, left: -40 }] } />
-                    <View style={ [styles.blackCircle, { position: 'absolute', top: -40, right: -40 }] } />
-                    <View style={ styles.ticketDateContainer }>
-                        <View style={ styles.subtitleContainer }>
-                            <Text style={ styles.dateTitle }>{ ticketData.date.date }</Text>
-                            <Text style={ styles.subtitle }>{ ticketData.date.day }</Text>
+                    <View style={[styles.blackCircle, { position: 'absolute', top: -40, left: -40 }]} />
+                    <View style={[styles.blackCircle, { position: 'absolute', top: -40, right: -40 }]} />
+                    <View style={styles.ticketDateContainer}>
+                        <View style={styles.subtitleContainer}>
+                            <Text style={styles.dateTitle}>{ticketData.date.date}</Text>
+                            <Text style={styles.subtitle}>{ticketData.date.day}</Text>
                         </View>
-                        <View style={ styles.subtitleContainer }>
-                            <CustomIcon name="clock" style={ styles.clockIcon } />
-                            <Text style={ styles.subtitle }>{ ticketData.time }</Text>
+                        <View style={styles.subtitleContainer}>
+                            <CustomIcon name="clock" style={styles.clockIcon} />
+                            <Text style={styles.subtitle}>{ticketData.time}</Text>
                         </View>
                     </View>
-                    <View style={ styles.ticketSeatContainer }>
-                        <View style={ styles.subtitleContainer }>
-                            <Text style={ styles.subheading }>Hall</Text>
-                            <Text style={ styles.subtitle }>02</Text>
+                    <View style={styles.ticketSeatContainer}>
+                        <View style={styles.subtitleContainer}>
+                            <Text style={styles.subheading}>Hall</Text>
+                            <Text style={styles.subtitle}>02</Text>
                         </View>
-                        <View style={ styles.subtitleContainer }>
-                            <Text style={ styles.subheading }>Row</Text>
-                            <Text style={ styles.subtitle }>04</Text>
+                        <View style={styles.subtitleContainer}>
+                            <Text style={styles.subheading}>Row</Text>
+                            <Text style={styles.subtitle}>04</Text>
                         </View>
-                        <View style={ styles.subtitleContainer }>
-                            <Text style={ styles.subheading }>Seats</Text>
-                            <Text style={ styles.subtitle }>
-                                { ticketData.seatArray
+                        <View style={styles.subtitleContainer}>
+                            <Text style={styles.subheading}>Seats</Text>
+                            <Text style={styles.subtitle}>
+                                {ticketData.seatArray
                                     .slice(0, 3)
-                                    .join(', ') }
+                                    .join(', ')}
                             </Text>
                         </View>
                     </View>
                     <Image
-                        source={ require('../assets/image/barcode.png') }
-                        style={ styles.barcodeImage }
+                        source={require('../../assets/image/barcode.png')}
+                        style={styles.barcodeImage}
                     />
                 </View>
             </View>

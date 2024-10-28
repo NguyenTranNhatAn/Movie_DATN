@@ -62,12 +62,13 @@ const Details = ({ route, navigation }) => {
             source={{ uri: item.trailer }} // Trailer video URL
             style={styles.webview}
             allowsFullscreenVideo={true} // Cho phép fullscreen
+            
           />
         </View>
       </ScrollView>
 
       {/* Select Seat Button */}
-      <TouchableOpacity style={styles.selectButton}>
+      <TouchableOpacity onPress={()=>navigation.navigate('Seat')} style={styles.selectButton}>
         <Text style={styles.selectButtonText}>Select Seat</Text>
       </TouchableOpacity>
     </View>

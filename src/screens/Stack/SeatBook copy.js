@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -17,12 +17,14 @@ import {
   FONTFAMILY,
   FONTSIZE,
   SPACING,
-} from '../theme/theme';
+} from '../../theme/theme';
 import LinearGradient from 'react-native-linear-gradient';
-import AppHeader from '../components/AppHeader';
-import CustomIcon from '../components/CustomIcon';
+import AppHeader from '../../components/AppHeader';
+import CustomIcon from '../../components/CustomIcon';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useDispatch, useSelector } from 'react-redux';
+import { GetShowTime } from '../../reducers/Showtimes/GetShowTimeSlide';
 
 const timeArray = [
   '10:30',
@@ -62,7 +64,7 @@ const generateSeats = () => {
       const seatObject = {
         number: start,
         row: rows[i],
-         
+
         taken: Boolean(Math.round(Math.random())),
         selected: false,
       };
@@ -83,14 +85,61 @@ const generateSeats = () => {
   }
   return rowArray;
 };
+const generateSeat = (roomShape) => {
+ 
 
-const SeatBookingScreen = ({ navigation, route }) => {
+  const rowArray =  roomShape.split('/').filter(row => row.trim() !== '').map(row =>row.split(''));
+  const designArr= []
+  let start = 1;
+  let reachnine = false;
+
+  const rows = [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+    "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+  ]
+  ;
+  rowArray.forEach((row )=> {
+    const columnArray = [];
+    let i=0
+    row.forEach((seat) => {
+      const taken = (seat =='U')?true:false;
+      const seatObject ={
+        number:start,
+        row:rows[i],
+        taken:taken,
+        select:false
+      }
+      columnArray.push(seatObject);
+      start++,
+      i++
+    });
+    designArr.push(columnArray)
+  });
+ 
+  return designArr;
+};
+
+const SeatBookScreen1 = ({ navigation, route }) => {
+  const dispatch = useDispatch();
+  const { showtimeData, showtimeStatus } = useSelector((state) => state.showTime);
   const [dateArray, setDateArray] = useState(generateDate());
   const [selectedDateIndex, setSelectedDateIndex] = useState();
   const [price, setPrice] = useState(0);
-  const [twoDSeatArray, setTwoDSeatArray] = useState(generateSeats());
+  const [twoDSeatArray, setTwoDSeatArray] = useState([]);
   const [selectedSeatArray, setSelectedSeatArray] = useState([]);
   const [selectedTimeIndex, setSelectedTimeIndex] = useState();
+ 
+  useEffect(() => {
+
+    if (Object.keys(showtimeData).length === 0) {
+      dispatch(GetShowTime());
+    
+     
+
+    }
+    console.log(showtimeData)
+    setTwoDSeatArray(generateSeat(showtimeData.Room_Shape))  
+  }, [dispatch, showtimeData])
 
   const selectSeat = (index, subindex, num) => {
     if (!twoDSeatArray[index][subindex].taken) {
@@ -125,7 +174,7 @@ const SeatBookingScreen = ({ navigation, route }) => {
             seatArray: selectedSeatArray,
             time: timeArray[selectedTimeIndex],
             date: dateArray[selectedDateIndex],
-            ticketImage: route.params.PosterImage,
+          //  ticketImage: route.params.PosterImage,
           }),
         );
       } catch (error) {
@@ -135,7 +184,7 @@ const SeatBookingScreen = ({ navigation, route }) => {
         seatArray: selectedSeatArray,
         time: timeArray[selectedTimeIndex],
         date: dateArray[selectedDateIndex],
-        ticketImage: route.params.PosterImage,
+       // ticketImage: route.params.PosterImage,
       });
     } else {
       ToastAndroid.showWithGravity(
@@ -146,67 +195,68 @@ const SeatBookingScreen = ({ navigation, route }) => {
     }
   };
 
+
   return (
-    <ScrollView style={ styles.container } bounces={ false } showsVerticalScrollIndicator={ false }>
+    <ScrollView style={styles.container} bounces={false} showsVerticalScrollIndicator={false}>
       <StatusBar hidden />
 
       <View>
         <ImageBackground
-          source={ { uri: 'https://i.ytimg.com/vi/jBpUvgVFuXE/hqdefault.jpg' } }
-          style={ styles.ImageBG }>
-          <LinearGradient colors={ [COLORS.BlackRGB10, COLORS.Black] } style={ styles.linearGradient }>
-            <View style={ styles.appHeaderContainer }>
-              <AppHeader name="close" header="" action={ () => navigation.goBack() } />
+          source={{ uri: 'https://i.ytimg.com/vi/jBpUvgVFuXE/hqdefault.jpg' }}
+          style={styles.ImageBG}>
+          <LinearGradient colors={[COLORS.BlackRGB10, COLORS.Black]} style={styles.linearGradient}>
+            <View style={styles.appHeaderContainer}>
+            <AppHeader name="close" header="" action={ () => navigation.goBack() } />
             </View>
           </LinearGradient>
         </ImageBackground>
-        <Text style={ styles.screenText }>Screen this side</Text>
+        <Text style={styles.screenText}>Screen this side</Text>
       </View>
 
-      <View style={ styles.seatContainer }>
-        <View style={ styles.containerGap20 }>
-          { twoDSeatArray?.map((item, index) => {
+      <View style={styles.seatContainer}>
+        <View style={styles.containerGap20}>
+          {twoDSeatArray?.map((item, index) => {
             return (
-              <View key={ index } style={ styles.seatRow }>
-                { item?.map((subitem, subindex) => {
+              <View key={index} style={styles.seatRow}>
+                {item?.map((subitem, subindex) => {
                   return (
                     <TouchableOpacity
-                      key={ subitem.number }
-                      onPress={ () => {
+                      key={subitem.number}
+                      onPress={() => {
                         selectSeat(index, subindex, subitem.number);
-                      } }>
-                      <View style={ styles.seatContainer1 }>
+                      }}>
+                      <View style={styles.seatContainer1}>
                         <Icon1
                           name="sofa-single"
-                          style={ [
+                          style={[
                             styles.seatIcon,
                             subitem.taken ? { color: COLORS.Grey } : {},
                             subitem.selected ? { color: COLORS.Orange } : {},
-                          ] }
+                          ]}
                         />
-                        <Text style={ styles.seatLabel }>
-                          { `${subitem.row || 'undefined'}${subitem.number || 'undefined'}` }
+                        <Text style={styles.seatLabel}>
+                          {`${subitem.row || 'undefined'}${subitem.number || 'undefined'}`}
                         </Text>
                       </View>
                     </TouchableOpacity>
                   );
-                }) }
+                })}
               </View>
             );
-          }) }
+          })}
         </View>
-        <View style={ styles.seatRadioContainer }>
-          <View style={ styles.radioContainer }>
-            <Icon1 name="sofa-single" style={ styles.radioIcon } />
-            <Text style={ styles.radioText }>Available</Text>
+        <View style={styles.seatRadioContainer}>
+          <View style={styles.radioContainer}>
+            <Icon1 name="sofa-single" style={styles.radioIcon} />
+            <Text style={styles.radioText}>Available</Text>
           </View>
-          <View style={ styles.radioContainer }>
-            <Icon1 name="sofa-single" style={ [styles.radioIcon, { color: COLORS.Grey }] } />
-            <Text style={ styles.radioText }>Taken</Text>
+          <View style={styles.radioContainer}>
+            <Icon1 name="sofa-single" style={[styles.radioIcon, { color: COLORS.Grey }]} />
+            <Text style={styles.radioText}>Taken</Text>
           </View>
-          <View style={ styles.radioContainer }>
-            <Icon1 name="sofa-single" style={ [styles.radioIcon, { color: COLORS.Orange }] } />
-            <Text style={ styles.radioText }>Selected</Text>
+          <View style={styles.radioContainer}>
+            <Icon1 name="sofa-single" style={[styles.radioIcon, { color: COLORS.Orange }]} />
+            <Text style={styles.radioText}>Selected</Text>
           </View>
         </View>
       </View>
@@ -214,16 +264,16 @@ const SeatBookingScreen = ({ navigation, route }) => {
 
       <View>
         <FlatList
-          data={ dateArray }
-          keyExtractor={ item => item.date }
+          data={dateArray}
+          keyExtractor={item => item.date}
           horizontal
-          bounces={ false }
-          contentContainerStyle={ styles.containerGap24 }
-          renderItem={ ({ item, index }) => {
+          bounces={false}
+          contentContainerStyle={styles.containerGap24}
+          renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity onPress={ () => setSelectedDateIndex(index) }>
+              <TouchableOpacity onPress={() => setSelectedDateIndex(index)}>
                 <View
-                  style={ [
+                  style={[
                     styles.dateContainer,
                     index === 0
                       ? { marginLeft: SPACING.space_24 }
@@ -233,28 +283,28 @@ const SeatBookingScreen = ({ navigation, route }) => {
                     index === selectedDateIndex
                       ? { backgroundColor: COLORS.Orange }
                       : {},
-                  ] }>
-                  <Text style={ styles.dateText }>{ item.date }</Text>
-                  <Text style={ styles.dayText }>{ item.day }</Text>
+                  ]}>
+                  <Text style={styles.dateText}>{item.date}</Text>
+                  <Text style={styles.dayText}>{item.day}</Text>
                 </View>
               </TouchableOpacity>
             );
-          } }
+          }}
         />
       </View>
 
-      <View style={ styles.OutterContainer }>
+      <View style={styles.OutterContainer}>
         <FlatList
-          data={ timeArray }
-          keyExtractor={ item => item }
+          data={timeArray}
+          keyExtractor={item => item}
           horizontal
-          bounces={ false }
-          contentContainerStyle={ styles.containerGap24 }
-          renderItem={ ({ item, index }) => {
+          bounces={false}
+          contentContainerStyle={styles.containerGap24}
+          renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity onPress={ () => setSelectedTimeIndex(index) }>
+              <TouchableOpacity onPress={() => setSelectedTimeIndex(index)}>
                 <View
-                  style={ [
+                  style={[
                     styles.timeContainer,
                     index === 0
                       ? { marginLeft: SPACING.space_24 }
@@ -264,22 +314,22 @@ const SeatBookingScreen = ({ navigation, route }) => {
                     index === selectedTimeIndex
                       ? { backgroundColor: COLORS.Orange }
                       : {},
-                  ] }>
-                  <Text style={ styles.timeText }>{ item }</Text>
+                  ]}>
+                  <Text style={styles.timeText}>{item}</Text>
                 </View>
               </TouchableOpacity>
             );
-          } }
+          }}
         />
       </View>
 
-      <View style={ styles.buttonPriceContainer }>
-        <View style={ styles.priceContainer }>
-          <Text style={ styles.totalPriceText }>Total Price</Text>
-          <Text style={ styles.price }>$ { price }.00</Text>
+      <View style={styles.buttonPriceContainer}>
+        <View style={styles.priceContainer}>
+          <Text style={styles.totalPriceText}>Total Price</Text>
+          <Text style={styles.price}>$ {price}.00</Text>
         </View>
-        <TouchableOpacity onPress={ BookSeats }>
-          <Text style={ styles.buttonText }>Buy Tickets</Text>
+        <TouchableOpacity onPress={BookSeats}>
+          <Text style={styles.buttonText}>Buy Tickets</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -424,6 +474,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SeatBookingScreen;
+export default SeatBookScreen1;
 
 
