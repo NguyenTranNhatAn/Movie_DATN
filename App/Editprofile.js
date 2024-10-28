@@ -1,116 +1,139 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert,ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { EditProfile } from './Reducer/EditProfileSlide';
 import { UploadUsers } from './Reducer/UploadUserslide';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 const EditProfileComponent = () => {
-  const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers); // Lấy thêm state error từ slice
-  const { editprofileData, editprofileStatus, error } = useSelector((state) => state.EditProfile); // Lấy thêm state error từ slice
+  const { UploadUsersData, UploadUsersStatus, error: uploadError } = useSelector((state) => state.UploadUsers);
+  const { editprofileStatus, error: editError } = useSelector((state) => state.EditProfile);
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  const [email, setgmail] = useState('');
-  
-  
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false); // Trạng thái loading
+
   const dispatch = useDispatch();
-  
- // Gọi API lấy thông tin người dùng khi component mount và cập nhật form
-useEffect(() => {
-  const loadUserInfo = async () => {
+  const navigation = useNavigation();
+  // Gọi API lấy thông tin người dùng khi component mount và cập nhật form
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      try {
+        setLoading(true);
+        console.log('Gọi API UploadUsers');
+        await dispatch(UploadUsers());
+      } catch (error) {
+        console.error('Lỗi khi gọi API UploadUsers:', error);
+        Alert.alert('Lỗi', 'Không thể tải thông tin người dùng.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserInfo();
+  }, [dispatch]);
+
+  // Cập nhật form với dữ liệu người dùng sau khi API trả về thành công
+  useEffect(() => {
+    if (UploadUsersData) {
+      console.log('Dữ liệu người dùng:', UploadUsersData);
+      setName(UploadUsersData.name || '');
+      setPhone(UploadUsersData.phone || '');
+      setAddress(UploadUsersData.address || '');
+      setEmail(UploadUsersData.email || '');
+    }
+
+    if (uploadError) {
+      Alert.alert('Lỗi', uploadError);
+    }
+  }, [UploadUsersData, uploadError]);
+
+  const commit = async () => {
     try {
-      console.log('Gọi API UploadUsers');
-      await dispatch(UploadUsers()); // Gọi API lấy thông tin người dùng
+      const result = await dispatch(EditProfile({ name, phone, address, email })).unwrap();
+      console.log('Kết quả cập nhật:', result);
+  
+      // Hiển thị thông báo thành công
+      Alert.alert('Thành công', 'Cập nhật thông tin thành công', [
+        {
+          text: 'OK',
+          onPress: async () => {
+            await dispatch(UploadUsers()); // Gọi lại API để lấy dữ liệu mới
+            navigation.goBack(); // Quay lại màn hình trước đó
+          },
+        },
+      ]);
     } catch (error) {
-      console.error('Lỗi khi gọi API UploadUsers:', error);
+      console.error('Lỗi cập nhật:', error);
+  
+      // Hiển thị thông báo lỗi cụ thể
+      Alert.alert('Lỗi', error || 'Có lỗi xảy ra. Vui lòng thử lại.');
     }
   };
+  
 
-  loadUserInfo(); // Chạy khi component mount
-}, [dispatch]);
-
-// Cập nhật form với dữ liệu người dùng sau khi API trả về thành công
-useEffect(() => {
-  if (UploadUsersData) {
-    console.log('Dữ liệu người dùng:', UploadUsersData); // Log dữ liệu để kiểm tra
-    setName(UploadUsersData.name || '');
-    setPhone(UploadUsersData.phone || '');
-    setAddress(UploadUsersData.address || '');
-    setgmail(UploadUsersData.email || '');
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#f55" />
+      </View>
+    );
   }
-
-  if (error) {
-    Alert.alert('Lỗi', error); // Hiển thị lỗi nếu có
-  }
-}, [UploadUsersData, error]); // Chỉ theo dõi UploadUsersData và error
-
-const commit = async () => {
-  try {
-    const token = await AsyncStorage.getItem('authToken');
-    if (!token) {
-      Alert.alert('Lỗi', 'Token không tồn tại. Vui lòng đăng nhập lại.');
-      return;
-    }
-
-    const data = { name, phone, address, email };
-    console.log('Data to send:', data);
-
-    // Gọi API và nhận phản hồi từ Redux
-    const result = await dispatch(EditProfile({ data, token }));
-    console.log('Kết quả cập nhật:', result);
-
-    // Kiểm tra phản hồi và lấy thông báo lỗi chính xác
-    if (result.error) {
-      const errorMessage =
-        result.error.message || // Nếu message tồn tại
-        JSON.stringify(result.error); // Nếu không, chuyển object thành chuỗi
-
-      Alert.alert('Lỗi', errorMessage || 'Cập nhật thất bại');
-    } else {
-      Alert.alert('Thành công', 'Cập nhật thông tin thành công');
-    }
-  } catch (error) {
-    console.error('Lỗi khi gửi thông tin:', error);
-    Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra');
-  }
-};
 
   return (
     <View style={styles.container}>
-      {/* Profile picture */}
+      {/* Ảnh đại diện với icon chỉnh sửa */}
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: 'https://randomuser.me/api/portraits/men/1.jpg' }} // Thay thế bằng URL ảnh của bạn
+          source={{ uri: 'https://randomuser.me/api/portraits/men/1.jpg' }}
           style={styles.profileImage}
         />
-        <TouchableOpacity style={styles.editIconContainer}>
-          <Text style={styles.editIconText}>✏️</Text>
-        </TouchableOpacity>
+        
       </View>
 
-      {/* Form Fields */}
+      {/* Các trường nhập liệu */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Name</Text>
-        <TextInput style={styles.input} value={name} onChangeText={setName} />
+        <TextInput 
+          style={styles.input} 
+          value={name} 
+          onChangeText={setName} 
+        />
       </View>
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Mobile Number</Text>
-        <TextInput style={styles.input} value={phone} onChangeText={setPhone} />
+        <TextInput 
+          style={styles.input} 
+          value={phone} 
+          onChangeText={setPhone} 
+          keyboardType="phone-pad"
+        />
       </View>
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Enter Address</Text>
-        <TextInput style={styles.input} value={address} onChangeText={setAddress} />
-      </View>
-      
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Enter Email</Text>
-        <TextInput style={styles.input} value={email} onChangeText={setgmail} />
+        <TextInput 
+          style={styles.input} 
+          value={address} 
+          onChangeText={setAddress} 
+        />
       </View>
 
-      {/* Update Button */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Enter Email</Text>
+        <TextInput 
+          style={styles.input} 
+          value={email} 
+          onChangeText={setEmail} 
+          keyboardType="email-address"
+        />
+      </View>
+
+      {/* Nút cập nhật */}
       <TouchableOpacity style={styles.button} onPress={commit}>
         <Text style={styles.buttonText}>Update</Text>
       </TouchableOpacity>
@@ -128,23 +151,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
+    position: 'relative', // Cho phép icon nằm chồng lên ảnh đại diện
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 25, // Bo góc nhẹ cho ảnh
   },
   editIconContainer: {
     position: 'absolute',
-    bottom: 0,
-    right: 10,
+    bottom: 5,  // Chỉnh gần sát đáy ảnh
+    right: 5,   // Chỉnh gần sát bên phải ảnh
     backgroundColor: '#f55',
-    borderRadius: 50,
-    padding: 5,
+    borderRadius: 20,
+    padding: 8,
+    elevation: 5, // Tạo bóng cho icon để nổi bật
   },
-  editIconText: {
-    color: '#fff',
-    fontSize: 16,
+  editIconImage: {
+    width: 18,
+    height: 18,
+    tintColor: '#fff', // Icon có màu trắng
   },
   inputContainer: {
     marginBottom: 20,

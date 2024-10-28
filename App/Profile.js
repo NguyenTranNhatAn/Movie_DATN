@@ -1,52 +1,69 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { UploadUsers } from './Reducer/UploadUserslide';
 
 const Profile = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  // Lấy dữ liệu người dùng từ Redux store
+  const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
+
+  // Gọi API khi component được render
+  useEffect(() => {
+    if (UploadUsersStatus === 'idle') {
+      dispatch(UploadUsers());
+    }
+  }, [UploadUsersStatus, dispatch]);
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.profileName1}>Profile</Text>
       <View style={styles.profileSection}>
-      
         <Image
           source={require('../Img/anhspidermen.png')}
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>Mark Willions</Text>
-        <Text style={styles.profilePhone}>(405) 555-0128</Text>
+        <Text style={styles.profileName}>
+          {UploadUsersData.name || 'N/A'}
+        </Text>
+        <Text style={styles.profilePhone}>
+          {UploadUsersData.phone || 'N/A'}
+        </Text>
       </View>
 
       <View style={styles.optionsContainer}>
-      <TouchableOpacity
-      style={styles.optionRow}
-      onPress={() => navigation.navigate('editprofile')} // Chuyển hướng đến màn hình ProfileEditScreen
-    >
-      <Text style={styles.optionText}> Edit Profile</Text>
-      <Image source={require('../Img/Vector.png')}/>
-    </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.optionRow}
+          onPress={() => navigation.navigate('editprofile')}
+        >
+          <Text style={styles.optionText}>Edit Profile</Text>
+          <Image source={require('../Img/Vector.png')} />
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}>
-        <View style={styles.editicon} >
-      <Image source={require('../Img/ticket.png')}/>
-      <Text style={styles.optionText}> My tickets</Text>
-      </View>
-          <Image source={require('../Img/Vector.png')}/>
+          <View style={styles.editicon}>
+            <Image source={require('../Img/ticket.png')} />
+            <Text style={styles.optionText}>My tickets</Text>
+          </View>
+          <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}>
           <Text style={styles.optionText}>Change Password</Text>
-          <Image source={require('../Img/Vector.png')}/>
+          <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}>
           <Text style={styles.optionText}>Privacy Policy</Text>
-          <Image source={require('../Img/Vector.png')}/>
+          <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}>
           <Text style={styles.optionText}>Terms & Conditions</Text>
-          <Image source={require('../Img/Vector.png')}/>
+          <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
       </View>
 
