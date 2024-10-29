@@ -69,30 +69,19 @@ const SeatBookScreen = ({ navigation, route }) => {
 
     if (Object.keys(showtimeData).length === 0) {
       dispatch(GetShowTime('671885512ababaf253de9238'));
-
-
-
     }
     else {
 
       setSeats(showtimeData.Room_Shape.split('/').filter(row => row.trim() !== ''))
-      // setSeats(initialSeats)
     }
-
-    //console.log(showtimeData)
-
   }, [dispatch, showtimeData])
   useEffect(() => {
     socket.on('connect', () => {
       console.log('Connected to server');
     });
     // Lắng nghe sự kiện khi ghế được chọn
-    socket.on('seat_selected', (data) => {
-     
-      dispatch(GetShowTime('671885512ababaf253de9238')); 
-      
-       
-     
+    socket.on('seat_selected', (data) => {   
+      dispatch(GetShowTime('671885512ababaf253de9238'));    
     })
     // Lắng nghe sự kiện khi ghế được khôi phục
     socket.on('seat_reverted', (data) => {
@@ -107,7 +96,6 @@ const SeatBookScreen = ({ navigation, route }) => {
       dispatch(GetShowTime('671885512ababaf253de9238'));
      
     });
-
     // Lắng nghe sự kiện khi ghế đã được đặt
     socket.on('seat_booked', (data) => {
       console.log('Seat booked:', data);
@@ -130,7 +118,6 @@ const SeatBookScreen = ({ navigation, route }) => {
       socket.off('seat_selected');
       socket.off('seat_reverted');
       socket.off('seat_booked');
-
     };
   }, []);
 
