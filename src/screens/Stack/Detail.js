@@ -1,10 +1,49 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { WebView } from 'react-native-webview'; // Thêm import WebView
 import { converTime } from '../../utils/convertTime';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToWishlist, removeFromWishlist } from '../../reducers/WishlistSlice'; // Đường dẫn tới slice của wishlist
 
 const Details = ({ route, navigation }) => {
   const { item } = route.params;
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.wishlist.user);
+  const wishlist = user ? user.wishlist : [];
+
+  // Kiểm tra xem phim đã nằm trong wishlist chưa
+  const [isFavorite, setIsFavorite] = useState(wishlist.includes(item.id));
+
+  const handleFavoriteToggle = () => {
+    if (user) {
+      if (isFavorite) {
+        // Bỏ yêu thích
+        dispatch(removeFromWishlist({ userId: user._id, movieId: item.id }))
+          .then(() => {
+            Alert.alert("Xóa thành công khỏi danh sách yêu thích");
+            setIsFavorite(false);
+          })
+          .catch((error) => {
+            console.error(error);
+            Alert.alert("Có lỗi xảy ra, vui lòng thử lại.");
+          });
+      } else {
+        // Thêm vào yêu thích
+        dispatch(addToWishlist({ userId: user._id, movieId: item.id }))
+          .then(() => {
+            Alert.alert("Thêm vào danh sách yêu thích thành công");
+            setIsFavorite(true);
+          })
+          .catch((error) => {
+            console.error(error);
+            Alert.alert("Có lỗi xảy ra, vui lòng thử lại.");
+          });
+      }
+    } else {
+      Alert.alert("Vui lòng đăng nhập để thêm vào danh sách yêu thích");
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -16,7 +55,15 @@ const Details = ({ route, navigation }) => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Movie Details</Text>
-        <View></View>
+        <TouchableOpacity onPress={handleFavoriteToggle}>
+          <Image
+            source={isFavorite 
+              ? require('../../../image/iconAP.png') // Icon yêu thích đầy
+              : require('../../../image/iconGG.png') // Icon yêu thích rỗng
+            }
+            style={styles.favoriteIcon}
+          />
+        </TouchableOpacity>
       </View>
       
       <ScrollView>
@@ -91,6 +138,11 @@ const styles = StyleSheet.create({
   arrowIcon: {
     width: 24,
     height: 24,
+  },
+  favoriteIcon: {
+    width: 24,
+    height: 24,
+    marginLeft: 15,
   },
   headerTitle: {
     fontSize: 18,
@@ -167,10 +219,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     marginTop: 10,
-    // position: 'absolute',
-    bottom: 5,
-    // left: 20,
-    // right: 20,
     alignItems: 'center',
   },
   selectButtonText: {

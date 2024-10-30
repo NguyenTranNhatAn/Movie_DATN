@@ -30,6 +30,7 @@ const AuthRouter = <Stack.Navigator screenOptions={{ headerShown: false }}>
 const MainStackNavigation = (props) => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Tab" component={MainTabNavigation} />
       <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="History" component={History} />
@@ -39,7 +40,7 @@ const MainStackNavigation = (props) => {
     
       <Stack.Screen name="Checkout" component={Checkout} />
       <Stack.Screen name="Editprofile" component={EditProfileComponent} />
-      <Stack.Screen name="Login" component={LoginScreen} />
+     
       <Stack.Screen name="Signup" component={SignupScreen} />
 
 
