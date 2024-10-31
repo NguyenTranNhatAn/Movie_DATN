@@ -27,7 +27,7 @@ function App(): React.JSX.Element {
     <Provider store={store}>
        <SafeAreaView style={backgroundStyle}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="profile">
+        <Stack.Navigator initialRouteName="Checkout">
           <Stack.Screen
             name="Checkout"
             component={Checkout}
