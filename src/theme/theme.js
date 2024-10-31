@@ -16,6 +16,9 @@ export const SPACING = {
 };
 
 export const COLORS = {
+  GreyFade:'#F6F6F6',
+  Red:'#FF515A',
+  GreyWhite:'#EEEEEE',
   Black: '#000000',
   BlackRGB10: 'rgba(0,0,0,0.1)',
   Orange: '#FF5524',

@@ -68,7 +68,7 @@ const SeatBookScreen = ({ navigation, route }) => {
   useEffect(() => {
 
     if (Object.keys(showtimeData).length === 0) {
-      dispatch(GetShowTime('671885512ababaf253de9238'));
+      dispatch(GetShowTime('6722c8e1b3839d363bea30ed'));
     }
     else {
 
@@ -81,7 +81,7 @@ const SeatBookScreen = ({ navigation, route }) => {
     });
     // Lắng nghe sự kiện khi ghế được chọn
     socket.on('seat_selected', (data) => {   
-      dispatch(GetShowTime('671885512ababaf253de9238'));    
+      dispatch(GetShowTime('6722c8e1b3839d363bea30ed'));    
     })
     // Lắng nghe sự kiện khi ghế được khôi phục
     socket.on('seat_reverted', (data) => {
@@ -93,18 +93,18 @@ const SeatBookScreen = ({ navigation, route }) => {
       setSelectedSeatArray(newArr)
       setPrice(newArr.length * 5.0);
       }
-      dispatch(GetShowTime('671885512ababaf253de9238'));
+      dispatch(GetShowTime('6722c8e1b3839d363bea30ed'));
      
     });
     // Lắng nghe sự kiện khi ghế đã được đặt
     socket.on('seat_booked', (data) => {
       console.log('Seat booked:', data);
-      dispatch(GetShowTime('671885512ababaf253de9238'));
+      dispatch(GetShowTime('6722c8e1b3839d363bea30ed'));
 
     });
     socket.on('deselect_seat', (data) => {
       console.log('Seat huy:', data);
-      dispatch(GetShowTime('671885512ababaf253de9238'));
+      dispatch(GetShowTime('6722c8e1b3839d363bea30ed'));
 
     });
     socket.on('error', (data) => {

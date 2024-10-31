@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: BORDERRADIUS.radius_20,
-    backgroundColor: COLORS.Orange,
+    backgroundColor: COLORS.Red,
   },
 });
 

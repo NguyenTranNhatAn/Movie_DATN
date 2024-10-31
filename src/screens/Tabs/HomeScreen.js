@@ -28,6 +28,7 @@ const HomeScreen = (props) => {
     const { genreData, genreStatus } = useSelector((state) => state.genreList);
     const { movieData, movieStatus } = useSelector((state) => state.movieList);
     const [listMovie, setListMovie] = useState([]);
+    
 
     const { navigation } = props;
     const PAGE_WIDTH = Dimensions.get('window').width;

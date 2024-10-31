@@ -22,6 +22,7 @@ import SeatBookingScreen from '../screens/SeatBookingScreen';
 import TicketScreenDemo from '../screens/Stack/TicketDemo';
 import TicketScreen from '../screens/Stack/TicketScreen';
 import SeatBookScreen from '../screens/Stack/SeatBook';
+import CinemaSelect from '../screens/Stack/CinemaSelect';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -41,6 +42,7 @@ const MainStackNavigation = (props) => {
       <Stack.Screen name="Detail" component={Details} />
       <Stack.Screen name="Lastest" component={Latest} />
       <Stack.Screen name="Seat" component={SeatBookScreen} />
+      <Stack.Screen name="Cinema" component={CinemaSelect} />
       <Stack.Screen name="ticket" component={TicketScreen} />
       <Stack.Screen name="Ticket" component={TicketScreenDemo} />
 
