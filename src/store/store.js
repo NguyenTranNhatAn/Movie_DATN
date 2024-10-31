@@ -9,6 +9,7 @@ import showtimeReducer from '../reducers/Showtimes/GetShowTimeSlide'
 import brandListReducer from '../reducers/Brand/GetAllBrand'
 import showTimeListMovieReducer from '../reducers/Showtimes/ShowTimeByMovie'
 import timeRangeMovieReducer from '../reducers/Showtimes/GetTimeRange'
+import cinemaShowtime from '../reducers/Showtimes/ShowTimeCinema'
 export const store = configureStore({
   reducer: {
     search: searchReducer,
@@ -19,7 +20,8 @@ export const store = configureStore({
     showTime: showtimeReducer,
     brandList: brandListReducer,
     showtimebyMovie: showTimeListMovieReducer,
-    listTime:timeRangeMovieReducer
+    listTime:timeRangeMovieReducer,
+    cinemaShow:cinemaShowtime,
   },
 });
 

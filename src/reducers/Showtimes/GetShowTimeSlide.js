@@ -29,6 +29,7 @@ export const showtimeSlice = createSlice({
         state.showtimeStatus = 'failed';
         console.log(action.error.message);
       });
+      
   },
 });
 

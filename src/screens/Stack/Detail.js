@@ -68,7 +68,7 @@ const Details = ({ route, navigation }) => {
       </ScrollView>
 
       {/* Select Seat Button */}
-      <TouchableOpacity onPress={()=>navigation.navigate('Seat')} style={styles.selectButton}>
+      <TouchableOpacity onPress={()=>navigation.navigate('Cinema',{id:item._id,image:item.images})} style={styles.selectButton}>
         <Text style={styles.selectButtonText}>Select Seat</Text>
       </TouchableOpacity>
     </View>

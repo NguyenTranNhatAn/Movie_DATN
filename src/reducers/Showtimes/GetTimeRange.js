@@ -15,7 +15,12 @@ export const getimeSlice = createSlice({
     getTimeData: [],
     getTimeStatus: 'idle',
   },
-  reducers: {},
+  reducers: {
+    clearShowtimeData: (state) => {
+      state.getTimeData = [];  // Reset dữ liệu showtime
+      state.getTimeStatus = 'idle'; // Reset trạng thái nếu cần
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(GetTime.pending, (state, action) => {
@@ -31,5 +36,5 @@ export const getimeSlice = createSlice({
       });
   },
 });
-
+export const { clearShowtimeData } = getimeSlice.actions;
 export default getimeSlice.reducer;

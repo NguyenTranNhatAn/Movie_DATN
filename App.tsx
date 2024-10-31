@@ -22,10 +22,10 @@ function App(): React.JSX.Element {
         barStyle={'dark-content'}
         backgroundColor="rgba(255, 255, 255, 1)"
       />
-     {/* <NavigationContainer>
+     <NavigationContainer>
       <Router/>
-     </NavigationContainer> */}
-     <CinemaSelect navigation={undefined} route={undefined}/>
+     </NavigationContainer>
+     {/* <CinemaSelect navigation={undefined} route={undefined}/> */}
      
 
 

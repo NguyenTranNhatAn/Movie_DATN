@@ -34,32 +34,29 @@ import { BrandList } from '../../reducers/Brand/GetAllBrand';
 import { Image } from 'react-native-animatable';
 import { getDateList } from '../../utils/getListDate';
 import { GetMovieShowtime } from '../../reducers/Showtimes/ShowTimeByMovie';
-import { GetTime } from '../../reducers/Showtimes/GetTimeRange';
+import { clearShowtimeData, GetTime } from '../../reducers/Showtimes/GetTimeRange';
 import { genreSlice } from '../../reducers/Genre/GenreListSlice';
-const timeArray = [
-  "All",
-  '9:00 - 12:00',
-  '12:00 - 15:00',
-  '15:00 - 18:00',
-  '18:00 - 21:00',
-  '21:00 - 24:00',
+import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
 
-
-];
 
 
 
 
 
 const CinemaSelect = ({ navigation, route }) => {
+  const { id, image } = route.params;
+  const [iD, setID] = useState(id);
+
+
   const dispatch = useDispatch();
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState({});
   const [showTimeByMovie, setShowTimeByMovie] = useState([]);
   const [seats, setSeats] = useState([]);
   const { showtimeData, showtimeStatus } = useSelector((state) => state.showTime);
   const { brandData, brandStatus } = useSelector((state) => state.brandList);
   const { getTimeData, getTimeStatus } = useSelector((state) => state.listTime);
   const { showtimeMovieData, showtimeMovieStatus } = useSelector((state) => state.showtimebyMovie);
+  const { showCinemaData, showCinemaStatus } = useSelector((state) => state.cinemaShow);
   const [dateArray, setDateArray] = useState(getDateList(7));
   const [selectedIds, setSelectedIds] = useState([]);
   const [timeARR, setTimeARR] = useState([]);
@@ -70,6 +67,8 @@ const CinemaSelect = ({ navigation, route }) => {
   const [selectedSeatArray, setSelectedSeatArray] = useState([]);
   const [selectedTimeIndex, setSelectedTimeIndex] = useState();
   const [listBrand, setListBrand] = useState([]);
+  const [dataNot, setDatanot] = useState(false);
+  const [cinemaData, setCinemaData] = useState([]);
 
 
   useEffect(() => {
@@ -78,81 +77,111 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedBrand(0);
   }, []);
 
- 
+
+  useEffect(() => {
+    if (showCinemaData.length === 0) {
+
+      dispatch(ShowCine({ movieId: iD, day: dateArray[0].date,  startHour:7, endHour:12  }));
+    }
+    setCinemaData(showCinemaData);
+  //  console.log(cinemaData)
+
+  }, [dispatch, showCinemaData])
 
   useEffect(() => {
     // Kiểm tra trạng thái để gọi dispatch
-    if (brandStatus === 'idle' || brandStatus.length === 0) {
-      dispatch(BrandList({movieId: '670b3bcf184ded8e7759c0ab', day: dateArray[0].date}));
+    if (brandStatus === 'idle' || brandData.length === 0) {
+      dispatch(BrandList({ movieId: iD, day: dateArray[0].date }));
+  
     }
-
+   
     // Cập nhật timeARR khi getTimeData thay đổi
     if (brandData.length > 0) {
       setListBrand(brandData);
 
     }
-    console.log(brandData)
+     console.log(brandData)
   }, [dispatch, brandData, brandStatus]);
-  
-  useEffect(() => {
-    if (showtimeMovieData.length === 0) {
-
-      dispatch(GetMovieShowtime({ movieId: '670b3bcf184ded8e7759c0ab', day: dateArray[0].date }));
-    }
 
 
-
-    setShowTimeByMovie(showtimeMovieData);
-
-
-  }, [dispatch, showtimeMovieData])
 
   useEffect(() => {
+
+   
     // Kiểm tra trạng thái để gọi dispatch
-    if (getTimeStatus === 'idle' || getTimeData.length === 0) {
-      dispatch(GetTime({ movieId: '670b3bcf184ded8e7759c0ab', day: "2024-10-31T14:35:22.123Z" }));
+    if (getTimeData.length === 0 && selectedDateIndex === undefined) {
+      dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
+
     }
 
-    // Cập nhật timeARR khi getTimeData thay đổi
+
+    if (getTimeData.length === 0) {
+      setDatanot(true)
+    }
     if (getTimeData.length > 0) {
+      
       setTimeARR(getTimeData);
-
+      setDatanot(false)
     }
-    //console.log(timeARR)
-  }, [dispatch, getTimeStatus, getTimeData]);
 
-  const toggleDate = (index)=>{
-    setSelectedDateIndex(index)
-  }
-  const toggleExpand = () => {
 
-    setExpanded(!expanded);
+  }, [dispatch, getTimeStatus, getTimeData, id]);
+
+  const toggleDate = (index) => {
+
+    setSelectedDateIndex(index);
+
+    // Lấy ngày đã chọn dựa trên chỉ mục index
+    const selectedDate = dateArray[index].date;
+
+    // Dispatch hành động lấy dữ liệu thời gian với ngày đã chọn
+    dispatch(GetTime({ movieId: iD, day: selectedDate ,}));
+    dispatch(ShowCine({ movieId: iD, day: selectedDate ,startHour:1,endHour:24 }));
+  
+  };
+  const toggleTime = (index,item) => {
+    const selectedDate = dateArray[index].date;
+    setSelectedTimeIndex(index);
+    dispatch(ShowCine({ movieId: iD, day: selectedDate  ,startHour:item.start,endHour:item.end}));
+
+    // Lấy ngày đã chọn dựa trên chỉ mục index
+   // const selectedDate = dateArray[index].date;
+
+    // Dispatch hành động lấy dữ liệu thời gian với ngày đã chọn
+    // dispatch(GetTime({ movieId: iD, day: selectedDate }));
+    // dispatch(ShowCine({ movieId: iD, day: selectedDate  }));
   };
 
-  const renderBrand = ({ item, index }) => {
-    return (
-      <TouchableOpacity onPress={() => setSelectedBrand(index)} style={{ justifyContent: 'center', alignItems: 'center', }}>
-        <View style={{ borderColor: index == selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-          <Image style={{ resizeMode: 'contain', height: 50, width: 50 }} source={{ uri: item.logo }} />
+  const toggleExpand = (id) => {
+    setExpanded((prevState) => ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
+  };
 
-        </View>
-        <Text numberOfLines={1} style={{ textAlign: 'center', width: 70, color: index == selectedBrand ? 'black' : 'grey', fontWeight: 'bold' }}>{item.name}</Text>
-      </TouchableOpacity>
-    )
+  const formatTime = (timeString) => {
+    const date = new Date(timeString);
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}`;
+  };
 
-  }
+const goBack = ()=>{
+  navigation.goBack();
+  dispatch(clearShowtimeData())
+}
 
   return (
-    <View style={styles.container} bounces={false} showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.container} bounces={false} showsVerticalScrollIndicator={false}>
       <StatusBar hidden />
 
       <View>
         <ImageBackground
-          source={{ uri: 'https://i.ytimg.com/vi/jBpUvgVFuXE/hqdefault.jpg' }}
+          source={{ uri: image[0] }}
           style={styles.ImageBG}>
           <LinearGradient colors={[COLORS.BlackRGB10, COLORS.Black]} style={styles.linearGradient}>
             <View style={styles.appHeaderContainer}>
-              <AppHeader name="close" header="" action={() => navigation.goBack()} />
+              <AppHeader name="close" header="" action={() =>goBack() } />
             </View>
           </LinearGradient>
         </ImageBackground>
@@ -168,7 +197,7 @@ const CinemaSelect = ({ navigation, route }) => {
           contentContainerStyle={styles.containerGap24}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity onPress={() =>toggleDate(index)}>
+              <TouchableOpacity onPress={() => toggleDate(index)}>
                 <View
                   style={[
                     styles.dateContainer,
@@ -190,12 +219,12 @@ const CinemaSelect = ({ navigation, route }) => {
         />
       </View>
 
-      <View style={styles.OutterContainer}>
+      {!dataNot ? <View style={styles.OutterContainer}>
 
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.containerGap24,{paddingLeft:24}]}
+          contentContainerStyle={[styles.containerGap24, { paddingLeft: 24 }]}
 
         >
           {
@@ -203,12 +232,12 @@ const CinemaSelect = ({ navigation, route }) => {
               <View
                 style={[
                   styles.timeContainer,
-                 
+
                   selectedTimeIndex === 0
                     ? { backgroundColor: COLORS.Red }
                     : {},
                 ]}>
-                <Text style={[styles.timeText, 0 === selectedTimeIndex ? { color: COLORS.White } : {}]}>Tất cả</Text>
+                <Text onPress={()=>dispatch(dispatch(ShowCine({ movieId: iD, day: dateArray[selectedDateIndex].date ,startHour:1,endHour:24 })))} style={[styles.timeText, 0 === selectedTimeIndex ? { color: COLORS.White } : {}]}>Tất cả</Text>
               </View>
             </TouchableOpacity>
           }
@@ -216,21 +245,21 @@ const CinemaSelect = ({ navigation, route }) => {
           {
             timeARR.map((item, index) => {
               return (
-                <TouchableOpacity key={index+1} onPress={() => setSelectedTimeIndex(index+1)}>
+                <TouchableOpacity key={index + 1} onPress={() => toggleTime(index+1,item)}>
                   <View
                     style={[
                       styles.timeContainer,
-                      index+1 === 0
+                      index + 1 === 0
                         ? { marginLeft: SPACING.space_24 }
-                        : index === timeArray.length - 1
+                        : index === timeARR.length - 1
                           ? { marginRight: SPACING.space_24 }
                           : {},
-                      index+1 === selectedTimeIndex
+                      index + 1 === selectedTimeIndex
                         ? { backgroundColor: COLORS.Red }
                         : {},
                     ]}>
 
-                    <Text style={[styles.timeText, index+1 === selectedTimeIndex ? { color: COLORS.White } : {}]}>{item.label ?? ""}</Text>
+                    <Text style={[styles.timeText, index + 1 === selectedTimeIndex ? { color: COLORS.White } : {}]}>{item.label ?? ""}</Text>
 
                   </View>
                 </TouchableOpacity>
@@ -240,17 +269,19 @@ const CinemaSelect = ({ navigation, route }) => {
 
         </ScrollView>
       </View>
+        : <></>
+      }
       <View style={styles.body}>
 
         <View style={{ borderRadius: 10, marginTop: 20, marginHorizontal: 24, paddingVertical: 15, backgroundColor: 'white' }}>
-          <ScrollView
+          {!dataNot ? <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 15, paddingLeft: 15, }}
           >
             {<TouchableOpacity onPress={() => setSelectedBrand(0)} style={{ justifyContent: 'center', alignItems: 'center', }}>
               <View style={{ borderColor: 0 == selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-                <Image style={{ resizeMode: 'contain', height: 50, width: 50 }} source={{ uri: "https://res.cloudinary.com/dqpwsunpc/image/upload/v1730307886/igugmco1rieyhpveixnv.jpg" }} />
+                <Image style={{ resizeMode: 'contain', height: 40, width: 40 }} source={{ uri: "https://res.cloudinary.com/dqpwsunpc/image/upload/v1730307886/igugmco1rieyhpveixnv.jpg" }} />
 
               </View>
               <Text numberOfLines={1} style={{ textAlign: 'center', width: 70, color: 0 == selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' }}>All</Text>
@@ -258,19 +289,92 @@ const CinemaSelect = ({ navigation, route }) => {
             {
               listBrand.map((item, index) => {
                 return (
-                  <TouchableOpacity key={item._id} onPress={() => setSelectedBrand(index + 1)} style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <TouchableOpacity key={item.logo} onPress={() => setSelectedBrand(index + 1)} style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <View style={{ borderColor: index + 1 === selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-                      <Image style={{ resizeMode: 'contain', height: 50, width: 50 }} source={{ uri: item.logo }} />
+                      <Image style={{ resizeMode: 'contain', height: 40, width: 40 }} source={{ uri: item.logo }} />
                     </View>
                     <Text numberOfLines={1} style={{ textAlign: 'center', width: 70, color: index + 1 === selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' }}>{item.name}</Text>
                   </TouchableOpacity>
                 );
               })
             }
-          </ScrollView>
+          </ScrollView> : <Text style={{ textAlign: 'center', color: 'black', fontSize: 25, fontWeight: 'bold' }}>Không có Lịch Chiếu</Text>}
+
         </View>
+        {
+          !dataNot ?
+            <>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, marginTop: 10 }}>
+                <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>
+                  CGV
+                </Text>
+                <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>
+                  Số rạp
+                </Text>
+              </View>
+              <ScrollView contentContainerStyle={{ display: 'flex', gap: 15, marginHorizontal: 24, marginTop: 10, }}>
+                {
+                  cinemaData.map((item, index) => {
+                    return (
+                      <View key={item.cinema._id} style={{ backgroundColor: 'white', borderRadius: 10, borderRadius: 10, padding: 10, }}>
+                        <View style={{ flexDirection: 'row' }}>
+                          <View style={{ flexDirection: 'row', flex: 1 }}>
+                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                              <View style={{ borderColor: COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
+                                <Image style={{ height: 40, width: 40 }} source={{ uri: item.cinema.brandId.logo }} />
+                              </View>
+                              <View style={{ marginLeft: 10, alignSelf: 'center' }}>
+                                <Text style={{ color: 'black', fontSize: 14, fontWeight: 'bold' }}>
+                                  {item.cinema.name}
+                                </Text>
+                                <Text numberOfLines={1} style={{ color: 'black', fontSize: 12, width: '65%' }}>
+                                  {item.cinema.address}
+                                </Text>
+                              </View>
+                            </View>
+                            <TouchableOpacity onPress={() => toggleExpand(item.cinema._id)} style={{ height: 50, width: 50, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
+                              <Image style={{ width: 30, height: 30, }} source={require('../../../image/image.png')} />
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                        {expanded[item.cinema._id] && (
+                          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginTop: 10 }}>
+                            {item.showtimes.map((item, index) => (
+                              <TouchableOpacity
+                                key={'Room' + index}
+                                onPress={() => setSelectedTimeIndex(index + 1)}
+                                style={{ flexBasis: '30%', marginBottom: 10 }}
+                              >
+                                <View
+                                  style={[
+                                    styles.timeContainer,
+                                    index + 1 === selectedTimeIndex
+                                      ? { backgroundColor: COLORS.Red }
+                                      : {},
+                                  ]}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.timeText,
+                                      index + 1 === selectedTimeIndex ? { color: COLORS.White } : {}
+                                    ]}
+                                  >
+                                    {`${formatTime(item.startTime)}-${formatTime(item.endTime)}` ?? ""}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                        )}
+                      </View>
+                    );
+                  })
+                }
+              </ScrollView></>
+            : <></>
+        }
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -375,7 +479,7 @@ const styles = StyleSheet.create({
   },
   containerGap24: {
     gap: SPACING.space_24,
-    
+
   },
   dateContainer: {
     width: SPACING.space_10 * 7,
