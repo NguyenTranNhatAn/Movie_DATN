@@ -46,6 +46,7 @@ import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
 const CinemaSelect = ({ navigation, route }) => {
   const { id, image } = route.params;
   const [iD, setID] = useState(id);
+  const [dateArray, setDateArray] = useState(getDateList("2024-10-31", "2024-11-08"));
 
 
   const dispatch = useDispatch();
@@ -57,7 +58,6 @@ const CinemaSelect = ({ navigation, route }) => {
   const { getTimeData, getTimeStatus } = useSelector((state) => state.listTime);
   const { showtimeMovieData, showtimeMovieStatus } = useSelector((state) => state.showtimebyMovie);
   const { showCinemaData, showCinemaStatus } = useSelector((state) => state.cinemaShow);
-  const [dateArray, setDateArray] = useState(getDateList(7));
   const [selectedIds, setSelectedIds] = useState([]);
   const [timeARR, setTimeARR] = useState([]);
   const [selectedDateIndex, setSelectedDateIndex] = useState();
@@ -81,15 +81,16 @@ const CinemaSelect = ({ navigation, route }) => {
   useEffect(() => {
     if (showCinemaData.length === 0) {
 
-      dispatch(ShowCine({ movieId: iD, day: dateArray[0].date,  startHour:7, endHour:12  }));
+      dispatch(ShowCine({ movieId: iD, day: dateArray[0].date,  startHour:1, endHour:24  }));
+    
     }
+  
     setCinemaData(showCinemaData);
-  //  console.log(cinemaData)
-
+    console.log(dateArray[0].date)
   }, [dispatch, showCinemaData])
 
   useEffect(() => {
-    // Kiểm tra trạng thái để gọi dispatch
+ 
     if (brandStatus === 'idle' || brandData.length === 0) {
       dispatch(BrandList({ movieId: iD, day: dateArray[0].date }));
   
@@ -99,8 +100,10 @@ const CinemaSelect = ({ navigation, route }) => {
     if (brandData.length > 0) {
       setListBrand(brandData);
 
+      
     }
-     console.log(brandData)
+    
+    //  console.log(brandData)
   }, [dispatch, brandData, brandStatus]);
 
 
@@ -134,7 +137,6 @@ const CinemaSelect = ({ navigation, route }) => {
     // Lấy ngày đã chọn dựa trên chỉ mục index
     const selectedDate = dateArray[index].date;
 
-    // Dispatch hành động lấy dữ liệu thời gian với ngày đã chọn
     dispatch(GetTime({ movieId: iD, day: selectedDate ,}));
     dispatch(ShowCine({ movieId: iD, day: selectedDate ,startHour:1,endHour:24 }));
   
@@ -144,12 +146,6 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedTimeIndex(index);
     dispatch(ShowCine({ movieId: iD, day: selectedDate  ,startHour:item.start,endHour:item.end}));
 
-    // Lấy ngày đã chọn dựa trên chỉ mục index
-   // const selectedDate = dateArray[index].date;
-
-    // Dispatch hành động lấy dữ liệu thời gian với ngày đã chọn
-    // dispatch(GetTime({ movieId: iD, day: selectedDate }));
-    // dispatch(ShowCine({ movieId: iD, day: selectedDate  }));
   };
 
   const toggleExpand = (id) => {
@@ -161,8 +157,9 @@ const CinemaSelect = ({ navigation, route }) => {
 
   const formatTime = (timeString) => {
     const date = new Date(timeString);
+    console.log(date)
     const hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
+    
     return `${hours}`;
   };
 
