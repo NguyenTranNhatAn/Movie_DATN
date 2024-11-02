@@ -196,6 +196,9 @@ const CinemaSelect = ({ navigation, route }) => {
     navigation.goBack();
     dispatch(clearShowtimeData())
   }
+  const toggleSeat = (index,item1)=>{
+console.log(item1)
+  }
 
   return (
     <ScrollView style={styles.container} bounces={false} showsVerticalScrollIndicator={false}>
@@ -366,7 +369,8 @@ const CinemaSelect = ({ navigation, route }) => {
                         {expanded[item.cinema._id] && (
                           <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginTop: 10 }}>
                             {item.showtimes.map((item1, index) => (
-                              <TouchableOpacity
+                              <TouchableOpacity 
+                              onPress={()=>toggleSeat(item1,index)}
                                 key={'Room' + index}
                                 // onPress={() => setSelectedTimeIndex(index + 1)}
                                 style={{ flexBasis: '30%', marginBottom: 10 }}
