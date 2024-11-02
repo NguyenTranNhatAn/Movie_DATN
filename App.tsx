@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import Router from './src/routers/Router';
 import { Provider } from 'react-redux';
 import { store } from './src/store/store';
+import CinemaSelect from './src/screens/Stack/CinemaSelect';
 
 
 function App(): React.JSX.Element {
@@ -24,6 +25,7 @@ function App(): React.JSX.Element {
      <NavigationContainer>
       <Router/>
      </NavigationContainer>
+     {/* <CinemaSelect navigation={undefined} route={undefined}/> */}
      
 
 
@@ -38,3 +40,14 @@ function App(): React.JSX.Element {
 
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+

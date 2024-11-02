@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seat Selection Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .row {
+            display: flex;
+            margin: 10px 0;
+        }
+        .seat {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ccc;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        .seat.taken {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+        .seat.selected {
+            background-color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="seat-container"></div>
+
+    <script>
+        const generateSeats = () => {
+            const numRow = 3; // Số hàng ghế
+            const numColumnLeft = 3; // Số ghế bên trái lối đi
+            const rowArray = [];
+            const rows = ['A', 'B', 'C']; // Các hàng
+
+            for (let i = 0; i < numRow; i++) {
+                const columnArray = [];
+                let start = 1; // Khởi tạo số ghế
+
+                // Thêm ghế bên trái lối đi
+                for (let j = 0; j < numColumnLeft; j++) {
+                    const seatObject = {
+                        number: start,
+                        row: rows[i],
+                        taken: Boolean(Math.round(Math.random())), // Ghế có thể đã được đặt
+                        selected: false,
+                    };
+                    columnArray.push(seatObject);
+                    start++;
+                }
+
+                rowArray.push(columnArray);
+            }
+            return rowArray;
+        };
+
+        const renderSeats = (seats) => {
+            const container = document.getElementById('seat-container');
+            container.innerHTML = ''; // Xóa nội dung cũ
+
+            seats.forEach((row) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'row';
+
+                row.forEach((item) => {
+                    const seatDiv = document.createElement('div');
+                    seatDiv.className = 'seat' + (item.taken ? ' taken' : '') + (item.selected ? ' selected' : '');
+                    seatDiv.innerText = item.number ? `${item.row}${item.number}` : ''; // Hiển thị số ghế
+                    seatDiv.onclick = () => {
+                        if (!item.taken) {
+                            item.selected = !item.selected; // Chọn hoặc bỏ chọn ghế
+                            renderSeats(seats); // Cập nhật giao diện
+                        }
+                    };
+                    rowDiv.appendChild(seatDiv);
+                    
+                });
+
+                container.appendChild(rowDiv);
+            });
+        };
+
+        const seats = generateSeats(); // Khởi tạo ghế
+        renderSeats(seats); // Hiển thị ghế
+    </script>
+</body>
+</html>

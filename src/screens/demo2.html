@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seat Generation Example</title>
+</head>
+<body>
+    <h1>Seat Generation Example</h1>
+    <button id="generateSeatsButton">Generate Seats</button>
+    <pre id="output"></pre>
+
+    <script>
+        const generateSeats = () => {
+            const numRow = 3; // Số hàng ghế
+            const numColumnLeft = 3; // Số ghế bên trái lối đi
+            const rowArray = [];
+            const rows = ['A', 'B', 'C']; // Các hàng
+
+            for (let i = 0; i < numRow; i++) {
+                const columnArray = [];
+                let start = 1; // Khởi tạo số ghế
+
+                // Thêm ghế bên trái lối đi
+                for (let j = 0; j < numColumnLeft; j++) {
+                    const seatObject = {
+                        number: start,
+                        row: rows[i],
+                        taken: Boolean(Math.round(Math.random())), // Ghế có thể đã được đặt
+                        selected: false,
+                    };
+                    columnArray.push(seatObject);
+                    start++;
+                }
+
+                rowArray.push(columnArray);
+            }
+            return rowArray;
+        };
+
+        document.getElementById('generateSeatsButton').onclick = () => {
+            const seats = generateSeats(); // Gọi hàm để tạo ghế
+            document.getElementById('output').innerText = JSON.stringify(seats, null, 2); // Hiển thị kết quả
+        };
+    </script>
+</body>
+</html>
