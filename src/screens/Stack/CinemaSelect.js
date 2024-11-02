@@ -65,7 +65,10 @@ const CinemaSelect = ({ navigation, route }) => {
   const [price, setPrice] = useState(0);
   const [twoDSeatArray, setTwoDSeatArray] = useState([]);
   const [selectedSeatArray, setSelectedSeatArray] = useState([]);
+  const [start, setstart] = useState()
+  const [end, setEnd] = useState()
   const [selectedTimeIndex, setSelectedTimeIndex] = useState();
+  const [brandId, setBrandId] = useState();
   const [listBrand, setListBrand] = useState([]);
   const [dataNot, setDatanot] = useState(false);
   const [cinemaData, setCinemaData] = useState([]);
@@ -75,42 +78,42 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedDateIndex(0);
     setSelectedTimeIndex(0);
     setSelectedBrand(0);
+    
   }, []);
 
 
   useEffect(() => {
     if (showCinemaData.length === 0) {
 
-      dispatch(ShowCine({ movieId: iD, day: dateArray[0].date,  startHour:1, endHour:24  }));
-    
+      dispatch(ShowCine({ movieId: iD, day: dateArray[0].date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
+
     }
-  
+
+
     setCinemaData(showCinemaData);
-    console.log(dateArray[0].date)
   }, [dispatch, showCinemaData])
 
   useEffect(() => {
- 
+
     if (brandStatus === 'idle' || brandData.length === 0) {
       dispatch(BrandList({ movieId: iD, day: dateArray[0].date }));
-  
+
     }
-   
+
     // Cập nhật timeARR khi getTimeData thay đổi
     if (brandData.length > 0) {
       setListBrand(brandData);
 
-      
+
     }
-    
-    //  console.log(brandData)
+
   }, [dispatch, brandData, brandStatus]);
 
 
 
   useEffect(() => {
 
-   
+
     // Kiểm tra trạng thái để gọi dispatch
     if (getTimeData.length === 0 && selectedDateIndex === undefined) {
       dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
@@ -122,7 +125,7 @@ const CinemaSelect = ({ navigation, route }) => {
       setDatanot(true)
     }
     if (getTimeData.length > 0) {
-      
+
       setTimeARR(getTimeData);
       setDatanot(false)
     }
@@ -137,16 +140,44 @@ const CinemaSelect = ({ navigation, route }) => {
     // Lấy ngày đã chọn dựa trên chỉ mục index
     const selectedDate = dateArray[index].date;
 
-    dispatch(GetTime({ movieId: iD, day: selectedDate ,}));
-    dispatch(ShowCine({ movieId: iD, day: selectedDate ,startHour:1,endHour:24 }));
-  
-  };
-  const toggleTime = (index,item) => {
-    const selectedDate = dateArray[index].date;
-    setSelectedTimeIndex(index);
-    dispatch(ShowCine({ movieId: iD, day: selectedDate  ,startHour:item.start,endHour:item.end}));
+    dispatch(GetTime({ movieId: iD, day: selectedDate, }));
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
 
   };
+  const allDate = () => {
+    const selectedDate = dateArray[selectedDateIndex].date;
+    setstart(0);
+    setEnd(24)
+    setSelectedTimeIndex(0)
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: 0, endHour: 24, brandId: brandId }));
+
+  }
+  const toggleTime = (index, item) => {
+    setstart(item.start)
+    setEnd(item.end)
+    const selectedDate = dateArray[selectedDateIndex].date;
+    setSelectedTimeIndex(index);
+    console.log(item.start, item.end)
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: item.start, endHour: item.end, brandId: brandId }));
+    console.log(item.start, item.end, brandId)
+
+  };
+  const toggleBrand = (item, index) => {
+    setBrandId(item.brandId)
+    setSelectedBrand(index + 1)
+    const selectedDate = dateArray[selectedDateIndex].date;
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: item.brandId }));
+    console.log(start ?? 0)
+  };
+
+  const allBrand = () => {
+    setBrandId(undefined)
+    const selectedDate = dateArray[selectedDateIndex].date;
+    setSelectedBrand(0);
+    
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24}));
+   
+  }
 
   const toggleExpand = (id) => {
     setExpanded((prevState) => ({
@@ -157,16 +188,14 @@ const CinemaSelect = ({ navigation, route }) => {
 
   const formatTime = (timeString) => {
     const date = new Date(timeString);
-    console.log(date)
     const hours = date.getHours();
-    
+
     return `${hours}`;
   };
-
-const goBack = ()=>{
-  navigation.goBack();
-  dispatch(clearShowtimeData())
-}
+  const goBack = () => {
+    navigation.goBack();
+    dispatch(clearShowtimeData())
+  }
 
   return (
     <ScrollView style={styles.container} bounces={false} showsVerticalScrollIndicator={false}>
@@ -178,7 +207,7 @@ const goBack = ()=>{
           style={styles.ImageBG}>
           <LinearGradient colors={[COLORS.BlackRGB10, COLORS.Black]} style={styles.linearGradient}>
             <View style={styles.appHeaderContainer}>
-              <AppHeader name="close" header="" action={() =>goBack() } />
+              <AppHeader name="close" header="" action={() => goBack()} />
             </View>
           </LinearGradient>
         </ImageBackground>
@@ -224,25 +253,25 @@ const goBack = ()=>{
           contentContainerStyle={[styles.containerGap24, { paddingLeft: 24 }]}
 
         >
-          {
-            <TouchableOpacity onPress={() => setSelectedTimeIndex(0)}>
-              <View
-                style={[
-                  styles.timeContainer,
 
-                  selectedTimeIndex === 0
-                    ? { backgroundColor: COLORS.Red }
-                    : {},
-                ]}>
-                <Text onPress={()=>dispatch(dispatch(ShowCine({ movieId: iD, day: dateArray[selectedDateIndex].date ,startHour:1,endHour:24 })))} style={[styles.timeText, 0 === selectedTimeIndex ? { color: COLORS.White } : {}]}>Tất cả</Text>
-              </View>
-            </TouchableOpacity>
-          }
+          <TouchableOpacity onPress={() => allDate()}>
+            <View
+              style={[
+                styles.timeContainer,
+
+                selectedTimeIndex === 0
+                  ? { backgroundColor: COLORS.Red }
+                  : {},
+              ]}>
+              <Text style={[styles.timeText, 0 === selectedTimeIndex ? { color: COLORS.White } : {}]}>Tất cả</Text>
+            </View>
+          </TouchableOpacity>
+
 
           {
             timeARR.map((item, index) => {
               return (
-                <TouchableOpacity key={index + 1} onPress={() => toggleTime(index+1,item)}>
+                <TouchableOpacity key={index + 1} onPress={() => toggleTime(index + 1, item)}>
                   <View
                     style={[
                       styles.timeContainer,
@@ -276,7 +305,7 @@ const goBack = ()=>{
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 15, paddingLeft: 15, }}
           >
-            {<TouchableOpacity onPress={() => setSelectedBrand(0)} style={{ justifyContent: 'center', alignItems: 'center', }}>
+            {<TouchableOpacity onPress={() => allBrand()} style={{ justifyContent: 'center', alignItems: 'center', }}>
               <View style={{ borderColor: 0 == selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
                 <Image style={{ resizeMode: 'contain', height: 40, width: 40 }} source={{ uri: "https://res.cloudinary.com/dqpwsunpc/image/upload/v1730307886/igugmco1rieyhpveixnv.jpg" }} />
 
@@ -286,7 +315,7 @@ const goBack = ()=>{
             {
               listBrand.map((item, index) => {
                 return (
-                  <TouchableOpacity key={item.logo} onPress={() => setSelectedBrand(index + 1)} style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <TouchableOpacity key={item.logo} onPress={() => toggleBrand(item, index)} style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <View style={{ borderColor: index + 1 === selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
                       <Image style={{ resizeMode: 'contain', height: 40, width: 40 }} source={{ uri: item.logo }} />
                     </View>
@@ -336,27 +365,22 @@ const goBack = ()=>{
                         </View>
                         {expanded[item.cinema._id] && (
                           <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginTop: 10 }}>
-                            {item.showtimes.map((item, index) => (
+                            {item.showtimes.map((item1, index) => (
                               <TouchableOpacity
                                 key={'Room' + index}
-                                onPress={() => setSelectedTimeIndex(index + 1)}
+                                // onPress={() => setSelectedTimeIndex(index + 1)}
                                 style={{ flexBasis: '30%', marginBottom: 10 }}
                               >
                                 <View
-                                  style={[
-                                    styles.timeContainer,
-                                    index + 1 === selectedTimeIndex
-                                      ? { backgroundColor: COLORS.Red }
-                                      : {},
-                                  ]}
+                                  style={styles.timeContainer}
                                 >
                                   <Text
                                     style={[
                                       styles.timeText,
-                                      index + 1 === selectedTimeIndex ? { color: COLORS.White } : {}
+
                                     ]}
                                   >
-                                    {`${formatTime(item.startTime)}-${formatTime(item.endTime)}` ?? ""}
+                                    {`${formatTime(item1.startTime)}-${formatTime(item1.endTime)}` ?? ""}
                                   </Text>
                                 </View>
                               </TouchableOpacity>

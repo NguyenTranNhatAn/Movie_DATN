@@ -1,7 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const ShowCine = createAsyncThunk('showcine', async data => {
-  const response = await fetch('https://be-movie-sooty.vercel.app/showtime/getCinemaMain?movieId='+data.movieId+'&day='+data.day+'&startHour='+data.startHour+'&endHour='+data.endHour);
+  var response;
+  if(data.brandId==undefined){
+     response = await fetch('https://be-movie-sooty.vercel.app/showtime/getCinemaMain?movieId='+data.movieId+'&day='+data.day+'&startHour='+data.startHour+'&endHour='+data.endHour);
+     console.log('run3')
+  }
+  else{
+     response = await fetch('https://be-movie-sooty.vercel.app/showtime/getCinemaMain?movieId='+data.movieId+'&day='+data.day+'&startHour='+data.startHour+'&endHour='+data.endHour+'&brandId='+data.brandId);
+    console.log('run4')
+  }
   if (!response.ok) {
     throw new Error('Failed');
   }
