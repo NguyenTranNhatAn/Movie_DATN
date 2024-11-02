@@ -78,7 +78,7 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedDateIndex(0);
     setSelectedTimeIndex(0);
     setSelectedBrand(0);
-    
+
   }, []);
 
 
@@ -174,9 +174,9 @@ const CinemaSelect = ({ navigation, route }) => {
     setBrandId(undefined)
     const selectedDate = dateArray[selectedDateIndex].date;
     setSelectedBrand(0);
-    
-    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24}));
-   
+
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24 }));
+
   }
 
   const toggleExpand = (id) => {
@@ -196,8 +196,8 @@ const CinemaSelect = ({ navigation, route }) => {
     navigation.goBack();
     dispatch(clearShowtimeData())
   }
-  const toggleSeat = (index,item1)=>{
-console.log(item1)
+  const toggleSeat = (item, item1, index) => {
+    console.log(item1.showtimeId)
   }
 
   return (
@@ -369,8 +369,8 @@ console.log(item1)
                         {expanded[item.cinema._id] && (
                           <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginTop: 10 }}>
                             {item.showtimes.map((item1, index) => (
-                              <TouchableOpacity 
-                              onPress={()=>toggleSeat(item1,index)}
+                              <TouchableOpacity
+                                onPress={() => toggleSeat(item, item1, index)}
                                 key={'Room' + index}
                                 // onPress={() => setSelectedTimeIndex(index + 1)}
                                 style={{ flexBasis: '30%', marginBottom: 10 }}
