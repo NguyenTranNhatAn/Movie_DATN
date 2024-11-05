@@ -15,7 +15,12 @@ const LoginScreen = ({navigation}) => {
       const response = await axios.post('https://be-movie-sooty.vercel.app/api/login', { phone, password });
         navigation.navigate ('Tab');
       console.log('Token:', response.data.token);
-      
+        // Lưu token và id vào AsyncStorage nếu đăng nhập thành công
+        const { token, _id } = response.data;
+        await AsyncStorage.setItem('token', token);
+        await AsyncStorage.setItem('_id', _id.toString());
+       console.log(`Login successful for ${phone}: Token - ${token}, ID - ${_id}`);
+        
     } catch (err) {
       Alert.alert( '','Đăng nhập thất bại!');
      
