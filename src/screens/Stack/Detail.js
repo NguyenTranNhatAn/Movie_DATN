@@ -1,17 +1,42 @@
-import React from 'react';
+// Details.js
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { WebView } from 'react-native-webview'; // Thêm import WebView
+import { WebView } from 'react-native-webview';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToWishlist } from '../../reducers/WishListSlice';
 import { converTime } from '../../utils/convertTime';
 
 const Details = ({ route, navigation }) => {
+  const dispatch = useDispatch();
   const { item } = route.params;
+  const wishlistStatus = useSelector((state) => state.wishlist.status);
+  useEffect(() => {
+    const checkUserId = async () => {
+      const _id = await AsyncStorage.getItem('_id');
+      console.log("Retrieved User ID:", _id); // Kiểm tra `_id` trong console
+    };
+
+    checkUserId(); // Gọi hàm kiểm tra khi component được render
+  }, []);
+  const handleAddToWishlist = () => {
+    dispatch(addToWishlist(item._id)).then((result) => {
+      if (result.meta.requestStatus === 'fulfilled') {
+        console.log("Movie added to wishlist successfully:", item._id);
+      } else {
+        console.log("Failed to add movie to wishlist:", result.error.message);
+      }
+    }).catch((error) => console.error("Error dispatching addToWishlist:", error));
+  };
+  
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
-            source={require('../../../assets/image/arrow-left.png')} // Đường dẫn icon mũi tên quay lại
+            source={require('../../../assets/image/arrow-left.png')}
             style={styles.arrowIcon}
           />
         </TouchableOpacity>
@@ -24,7 +49,7 @@ const Details = ({ route, navigation }) => {
         <View style={styles.posterInfoContainer}>
           {/* Movie Poster */}
           <Image
-            source={{ uri: item.images[0] }} // Đường dẫn ảnh của bộ phim
+            source={{ uri: item.images[0] }}
             style={styles.moviePoster}
           />
           
@@ -59,16 +84,20 @@ const Details = ({ route, navigation }) => {
         <Text style={styles.trailerTitle}>Trailer</Text>
         <View style={styles.videoContainer}>
           <WebView
-            source={{ uri: item.trailer }} // Trailer video URL
+            source={{ uri: item.trailer }}
             style={styles.webview}
-            allowsFullscreenVideo={true} // Cho phép fullscreen
-            
+            allowsFullscreenVideo={true}
           />
         </View>
       </ScrollView>
 
+      {/* Add to Wishlist Button */}
+      <TouchableOpacity onPress={handleAddToWishlist} style={styles.addButton}>
+        <Text style={styles.addButtonText}>Add to Wishlist</Text>
+      </TouchableOpacity>
+
       {/* Select Seat Button */}
-      <TouchableOpacity onPress={()=>navigation.navigate('Cinema',{id:item._id,image:item.images})} style={styles.selectButton}>
+      <TouchableOpacity onPress={() => navigation.navigate('Cinema', { id: item._id, image: item.images })} style={styles.selectButton}>
         <Text style={styles.selectButtonText}>Select Seat</Text>
       </TouchableOpacity>
     </View>
@@ -158,20 +187,29 @@ const styles = StyleSheet.create({
     height: 200,
     marginTop: 10,
     borderRadius: 10,
-    overflow: 'hidden', // Để tránh video ra ngoài đường biên
+    overflow: 'hidden',
   },
   webview: {
     flex: 1,
+  },
+  addButton: {
+    backgroundColor: '#FF515A',
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   selectButton: {
     backgroundColor: '#FF515A',
     paddingVertical: 15,
     borderRadius: 10,
     marginTop: 10,
-    // position: 'absolute',
     bottom: 5,
-    // left: 20,
-    // right: 20,
     alignItems: 'center',
   },
   selectButtonText: {

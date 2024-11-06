@@ -10,6 +10,7 @@ import brandListReducer from '../reducers/Brand/GetAllBrand'
 import showTimeListMovieReducer from '../reducers/Showtimes/ShowTimeByMovie'
 import timeRangeMovieReducer from '../reducers/Showtimes/GetTimeRange'
 import cinemaShowtime from '../reducers/Showtimes/ShowTimeCinema'
+import wishlistReducer from '../reducers/WishListSlice'
 export const store = configureStore({
   reducer: {
     search: searchReducer,
@@ -22,6 +23,7 @@ export const store = configureStore({
     showtimebyMovie: showTimeListMovieReducer,
     listTime:timeRangeMovieReducer,
     cinemaShow:cinemaShowtime,
+    wishlist: wishlistReducer,
   },
 });
 
