@@ -1,46 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { WebView } from 'react-native-webview'; // Thêm import WebView
+import { WebView } from 'react-native-webview';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { converTime } from '../../utils/convertTime';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToWishlist, removeFromWishlist } from '../../reducers/WishlistSlice'; // Đường dẫn tới slice của wishlist
 
 const Details = ({ route, navigation }) => {
   const { item } = route.params;
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.wishlist.user);
-  const wishlist = user ? user.wishlist : [];
+  const [isFavorite, setIsFavorite] = useState(false);  // Track if item is in wishlist
+  const [token, setToken] = useState(null);  // Store token
+  const [userWishlist, setUserWishlist] = useState([]);  // Store user's wishlist
 
-  // Kiểm tra xem phim đã nằm trong wishlist chưa
-  const [isFavorite, setIsFavorite] = useState(wishlist.includes(item.id));
+  useEffect(() => {
+    const getToken = async () => {
+      const storedToken = await AsyncStorage.getItem('token');
+      setToken(storedToken);
+    };
 
-  const handleFavoriteToggle = () => {
-    if (user) {
-      if (isFavorite) {
-        // Bỏ yêu thích
-        dispatch(removeFromWishlist({ userId: user._id, movieId: item.id }))
-          .then(() => {
-            Alert.alert("Xóa thành công khỏi danh sách yêu thích");
-            setIsFavorite(false);
-          })
-          .catch((error) => {
-            console.error(error);
-            Alert.alert("Có lỗi xảy ra, vui lòng thử lại.");
+    const getUserInfo = async () => {
+      if (token) {
+        try {
+          const response = await axios.get('https://be-movie-sooty.vercel.app/api/user-info', {
+            headers: { Authorization: `Bearer ${token}` },
           });
-      } else {
-        // Thêm vào yêu thích
-        dispatch(addToWishlist({ userId: user._id, movieId: item.id }))
-          .then(() => {
-            Alert.alert("Thêm vào danh sách yêu thích thành công");
+          setUserWishlist(response.data.wishlist); // Set the wishlist of the user
+          // Check if current movie is in the wishlist
+          if (response.data.wishlist.includes(item._id)) {
             setIsFavorite(true);
-          })
-          .catch((error) => {
-            console.error(error);
-            Alert.alert("Có lỗi xảy ra, vui lòng thử lại.");
-          });
+          } else {
+            setIsFavorite(false);
+          }
+        } catch (error) {
+          console.error("Error fetching user info:", error);
+        }
       }
-    } else {
-      Alert.alert("Vui lòng đăng nhập để thêm vào danh sách yêu thích");
+    };
+
+    getToken();
+    if (token) getUserInfo();
+  }, [token, item._id]);  // Re-run the effect when token or item changes
+
+  const handleAddToWishlist = async () => {
+    if (!token) {
+      Alert.alert("Lỗi", "Bạn cần đăng nhập trước khi thêm vào danh sách yêu thích.");
+      return;
+    }
+
+    try {
+      // Gọi API để thêm hoặc xóa bộ phim từ wishlist
+      const response = await axios.get(
+        `https://be-movie-sooty.vercel.app/movie/addWishList?movieId=${item._id}`, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.status === 'true') {
+        setIsFavorite(!isFavorite);  // Đảo ngược trạng thái của "favorite"
+        Alert.alert("Thành công", response.data.message);
+      } else {
+        Alert.alert("Lỗi", "Có lỗi khi thực hiện hành động này.");
+      }
+    } catch (error) {
+      console.error('Error adding/removing from wishlist:', error);
+      Alert.alert("Lỗi", "Có lỗi khi xử lý yêu cầu.");
     }
   };
 
@@ -49,42 +70,25 @@ const Details = ({ route, navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image
-            source={require('../../../assets/image/arrow-left.png')} // Đường dẫn icon mũi tên quay lại
-            style={styles.arrowIcon}
-          />
+          <Image source={require('../../../assets/image/arrow-left.png')} style={styles.arrowIcon} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Movie Details</Text>
-        <TouchableOpacity onPress={handleFavoriteToggle}>
-          <Image
-            source={isFavorite 
-              ? require('../../../image/iconAP.png') // Icon yêu thích đầy
-              : require('../../../image/iconGG.png') // Icon yêu thích rỗng
-            }
-            style={styles.favoriteIcon}
-          />
-        </TouchableOpacity>
+        <View></View>
       </View>
       
       <ScrollView>
-        {/* Movie Poster and Info in one row */}
+        {/* Movie Poster and Info */}
         <View style={styles.posterInfoContainer}>
-          {/* Movie Poster */}
-          <Image
-            source={{ uri: item.images[0] }} // Đường dẫn ảnh của bộ phim
-            style={styles.moviePoster}
-          />
-          
-          {/* Movie Info */}
+          <Image source={{ uri: item.images[0] }} style={styles.moviePoster} />
           <View style={styles.infoContainer}>
             <View style={styles.infoBox}>
               <Image source={require('../../../assets/icon/videocam.png')} style={styles.arrowIcon} />
-              <Text style={styles.infoLabel}>Type </Text>
+              <Text style={styles.infoLabel}>Type</Text>
               <Text style={styles.infoValue}>{item.genreName}</Text>
             </View>
             <View style={styles.infoBox}>
               <Image source={require('../../../assets/icon/clock.png')} style={styles.arrowIcon} />
-              <Text style={styles.infoLabel}>Duration </Text>
+              <Text style={styles.infoLabel}>Duration</Text>
               <Text style={styles.infoValue}>{converTime(item.duration)}</Text>
             </View>
             <View style={styles.infoBox}>
@@ -95,26 +99,36 @@ const Details = ({ route, navigation }) => {
           </View>
         </View>
 
-        {/* Movie Title and Description */}
+        {/* Movie Title and Description with Heart Icon */}
         <View style={styles.movieDetails}>
           <Text style={styles.movieTitle}>{item.name}</Text>
-          <Text style={styles.descriptionTitle}>Descriptions</Text>
-          <Text numberOfLines={7} style={styles.descriptionText}>{item.description}</Text>
+          <View style={styles.descriptionRow}>
+            <View style={styles.descriptionContainer}>
+              <Text style={styles.descriptionTitle}>Descriptions</Text>
+              <Text numberOfLines={7} style={styles.descriptionText}>{item.description}</Text>
+            </View>
+            {/* Heart Button */}
+            <TouchableOpacity onPress={handleAddToWishlist} style={styles.wishlistCircle}>
+              <Text style={styles.wishlistButtonText}>
+                {isFavorite ? '❤️' : '🤍'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Trailer Video */}
         <Text style={styles.trailerTitle}>Trailer</Text>
         <View style={styles.videoContainer}>
           <WebView
-            source={{ uri: item.trailer }} // Trailer video URL
+            source={{ uri: item.trailer }}
             style={styles.webview}
-            allowsFullscreenVideo={true} // Cho phép fullscreen
+            allowsFullscreenVideo={true}
           />
         </View>
       </ScrollView>
 
       {/* Select Seat Button */}
-      <TouchableOpacity style={styles.selectButton}>
+      <TouchableOpacity onPress={() => navigation.navigate('Cinema', { id: item._id, image: item.images })} style={styles.selectButton}>
         <Text style={styles.selectButtonText}>Select Seat</Text>
       </TouchableOpacity>
     </View>
@@ -138,11 +152,6 @@ const styles = StyleSheet.create({
   arrowIcon: {
     width: 24,
     height: 24,
-  },
-  favoriteIcon: {
-    width: 24,
-    height: 24,
-    marginLeft: 15,
   },
   headerTitle: {
     fontSize: 18,
@@ -188,10 +197,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
+  descriptionRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  descriptionContainer: {
+    flex: 1,
+  },
   descriptionTitle: {
     fontSize: 25,
     fontWeight: 'bold',
-    marginTop: 20,
     color: '#000',
   },
   descriptionText: {
@@ -209,16 +226,34 @@ const styles = StyleSheet.create({
     height: 200,
     marginTop: 10,
     borderRadius: 10,
-    overflow: 'hidden', // Để tránh video ra ngoài đường biên
+    overflow: 'hidden',
   },
   webview: {
     flex: 1,
+  },
+  wishlistCircle: {
+    backgroundColor: '#FFF',
+    borderRadius: 50,  
+    padding: 5,  
+    borderWidth: 2, 
+    borderColor: '#FF515A',  
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+  },
+  wishlistButtonText: {
+    fontSize: 32,  
+    color: '#FF515A',  
   },
   selectButton: {
     backgroundColor: '#FF515A',
     paddingVertical: 15,
     borderRadius: 10,
     marginTop: 10,
+    bottom: 5,
     alignItems: 'center',
   },
   selectButtonText: {

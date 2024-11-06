@@ -17,6 +17,7 @@ import { EditProfile } from '../reducers/EditProfileSlide';
 import EditProfileComponent from '../screens/Stack/Editprofile';
 import LoginScreen from '../screens/Stack/LoginScreens';
 import SplashScreen from '../screens/Stack/SplashScreens';
+import Favour from '../screens/Stack/Favour';
 import SignupScreen from '../screens/Stack/SignupScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -37,7 +38,7 @@ const MainStackNavigation = (props) => {
       <Stack.Screen name="Test" component={SeatSelection} />
       <Stack.Screen name="Detail" component={Details} />
       <Stack.Screen name="Lastest" component={Latest} />
-    
+      <Stack.Screen name="Favour" component={Favour} />
       <Stack.Screen name="Checkout" component={Checkout} />
       <Stack.Screen name="Editprofile" component={EditProfileComponent} />
      
@@ -72,7 +73,7 @@ const TabArr = [
     label: 'Favorite',
     focusedImage: require('../../assets/image/heart-f.png'),
     unfocusedImage: require('../../assets/image/heart.png'),
-    component: View,
+    component: Favour,
     color: "#FF515A",
 
   },

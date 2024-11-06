@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet,Image,Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const LoginScreen = ({navigation}) => {
@@ -13,7 +14,11 @@ const LoginScreen = ({navigation}) => {
   const handleLogin = async () => {
     try {
       const response = await axios.post('https://be-movie-sooty.vercel.app/api/login', { phone, password });
+      const { token } = response.data;
+      await AsyncStorage.setItem('token', token);
         navigation.navigate ('Tab');
+
+
       console.log('Token:', response.data.token);
       
       
