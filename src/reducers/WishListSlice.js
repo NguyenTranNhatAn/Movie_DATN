@@ -1,50 +1,52 @@
+// reducers/WishListSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const addToWishlist = createAsyncThunk('wishlist/add', async (movieId) => {
-  try {
-    const _id = await AsyncStorage.getItem('_id'); // Lấy _id từ AsyncStorage
-    console.log("User ID:", _id);
-    console.log("Movie ID:", movieId);
+export const addToWishlist = createAsyncThunk(
+  'wishlist/addToWishlist',
+  async (movieId, { rejectWithValue }) => {
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Vui lòng đăng nhập để thêm vào wishlist');
+      }
 
-    const response = await fetch(`https://be-movie-sooty.vercel.app/movie/addWishList?_id=${_id}&movieId=${movieId}`, {
-      method: 'POST',
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to add to wishlist');
+      const response = await axios.post(
+        `https://be-movie-sooty.vercel.app/movie/addWishList?movieId=${movieId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Có lỗi xảy ra');
     }
-
-    const result = await response.json();
-    console.log("API response:", result);
-    return result.user.wishlist;
-  } catch (error) {
-    console.error("Error adding to wishlist:", error);
-    throw error;
   }
-});
+);
 
-export const wishlistSlice = createSlice({
+const wishlistSlice = createSlice({
   name: 'wishlist',
   initialState: {
-    wishlist: [],
     status: 'idle',
+    error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(addToWishlist.pending, (state) => {
-        console.log("Adding to wishlist...");
         state.status = 'loading';
       })
-      .addCase(addToWishlist.fulfilled, (state, action) => {
-        console.log("Added to wishlist successfully:", action.payload);
+      .addCase(addToWishlist.fulfilled, (state) => {
         state.status = 'succeeded';
-        state.wishlist = action.payload;
       })
       .addCase(addToWishlist.rejected, (state, action) => {
-        console.log("Failed to add to wishlist:", action.error.message);
         state.status = 'failed';
+        state.error = action.payload;
       });
   },
 });

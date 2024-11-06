@@ -1,7 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet,Image,Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
+
 
 const LoginScreen = ({navigation}) => {
   const [phone, setPhoneNumber] = useState('');
@@ -13,20 +16,18 @@ const LoginScreen = ({navigation}) => {
   const handleLogin = async () => {
     try {
       const response = await axios.post('https://be-movie-sooty.vercel.app/api/login', { phone, password });
-        navigation.navigate ('Tab');
-      console.log('Token:', response.data.token);
-      console.log('ID:', response.data._id);
-        
-        const { token, _id } = response.data;
-        await AsyncStorage.setItem('token', token);
-        await AsyncStorage.setItem('_id', _id.toString());
-       console.log(`Login successful for ${phone}: Token - ${token}, ID - ${_id}`);
-        
+      const { token, _id } = response.data;
+      
+      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('_id', _id.toString());
+      
+      console.log(`Login successful for ${phone}: Token - ${token}, ID - ${_id}`);
+      navigation.navigate('Tab');
     } catch (err) {
-      Alert.alert( '','Đăng nhập thất bại!');
-     
+      Alert.alert('', 'Đăng nhập thất bại!');
     }
   };
+  
 
   const togglePasswordVisibility = () => {
     setSecureTextEntry(!secureTextEntry);

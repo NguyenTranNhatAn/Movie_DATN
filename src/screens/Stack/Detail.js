@@ -1,6 +1,6 @@
 // Details.js
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,24 +11,19 @@ const Details = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const { item } = route.params;
   const wishlistStatus = useSelector((state) => state.wishlist.status);
-  useEffect(() => {
-    const checkUserId = async () => {
-      const _id = await AsyncStorage.getItem('_id');
-      console.log("Retrieved User ID:", _id); // Kiểm tra `_id` trong console
-    };
+  const wishlistError = useSelector((state) => state.wishlist.error);
 
-    checkUserId(); // Gọi hàm kiểm tra khi component được render
-  }, []);
   const handleAddToWishlist = () => {
     dispatch(addToWishlist(item._id)).then((result) => {
+      AsyncStorage.getItem('authToken').then(token => console.log("Auth Token:", token));
+
       if (result.meta.requestStatus === 'fulfilled') {
-        console.log("Movie added to wishlist successfully:", item._id);
+        Alert.alert("Thành công", "Đã thêm vào danh sách yêu thích");
       } else {
-        console.log("Failed to add movie to wishlist:", result.error.message);
+        Alert.alert("Lỗi", wishlistError || "Có lỗi xảy ra. Vui lòng thử lại.");
       }
-    }).catch((error) => console.error("Error dispatching addToWishlist:", error));
+    });
   };
-  
 
   return (
     <View style={styles.container}>
@@ -47,22 +42,16 @@ const Details = ({ route, navigation }) => {
       <ScrollView>
         {/* Movie Poster and Info in one row */}
         <View style={styles.posterInfoContainer}>
-          {/* Movie Poster */}
-          <Image
-            source={{ uri: item.images[0] }}
-            style={styles.moviePoster}
-          />
-          
-          {/* Movie Info */}
+          <Image source={{ uri: item.images[0] }} style={styles.moviePoster} />
           <View style={styles.infoContainer}>
             <View style={styles.infoBox}>
               <Image source={require('../../../assets/icon/videocam.png')} style={styles.arrowIcon} />
-              <Text style={styles.infoLabel}>Type </Text>
+              <Text style={styles.infoLabel}>Type</Text>
               <Text style={styles.infoValue}>{item.genreName}</Text>
             </View>
             <View style={styles.infoBox}>
               <Image source={require('../../../assets/icon/clock.png')} style={styles.arrowIcon} />
-              <Text style={styles.infoLabel}>Duration </Text>
+              <Text style={styles.infoLabel}>Duration</Text>
               <Text style={styles.infoValue}>{converTime(item.duration)}</Text>
             </View>
             <View style={styles.infoBox}>
@@ -92,8 +81,8 @@ const Details = ({ route, navigation }) => {
       </ScrollView>
 
       {/* Add to Wishlist Button */}
-      <TouchableOpacity onPress={handleAddToWishlist} style={styles.addButton}>
-        <Text style={styles.addButtonText}>Add to Wishlist</Text>
+      <TouchableOpacity onPress={handleAddToWishlist} style={styles.wishlistButton}>
+        <Text style={styles.wishlistButtonText}>❤️ Add to Wishlist</Text>
       </TouchableOpacity>
 
       {/* Select Seat Button */}
@@ -213,6 +202,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  wishlistButton: {
+    backgroundColor: '#FF515A',
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  wishlistButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
