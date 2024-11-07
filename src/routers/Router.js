@@ -17,6 +17,7 @@ import { EditProfile } from '../reducers/EditProfileSlide';
 import EditProfileComponent from '../screens/Stack/Editprofile';
 import LoginScreen from '../screens/Stack/LoginScreens';
 import SplashScreen from '../screens/Stack/SplashScreens';
+import Favour from '../screens/Stack/Favour';
 import SignupScreen from '../screens/Stack/SignupScreen';
 import SeatBookingScreen from '../screens/SeatBookingScreen';
 import TicketScreenDemo from '../screens/Stack/TicketDemo';
@@ -35,6 +36,7 @@ const AuthRouter = <Stack.Navigator screenOptions={{ headerShown: false }}>
 const MainStackNavigation = (props) => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Tab" component={MainTabNavigation} />
       <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="History" component={History} />
@@ -46,9 +48,10 @@ const MainStackNavigation = (props) => {
       <Stack.Screen name="ticket" component={TicketScreen} />
       <Stack.Screen name="Ticket" component={TicketScreenDemo} />
 
+      <Stack.Screen name="Favour" component={Favour} />
       <Stack.Screen name="Checkout" component={Checkout} />
       <Stack.Screen name="Editprofile" component={EditProfileComponent} />
-      <Stack.Screen name="Login" component={LoginScreen} />
+     
       <Stack.Screen name="Signup" component={SignupScreen} />
 
 
@@ -80,7 +83,7 @@ const TabArr = [
     label: 'Favorite',
     focusedImage: require('../../assets/image/heart-f.png'),
     unfocusedImage: require('../../assets/image/heart.png'),
-    component: View,
+    component: Favour,
     color: "#FF515A",
 
   },
