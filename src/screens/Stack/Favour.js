@@ -1,53 +1,62 @@
 import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Favour = ({ navigation }) => {
     const [favouriteMovies, setFavouriteMovies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);  // Thêm trạng thái để xử lý lỗi
 
-    useEffect(() => {
-        // Lấy token từ AsyncStorage hoặc nơi bạn lưu trữ
-        const getToken = async () => {
-            try {
-                const token = await AsyncStorage.getItem('token'); // Thay thế bằng cách bạn lưu token
-                if (token) {
-                    fetchFavourMovies(token);
-                } else {
-                    setError("Token không hợp lệ.");
+    useFocusEffect(
+        useCallback(() => {
+            const getToken = async () => {
+                try {
+                    const token = await AsyncStorage.getItem('token'); // Thay thế bằng cách bạn lưu token
+                    if (token) {
+                        fetchFavourMovies(token);
+                    } else {
+                        setError("Token không hợp lệ.");
+                        setLoading(false);
+                    }
+                } catch (error) {
+                    console.log(error);
+                    setError("Lỗi khi lấy token.");
                     setLoading(false);
                 }
-            } catch (error) {
-                console.log(error);
-                setError("Lỗi khi lấy token.");
-                setLoading(false);
-            }
-        };
+            };
 
-        const fetchFavourMovies = async (token) => {
-            try {
-                const response = await axios.get('https://be-movie-sooty.vercel.app/user/getWishList', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (response.data && response.data.length > 0) {
-                    setFavouriteMovies(response.data);
-                } else {
-                    setError("Không có dữ liệu yêu thích.");
+            const fetchFavourMovies = async (token) => {
+                try {
+                    const response = await axios.get('https://be-movie-sooty.vercel.app/user/getWishList', {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    if (response.data && response.data.length > 0) {
+                        setFavouriteMovies(response.data);
+                    } else {
+                        setError("Không có dữ liệu yêu thích.");
+                    }
+                    setLoading(false);
+                } catch (error) {
+                    console.log(error);
+                    setError("Lỗi khi lấy dữ liệu.");
+                    setLoading(false);
                 }
-                setLoading(false);
-            } catch (error) {
-                console.log(error);
-                setError("Lỗi khi lấy dữ liệu.");
-                setLoading(false);
-            }
-        };
+            };
 
-        getToken();
-    }, []);
+            getToken();
+
+            // Clean up khi màn hình mất focus
+            return () => {
+                setLoading(true); // hoặc reset các state khác nếu cần
+                setFavouriteMovies([]);
+                setError("");
+            };
+        }, [])
+    );
 
     const renderItem = ({ item }) => (
         <View style={styles.container_flat}>
