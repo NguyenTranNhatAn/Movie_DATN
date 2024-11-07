@@ -7,7 +7,7 @@ export const EditProfile = createAsyncThunk(
   'editprofile',
   async ({ name, phone, address, email }, { rejectWithValue }) => {
     try {
-      const token = await AsyncStorage.getItem('authToken');
+      const token = await AsyncStorage.getItem('token');
       if (!token) {
         throw new Error('Không tìm thấy token, vui lòng đăng nhập lại');
       }

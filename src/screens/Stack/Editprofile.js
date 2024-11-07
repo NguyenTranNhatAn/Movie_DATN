@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { EditProfile } from './Reducer/EditProfileSlide';
-import { UploadUsers } from './Reducer/UploadUserslide';
+import { EditProfile } from '../../reducers/EditProfileSlide';
+import { UploadUsers } from '../../reducers/UploadUserslide';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 const EditProfileComponent = () => {
   const { UploadUsersData, UploadUsersStatus, error: uploadError } = useSelector((state) => state.UploadUsers);
-  const { editprofileStatus, error: editError } = useSelector((state) => state.EditProfile);
+  const { editprofileStatus, error: editError } = useSelector((state) => state.editProfile);
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');

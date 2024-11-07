@@ -11,6 +11,7 @@ import showTimeListMovieReducer from '../reducers/Showtimes/ShowTimeByMovie'
 import timeRangeMovieReducer from '../reducers/Showtimes/GetTimeRange'
 import cinemaShowtime from '../reducers/Showtimes/ShowTimeCinema'
 import wishlistReducer from '../reducers/WishlistSlice';
+import UploadUsersReduce from '../reducers/UploadUserslide'
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +26,8 @@ export const store = configureStore({
     listTime:timeRangeMovieReducer,
     cinemaShow:cinemaShowtime,
     wishlist: wishlistReducer,
+    UploadUsers: UploadUsersReduce,
+    
   },
 });
 

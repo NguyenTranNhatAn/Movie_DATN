@@ -8,7 +8,7 @@ export const UploadUsers = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       // Lấy token từ AsyncStorage
-      const token = await AsyncStorage.getItem('authToken');
+      const token = await AsyncStorage.getItem('token');
       console.log('Token:', token); // Log token để kiểm tra
 
       if (!token) throw new Error('Token không tồn tại');
