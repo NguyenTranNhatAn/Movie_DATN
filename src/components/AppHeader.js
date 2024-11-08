@@ -11,12 +11,12 @@ import {
 
 const AppHeader = (props) => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.iconBG} onPress={props.action}>
-        <Icon1 name={props.name} style={styles.iconStyle} />
+    <View style={ styles.container }>
+      <TouchableOpacity style={ styles.iconBG } onPress={ props.action }>
+        <Icon1 name={ props.name } style={ styles.iconStyle } />
       </TouchableOpacity>
-      <Text style={styles.headerText}>{props.header}</Text>
-      <View style={styles.emptyContainer}></View>
+      <Text style={ styles.headerText }>{ props.header }</Text>
+      <View style={ styles.emptyContainer }></View>
     </View>
   );
 };
@@ -36,7 +36,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTFAMILY.poppins_medium,
     fontSize: FONTSIZE.size_20,
     textAlign: 'center',
-    color: 'black', // hoặc COLORS.White nếu cần
+    // color: 'black', // hoặc COLORS.White nếu cần
+    color: 'white'
   },
   emptyContainer: {
     height: SPACING.space_20 * 2,

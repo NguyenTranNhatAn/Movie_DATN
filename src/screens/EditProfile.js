@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Image,TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import Avatar from '../assets/image/avatar.png';
 import Icon1 from 'react-native-vector-icons/Feather';
@@ -157,5 +157,5 @@ const styles = StyleSheet.create({
         color: '#FFF',
         marginLeft: 10
     }
-})
-export default EditProfile
+});
+export default EditProfile;
