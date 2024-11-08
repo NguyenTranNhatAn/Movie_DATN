@@ -7,15 +7,3 @@
 
 
 }
-// {
-//   "compilerOptions": {
-//     "target": "esnext",                   // Mức độ ECMAScript
-//     "module": "commonjs",                 // Kiểu module
-//     "jsx": "react-native",                 // Hỗ trợ JSX cho React Native
-//     "strict": true,                        // Kiểm tra chặt chẽ
-//     "esModuleInterop": true,               // Hỗ trợ interop cho các module ES
-//     "skipLibCheck": true,                 // Bỏ qua kiểm tra thư viện
-//     "forceConsistentCasingInFileNames": true // Kiểm tra sự nhất quán trong tên file
-//   },
-//   "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"] // Không kiểm tra thư mục node_modules
-// }

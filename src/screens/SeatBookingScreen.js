@@ -1,5 +1,4 @@
 
-
 import React, { useState } from 'react';
 import {
   Text,
@@ -24,7 +23,6 @@ import AppHeader from '../components/AppHeader';
 import CustomIcon from '../components/CustomIcon';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import SeatBooking from './Fb_Demo';
 
 const timeArray = [
   '10:30',
@@ -64,7 +62,7 @@ const generateSeats = () => {
       const seatObject = {
         number: start,
         row: rows[i],
-
+         
         taken: Boolean(Math.round(Math.random())),
         selected: false,
       };
@@ -165,8 +163,7 @@ const SeatBookingScreen = ({ navigation, route }) => {
         <Text style={ styles.screenText }>Screen this side</Text>
       </View>
 
-
-      {/* <View style={ styles.seatContainer }>
+      <View style={ styles.seatContainer }>
         <View style={ styles.containerGap20 }>
           { twoDSeatArray?.map((item, index) => {
             return (
@@ -212,8 +209,8 @@ const SeatBookingScreen = ({ navigation, route }) => {
             <Text style={ styles.radioText }>Selected</Text>
           </View>
         </View>
-      </View> */}
-      <SeatBooking />
+      </View>
+
 
       <View>
         <FlatList
@@ -293,7 +290,7 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flex: 1,
-    backgroundColor: COLORS.White,//đen
+    backgroundColor: COLORS.Black,
   },
   ImageBG: {
     width: '100%',

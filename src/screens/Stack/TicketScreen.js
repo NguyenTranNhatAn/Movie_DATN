@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Text,
   View,
@@ -7,43 +7,27 @@ import {
   ImageBackground,
   Image,
 } from 'react-native';
-import AppHeader from '../components/AppHeader';
+import AppHeader from '../../components/AppHeader';
 import {
   BORDERRADIUS,
   COLORS,
   FONTFAMILY,
   FONTSIZE,
   SPACING,
-} from '../theme/theme';
+} from '../../theme/theme';
 import LinearGradient from 'react-native-linear-gradient';
 
-const TicketScreen = ({ route, navigation }) => {
-  const { ticketId } = route.params;
-  const [ticketData, setTicketData] = useState(null);
+const TicketScreen = ({ navigation }) => {
 
-  useEffect(() => {
-    fetch(`https://60d8-171-252-189-233.ngrok-free.app/ticket/${ticketId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error === 0) {
-          setTicketData(data.data);
-        } else {
-          console.error('Error fetching ticket:', data.message);
-        }
-      })
-      .catch((error) => console.error('Fetch error:', error));
-  }, [ticketId]);
-
-  const formatShowDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDate = date.toLocaleDateString('vi-VN', options);
-
-    // Split the formatted date into weekday and date parts
-    const [weekday, datePart] = formattedDate.split(', ');
-    return { weekday, datePart };
-  };
-
+  const [ticketData, setTicketData] = useState({
+    ticketImage: 'https://i.ytimg.com/vi/jBpUvgVFuXE/hqdefault.jpg',
+    date: {
+      date: '2024-09-17',
+      day: 'Thứ Ba',
+    },
+    time: '18:00',
+    seatArray: ['A1', 'A2', 'A3'],
+  });
 
   return (
     <View style={ styles.container }>
@@ -51,56 +35,61 @@ const TicketScreen = ({ route, navigation }) => {
       <View style={ styles.appHeaderContainer }>
         <AppHeader
           name="close"
-          header="My Tickets"
+          header={ 'My Tickets' }
           action={ () => navigation.goBack() }
         />
       </View>
 
-      { ticketData && (
-        <View style={ styles.ticketContainer }>
-          <ImageBackground
-            source={ { uri: ticketData.movieImage || 'https://i.ytimg.com/vi/jBpUvgVFuXE/hqdefault.jpg' } }
-            style={ styles.ticketBGImage }>
-            <LinearGradient
-              colors={ [COLORS.OrangeRGBA0, COLORS.Orange] }
-              style={ styles.linearGradient }>
-              <View style={ [styles.blackCircle, { position: 'absolute', bottom: -40, left: -40 }] } />
-              <View style={ [styles.blackCircle, { position: 'absolute', bottom: -40, right: -40 }] } />
-            </LinearGradient>
-          </ImageBackground>
-          <View style={ styles.linear } />
+      <View style={ styles.ticketContainer }>
+        <ImageBackground
+          source={ { uri: ticketData.ticketImage } }
+          style={ styles.ticketBGImage }>
+          <LinearGradient
+            colors={ [COLORS.OrangeRGBA0, COLORS.Orange] }
+            style={ styles.linearGradient }>
+            <View style={ [styles.blackCircle, { position: 'absolute', bottom: -40, left: -40 }] } />
+            <View style={ [styles.blackCircle, { position: 'absolute', bottom: -40, right: -40 }] } />
+          </LinearGradient>
+        </ImageBackground>
+        <View style={ styles.linear } />
 
-          <View style={ styles.ticketFooter }>
-            <View style={ [styles.blackCircle, { position: 'absolute', top: -40, left: -40 }] } />
-            <View style={ [styles.blackCircle, { position: 'absolute', top: -40, right: -40 }] } />
-
-            {/* Dữ liệu hiển thị */ }
-            <View style={ styles.ticketDateContainer }>
-              <View style={ styles.ticketDateContainer }>
-                { ticketData && (
-                  <>
-                    <Text style={ styles.dateTitle }>{ formatShowDate(ticketData.showDate).weekday }</Text>
-                    <Text style={ styles.dateTitle }>{ formatShowDate(ticketData.showDate).datePart }</Text>
-                  </>
-                ) }
-              </View>
-
-              <Text style={ styles.subtitle }>Cinema: { ticketData.cinemaName }</Text>
-              <Text style={ styles.subtitle }>Room: { ticketData.roomName }</Text>
+        <View style={ styles.ticketFooter }>
+          <View style={ [styles.blackCircle, { position: 'absolute', top: -40, left: -40 }] } />
+          <View style={ [styles.blackCircle, { position: 'absolute', top: -40, right: -40 }] } />
+          <View style={ styles.ticketDateContainer }>
+            <View style={ styles.subtitleContainer }>
+              <Text style={ styles.dateTitle }>{ ticketData.date.date }</Text>
+              <Text style={ styles.subtitle }>{ ticketData.date.day }</Text>
             </View>
-            <View style={ styles.ticketSeatContainer }>
-              <Text style={ styles.subtitle }>Seats: { ticketData.seatDetails.join(', ') }</Text>
-              <Text style={ styles.subtitle }>Total Price: { ticketData.totalPrice }₫</Text>
+            <View style={ styles.subtitleContainer }>
+              <Text style={ styles.clockIcon } >clock</Text>
+              <Text style={ styles.subtitle }>{ ticketData.time }</Text>
             </View>
-            <Image
-              source={ {
-                uri: ticketData.qrCode ? ticketData.qrCode : 'https://example.com/default-image.png',
-              } }
-              style={ styles.barcodeImage }
-            />
           </View>
+          <View style={ styles.ticketSeatContainer }>
+            <View style={ styles.subtitleContainer }>
+              <Text style={ styles.subheading }>Hall</Text>
+              <Text style={ styles.subtitle }>02</Text>
+            </View>
+            <View style={ styles.subtitleContainer }>
+              <Text style={ styles.subheading }>Row</Text>
+              <Text style={ styles.subtitle }>04</Text>
+            </View>
+            <View style={ styles.subtitleContainer }>
+              <Text style={ styles.subheading }>Seats</Text>
+              <Text style={ styles.subtitle }>
+                { ticketData.seatArray
+                  .slice(0, 3)
+                  .map((item, index, arr) => item + (index === arr.length - 1 ? '' : ', ')) }
+              </Text>
+            </View>
+          </View>
+          <Image
+            source={ require('../../assets/image/barcode.png') }
+            style={ styles.barcodeImage }
+          />
         </View>
-      ) }
+      </View>
     </View>
   );
 };
@@ -113,7 +102,7 @@ const styles = StyleSheet.create({
   },
   appHeaderContainer: {
     marginHorizontal: SPACING.space_36,
-    marginTop: 0,
+    marginTop: SPACING.space_20 * 2,
   },
   ticketContainer: {
     flex: 1,
@@ -149,12 +138,17 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: BORDERRADIUS.radius_25,
   },
   ticketDateContainer: {
-    flexDirection: 'column',
+    flexDirection: 'row',
+    gap: SPACING.space_36,
     alignItems: 'center',
+    justifyContent: 'center',
     marginVertical: SPACING.space_10,
   },
   ticketSeatContainer: {
+    flexDirection: 'row',
+    gap: SPACING.space_36,
     alignItems: 'center',
+    justifyContent: 'center',
     marginVertical: SPACING.space_10,
   },
   dateTitle: {
@@ -167,10 +161,22 @@ const styles = StyleSheet.create({
     fontSize: FONTSIZE.size_14,
     color: COLORS.White,
   },
+  subheading: {
+    fontFamily: FONTFAMILY.poppins_medium,
+    fontSize: FONTSIZE.size_18,
+    color: COLORS.White,
+  },
+  subtitleContainer: {
+    alignItems: 'center',
+  },
+  clockIcon: {
+    fontSize: FONTSIZE.size_24,
+    color: COLORS.White,
+    paddingBottom: SPACING.space_10,
+  },
   barcodeImage: {
-    height: 100,
-    width: 100,
-    marginTop: SPACING.space_10,
+    height: 50,
+    aspectRatio: 158 / 52,
   },
   blackCircle: {
     height: 80,
