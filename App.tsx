@@ -7,7 +7,6 @@ import Router from './src/routers/Router';
 import { Provider } from 'react-redux';
 import { store } from './src/store/store';
 import CinemaSelect from './src/screens/Stack/CinemaSelect';
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 
 
 function App(): React.JSX.Element {
@@ -40,7 +39,8 @@ function App(): React.JSX.Element {
 }
 
 
-export default gestureHandlerRootHOC(App);
+export default App;
+
 
 
 
