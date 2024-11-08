@@ -1,40 +1,5 @@
-/*
-import React from 'react';
-import { SafeAreaView, StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome6';
-
-import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
-import SeatBookingScreen from './src/screens/SeatBookingScreen';
-
-function App(): React.JSX.Element {
-
-  return (
-
-    <SeatBookingScreen />
-    // <View>
-
-    //   <Icon name="couch" size={ 50 } color="#900" />
-    //   <Icon1 name="sofa-single-outline" size={ 50 } color="#900" />
-    //   <Icon1 name="sofa-single" size={ 50 } color="#900" />
-    // </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  icon: {
-    color: 'black'
-
-  }
-});
-
-export default App;
-*/
-
-
-import React from 'react';
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
+import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -55,7 +20,21 @@ import PolicyScreen from './src/screens/PolicyScreen';
 import Profile from './src/screens/Profile';
 import EditProfile from './src/screens/EditProfile';
 import SeatDemo from './src/screens/SeatDemo';
-
+import ImageSliderExample from './src/screens/ImageSliderExample';
+import MyCarousel from './src/screens/MyCarousel';
+import Fb_Demo from './src/screens/Fb_Demo';
+import Playtime from './src/screens/Playtime';
+import SeatSelectionScreen from './src/screens/SeatSelectionScreen';
+import ZoomableView from './src/screens/ZoomableView';
+import SeatSelector from './src/screens/SeatSelectionScreen';
+import PaymentScreen from './src/screens/PaymentScreen';
+import QRScreen from './src/screens/QRScreen';
+import PayOsScreen from './src/screens/PayOsScreen';
+import PaymentSuccess from './src/screens/PaymentSuccess';
+import { Linking, Alert } from 'react-native';
+import PaymentWebView from './src/screens/PaymentWebView';
+import TicketScreenAll from './src/screens/TicketScreenAll';
+/*
 // Tạo các màn hình đơn giản
 function HomeScreen() {
   return (
@@ -80,48 +59,55 @@ function ProfileScreen() {
     </View>
   );
 }
-
+*/
+/*
 // Khởi tạo Tab Navigator
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();//chuyển màn hình
 function MyTabs() {
-  return (
-    /*
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+ return (
+  
+   <Tab.Navigator
+     screenOptions={({ route }) => ({
+       tabBarIcon: ({ focused, color, size }) => {
+         let iconName;
 
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Settings') {
-            iconName = focused ? 'settings' : 'settings-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
+         if (route.name === 'Home') {
+           iconName = focused ? 'home' : 'home-outline';
+         } else if (route.name === 'Settings') {
+           iconName = focused ? 'settings' : 'settings-outline';
+         } else if (route.name === 'Profile') {
+           iconName = focused ? 'person' : 'person-outline';
+         }
 
-          // Trả về icon tương ứng từ react-native-vector-icons
-          return <Icon name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: 'tomato',
-        tabBarInactiveTintColor: 'gray',
-      })}
-    >
+         // Trả về icon tương ứng từ react-native-vector-icons
+         return <Icon name={iconName} size={size} color={color} />;
+       },
+       tabBarActiveTintColor: 'tomato',
+       tabBarInactiveTintColor: 'gray',
+     })}
+   >
 
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
-    */
-    <Tab.Navigator tabBar={ (props) => <CustomTabBar { ...props } /> }>
-      <Tab.Screen name="Home" component={ HomeScreen } />
-      <Tab.Screen name="Settings" component={ SettingsScreen } />
-      <Tab.Screen name="Profile" component={ ProfileScreen } />
-    </Tab.Navigator>
-  );
+     <Tab.Screen name="Home" component={HomeScreen} />
+     <Tab.Screen name="Settings" component={SettingsScreen} />
+     <Tab.Screen name="Profile" component={ProfileScreen} />
+   </Tab.Navigator>
+ 
+  
+   <Tab.Navigator tabBar={ (props) => <CustomTabBar { ...props } /> }>
+     <Tab.Screen name="Home" component={ HomeScreen } />
+     <Tab.Screen name="Settings" component={ SettingsScreen } />
+     <Tab.Screen name="Profile" component={ ProfileScreen } />
+   </Tab.Navigator>
+ );
+ 
 }
+  */
 
-export default function App() {
+const Stack = createStackNavigator();
+const App = () => {
+
+
   return (
     // <NavigationContainer>
     //   <MyTabs />
@@ -135,26 +121,51 @@ export default function App() {
     // </NavigationContainer>
 
     // <SeatBookingScreen navigation={ undefined } route={ undefined } />
+    //<Playtime />
+    // <NavigationContainer>
+    //   <Stack.Navigator>
+    //     <Stack.Screen name="SeatBooking" component={ SeatSelector } options={ { headerShown: false } } />
+    //     <Stack.Screen name="ZaloPayPaymentScreen" component={ PaymentScreen } options={ { headerShown: false } } />
+    //     <Stack.Screen name="QRScreen" component={ QRScreen } options={ { headerShown: false } } />
+    //   </Stack.Navigator>
+    // </NavigationContainer>
+
+    //<PaymentScreen route={ { params: { amount: 10000, userId: 'RE123', ticketId: "672a73e68f21d562887f10fc" } } } />
+    // <NavigationContainer >
+    //   <Stack.Navigator initialRouteName="SeatSelectionScreen">
+    //     <Stack.Screen name="SeatSelectionScreen" component={ SeatSelectionScreen } options={ { headerShown: false } } />
+    //     <Stack.Screen name="PaymentWebView" component={ PaymentWebView } options={ { headerShown: false } } />
+    //     <Stack.Screen name="PaySuccess" component={ PaymentSuccess } options={ { headerShown: false } } />
+    //   </Stack.Navigator>
+    // </NavigationContainer>
+    <NavigationContainer >
+      <Stack.Navigator initialRouteName="TicketScreenAll">
+        <Stack.Screen name="TicketScreenAll" component={ TicketScreenAll } options={ { headerShown: false } } />
+        <Stack.Screen name="TicketScreen" component={ TicketScreen } options={ { headerShown: false } } />
+
+      </Stack.Navigator>
+    </NavigationContainer>
+    // <TicketScreenAll navigation={ undefined } />
+    //<TicketScreen navigation={ undefined } />
+    //<PayOsScreen />
+    //<Fb_Demo />
+    //<ZoomableView />
     // <SeatDemo />
     //<QRCodeScanner />
     //<QRCodeAnimation />
     // <QRCodeScreen1 />
-    // <TicketScreen />
-    // <TicketScreenDemo navigation={ undefined } />
+
+
+    //<TicketScreenDemo navigation={ undefined } />
     // <NotificationScreen navigation={ undefined } />
     // <TermsScreen />
     // <PolicyScreen/>
     // <Profile />
     // <EditProfile />
+    // <ImageSliderExample/>
+    //  <MyCarousel />
+
   );
 }
 
-
-
-
-
-
-
-
-
-
+export default gestureHandlerRootHOC(App);
