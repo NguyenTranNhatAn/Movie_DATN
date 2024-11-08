@@ -131,20 +131,20 @@ const App = () => {
     // </NavigationContainer>
 
     //<PaymentScreen route={ { params: { amount: 10000, userId: 'RE123', ticketId: "672a73e68f21d562887f10fc" } } } />
-    // <NavigationContainer >
-    //   <Stack.Navigator initialRouteName="SeatSelectionScreen">
-    //     <Stack.Screen name="SeatSelectionScreen" component={ SeatSelectionScreen } options={ { headerShown: false } } />
-    //     <Stack.Screen name="PaymentWebView" component={ PaymentWebView } options={ { headerShown: false } } />
-    //     <Stack.Screen name="PaySuccess" component={ PaymentSuccess } options={ { headerShown: false } } />
-    //   </Stack.Navigator>
-    // </NavigationContainer>
     <NavigationContainer >
-      <Stack.Navigator initialRouteName="TicketScreenAll">
-        <Stack.Screen name="TicketScreenAll" component={ TicketScreenAll } options={ { headerShown: false } } />
-        <Stack.Screen name="TicketScreen" component={ TicketScreen } options={ { headerShown: false } } />
-
+      <Stack.Navigator initialRouteName="SeatSelectionScreen">
+        <Stack.Screen name="SeatSelectionScreen" component={ SeatSelectionScreen } options={ { headerShown: false } } />
+        <Stack.Screen name="PaymentWebView" component={ PaymentWebView } options={ { headerShown: false } } />
+        <Stack.Screen name="PaySuccess" component={ PaymentSuccess } options={ { headerShown: false } } />
       </Stack.Navigator>
     </NavigationContainer>
+    // <NavigationContainer >
+    //   <Stack.Navigator initialRouteName="TicketScreenAll">
+    //     <Stack.Screen name="TicketScreenAll" component={ TicketScreenAll } options={ { headerShown: false } } />
+    //     <Stack.Screen name="TicketScreen" component={ TicketScreen } options={ { headerShown: false } } />
+
+    //   </Stack.Navigator>
+    // </NavigationContainer>
     // <TicketScreenAll navigation={ undefined } />
     //<TicketScreen navigation={ undefined } />
     //<PayOsScreen />
