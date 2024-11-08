@@ -24,6 +24,7 @@ import TicketScreenDemo from '../screens/Stack/TicketDemo';
 import TicketScreen from '../screens/Stack/TicketScreen';
 import SeatBookScreen from '../screens/Stack/SeatBook';
 import CinemaSelect from '../screens/Stack/CinemaSelect';
+import PolicyScreen from '../screens/PolicyScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -47,6 +48,7 @@ const MainStackNavigation = (props) => {
       <Stack.Screen name="Cinema" component={CinemaSelect} />
       <Stack.Screen name="ticket" component={TicketScreen} />
       <Stack.Screen name="Ticket" component={TicketScreenDemo} />
+      <Stack.Screen name="Policy" component={PolicyScreen} />
 
       <Stack.Screen name="Favour" component={Favour} />
       <Stack.Screen name="Checkout" component={Checkout} />

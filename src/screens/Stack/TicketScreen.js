@@ -7,14 +7,14 @@ import {
   ImageBackground,
   Image,
 } from 'react-native';
-import AppHeader from '../components/AppHeader';
+import AppHeader from '../../components/AppHeader';
 import {
   BORDERRADIUS,
   COLORS,
   FONTFAMILY,
   FONTSIZE,
   SPACING,
-} from '../theme/theme';
+} from '../../theme/theme';
 import LinearGradient from 'react-native-linear-gradient';
 
 const TicketScreen = ({ route, navigation }) => {
