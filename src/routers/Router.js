@@ -23,31 +23,32 @@ import CinemaSelect from '../screens/Stack/CinemaSelect';
 import PolicyScreen from '../screens/PolicyScreen';
 import PaymentWebView from '../screens/PaymentWebView'; // Add if needed
 import PaymentSuccess from '../screens/PaymentSuccess'; // Add if needed
- 
+import TicketScreen from '../screens/Stack/TicketScreen';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const MainStackNavigation = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Tab" component={MainTabNavigation} />
-      <Stack.Screen name="Splash" component={SplashScreen} />
-      <Stack.Screen name="History" component={History} />
-      <Stack.Screen name="Test" component={SeatSelection} />
-      <Stack.Screen name="Detail" component={Details} />
-      <Stack.Screen name="Latest" component={Latest} />
-      <Stack.Screen name="Seat" component={SeatBookScreen} />
-      <Stack.Screen name="PaymentWebView" component={PaymentWebView} />
-      <Stack.Screen name="PaySuccess" component={PaymentSuccess} />
-      <Stack.Screen name="Cinema" component={CinemaSelect} />
-      {/* <Stack.Screen name="Ticket" component={TicketScreen} /> */}
-      <Stack.Screen name="Favour" component={Favour} />
-      <Stack.Screen name="Checkout" component={Checkout} />
-      <Stack.Screen name="EditProfile" component={EditProfileComponent} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="Policy" component={PolicyScreen} />
+    <Stack.Navigator screenOptions={ { headerShown: false } }>
+      <Stack.Screen name="Login" component={ LoginScreen } />
+      <Stack.Screen name="Tab" component={ MainTabNavigation } />
+      <Stack.Screen name="Splash" component={ SplashScreen } />
+      <Stack.Screen name="History" component={ History } />
+      <Stack.Screen name="Test" component={ SeatSelection } />
+      <Stack.Screen name="Detail" component={ Details } />
+      <Stack.Screen name="Latest" component={ Latest } />
+      <Stack.Screen name="Seat" component={ SeatBookScreen } />
+      <Stack.Screen name="PaymentWebView" component={ PaymentWebView } />
+      <Stack.Screen name="PaySuccess" component={ PaymentSuccess } />
+      <Stack.Screen name="Cinema" component={ CinemaSelect } />
+      <Stack.Screen name="Ticket" component={ TicketScreen } />
+      <Stack.Screen name="Favour" component={ Favour } />
+      <Stack.Screen name="Checkout" component={ Checkout } />
+      <Stack.Screen name="EditProfile" component={ EditProfileComponent } />
+      <Stack.Screen name="Signup" component={ SignupScreen } />
+      <Stack.Screen name="Policy" component={ PolicyScreen } />
     </Stack.Navigator>
   );
 };
@@ -115,18 +116,18 @@ const TabButton = ({ item, onPress, accessibilityState }) => {
 
   return (
     <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={1}
-      style={[styles.container, { flex: focused ? 1 : 0.65 }]}
+      onPress={ onPress }
+      activeOpacity={ 1 }
+      style={ [styles.container, { flex: focused ? 1 : 0.65 }] }
     >
       <View>
         <Animated.View
-          style={[StyleSheet.absoluteFillObject, { backgroundColor: item.color, borderRadius: 16 }, animatedStyle]}
+          style={ [StyleSheet.absoluteFillObject, { backgroundColor: item.color, borderRadius: 16 }, animatedStyle] }
         />
-        <View style={[styles.btn, { backgroundColor: focused ? null : item.alphaClr }]}>
-          <Image source={focused ? item.focusedImage : item.unfocusedImage} style={{ width: 24, height: 24 }} />
-          <Animated.View style={animatedTextStyle}>
-            {focused && <Text style={{ fontSize: 14, color: "white", marginLeft: 8 }}>{item.label}</Text>}
+        <View style={ [styles.btn, { backgroundColor: focused ? null : item.alphaClr }] }>
+          <Image source={ focused ? item.focusedImage : item.unfocusedImage } style={ { width: 24, height: 24 } } />
+          <Animated.View style={ animatedTextStyle }>
+            { focused && <Text style={ { fontSize: 14, color: "white", marginLeft: 8 } }>{ item.label }</Text> }
           </Animated.View>
         </View>
       </View>
@@ -136,26 +137,26 @@ const TabButton = ({ item, onPress, accessibilityState }) => {
 
 const MainTabNavigation = () => (
   <Tab.Navigator
-    screenOptions={{
+    screenOptions={ {
       headerShown: false,
       tabBarStyle: {
         height: 60,
         position: 'absolute',
         paddingHorizontal: 20,
       },
-    }}
+    } }
   >
-    {TabArr.map((item, index) => (
+    { TabArr.map((item, index) => (
       <Tab.Screen
-        key={index}
-        name={item.route}
-        component={item.component}
-        options={{
+        key={ index }
+        name={ item.route }
+        component={ item.component }
+        options={ {
           tabBarShowLabel: false,
-          tabBarButton: (props) => <TabButton {...props} item={item} />,
-        }}
+          tabBarButton: (props) => <TabButton { ...props } item={ item } />,
+        } }
       />
-    ))}
+    )) }
   </Tab.Navigator>
 );
 
