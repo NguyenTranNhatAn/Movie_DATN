@@ -42,13 +42,13 @@ export default function App({ width }) {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.box, animatedDefault]}>
-        <Text style={styles.text}>inout</Text>
+    <View style={ styles.container }>
+      <Animated.View style={ [styles.box, animatedDefault] }>
+        <Text style={ styles.text }>inout</Text>
       </Animated.View>
 
-      <Animated.View style={[styles.box, animatedChanged]}>
-        <Text style={styles.text}>linear</Text>
+      <Animated.View style={ [styles.box, animatedChanged] }>
+        <Text style={ styles.text }>linear</Text>
       </Animated.View>
     </View>
   );
