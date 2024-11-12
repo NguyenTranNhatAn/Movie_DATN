@@ -13,28 +13,22 @@ import Profile from '../screens/Tabs/Profile';
 import Latest from '../screens/Stack/Latest';
 import Category from '../screens/Tabs/Category';
 import Checkout from '../screens/Stack/Checkout';
-import { EditProfile } from '../reducers/EditProfileSlide';
 import EditProfileComponent from '../screens/Stack/Editprofile';
 import LoginScreen from '../screens/Stack/LoginScreens';
 import SplashScreen from '../screens/Stack/SplashScreens';
 import Favour from '../screens/Stack/Favour';
 import SignupScreen from '../screens/Stack/SignupScreen';
-import SeatBookingScreen from '../screens/SeatBookingScreen';
-import TicketScreenDemo from '../screens/Stack/TicketDemo';
-import TicketScreen from '../screens/Stack/TicketScreen';
 import SeatBookScreen from '../screens/Stack/SeatBook';
 import CinemaSelect from '../screens/Stack/CinemaSelect';
 import PolicyScreen from '../screens/PolicyScreen';
+import PaymentWebView from '../screens/PaymentWebView'; // Add if needed
+import PaymentSuccess from '../screens/PaymentSuccess'; // Add if needed
+ 
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const AuthRouter = <Stack.Navigator screenOptions={ { headerShown: false } }>
-  {/* <Stack.Screen name='LoginScreen' component={LoginScreen} />
-    <Stack.Screen name='SignInScreen' component={SignInScreen} /> */}
-
-</Stack.Navigator>
-
-const MainStackNavigation = (props) => {
+const MainStackNavigation = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
@@ -43,39 +37,20 @@ const MainStackNavigation = (props) => {
       <Stack.Screen name="History" component={History} />
       <Stack.Screen name="Test" component={SeatSelection} />
       <Stack.Screen name="Detail" component={Details} />
-      <Stack.Screen name="Lastest" component={Latest} />
+      <Stack.Screen name="Latest" component={Latest} />
       <Stack.Screen name="Seat" component={SeatBookScreen} />
+      <Stack.Screen name="PaymentWebView" component={PaymentWebView} />
+      <Stack.Screen name="PaySuccess" component={PaymentSuccess} />
       <Stack.Screen name="Cinema" component={CinemaSelect} />
-      <Stack.Screen name="ticket" component={TicketScreen} />
-      <Stack.Screen name="Ticket" component={TicketScreenDemo} />
+      {/* <Stack.Screen name="Ticket" component={TicketScreen} /> */}
+      <Stack.Screen name="Favour" component={Favour} />
+      <Stack.Screen name="Checkout" component={Checkout} />
+      <Stack.Screen name="EditProfile" component={EditProfileComponent} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Policy" component={PolicyScreen} />
-
-  return (
-    <Stack.Navigator screenOptions={ { headerShown: false } }>
-      <Stack.Screen name="Login" component={ LoginScreen } />
-      <Stack.Screen name="Tab" component={ MainTabNavigation } />
-      <Stack.Screen name="Splash" component={ SplashScreen } />
-      <Stack.Screen name="History" component={ History } />
-      <Stack.Screen name="Test" component={ SeatSelection } />
-      <Stack.Screen name="Detail" component={ Details } />
-      <Stack.Screen name="Lastest" component={ Latest } />
-      <Stack.Screen name="Seat" component={ SeatSelectionScreen } />
-      <Stack.Screen name="PaymentWebView" component={ PaymentWebView } />
-      <Stack.Screen name="PaySuccess" component={ PaymentSuccess } />
-      <Stack.Screen name="Cinema" component={ CinemaSelect } />
-      <Stack.Screen name="Ticket" component={ TicketScreen } />
-    
-
-      <Stack.Screen name="Favour" component={ Favour } />
-      <Stack.Screen name="Checkout" component={ Checkout } />
-      <Stack.Screen name="Editprofile" component={ EditProfileComponent } />
-
-      <Stack.Screen name="Signup" component={ SignupScreen } />
-
-
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 const TabArr = [
   {
@@ -85,7 +60,6 @@ const TabArr = [
     unfocusedImage: require('../../assets/image/home.png'),
     component: HomeScreen,
     color: "#FF515A",
-
   },
   {
     route: 'Search',
@@ -94,7 +68,6 @@ const TabArr = [
     unfocusedImage: require('../../assets/image/search-normal.png'),
     component: Search,
     color: "#FF515A",
-
   },
   {
     route: 'Favorite',
@@ -103,7 +76,6 @@ const TabArr = [
     unfocusedImage: require('../../assets/image/heart.png'),
     component: Favour,
     color: "#FF515A",
-
   },
   {
     route: 'Ticket',
@@ -112,7 +84,6 @@ const TabArr = [
     unfocusedImage: require('../../assets/image/ticket.png'),
     component: Category,
     color: "#FF515A",
-
   },
   {
     route: 'Profile',
@@ -121,15 +92,11 @@ const TabArr = [
     unfocusedImage: require('../../assets/image/user-square.png'),
     component: Profile,
     color: "#FF515A",
-
   },
-  // Thêm các tab khác tương tự
 ];
-const TabButton = (props) => {
-  const { item, onPress, accessibilityState } = props;
-  const focused = accessibilityState.selected;
 
-  // Sử dụng shared values để tạo animation
+const TabButton = ({ item, onPress, accessibilityState }) => {
+  const focused = accessibilityState.selected;
   const scale = useSharedValue(focused ? 1 : 0);
   const textScale = useSharedValue(focused ? 1 : 0);
 
@@ -138,83 +105,64 @@ const TabButton = (props) => {
     textScale.value = withTiming(focused ? 1 : 0, { duration: 300 });
   }, [focused]);
 
-  // Style động cho icon và text
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
-  const animatedTextStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: textScale.value }],
-    };
-  });
+  const animatedTextStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: textScale.value }],
+  }));
 
   return (
     <TouchableOpacity
-      onPress={ onPress }
-      activeOpacity={ 1 }
-      style={ [styles.container, { flex: focused ? 1 : 0.65 }] }
+      onPress={onPress}
+      activeOpacity={1}
+      style={[styles.container, { flex: focused ? 1 : 0.65 }]}
     >
       <View>
         <Animated.View
-          style={ [StyleSheet.absoluteFillObject, { backgroundColor: item.color, borderRadius: 16 }, animatedStyle] }
+          style={[StyleSheet.absoluteFillObject, { backgroundColor: item.color, borderRadius: 16 }, animatedStyle]}
         />
-        <View style={ [styles.btn, { backgroundColor: focused ? null : item.alphaClr }] }>
-          {/* Thay thế Feather icon bằng Image */ }
-          <Image
-            source={ focused ? item.focusedImage : item.unfocusedImage }
-            style={ { width: 24, height: 24 } } // Điều chỉnh kích thước theo nhu cầu
-          />
-          <Animated.View style={ animatedTextStyle }>
-            { focused && (
-              <Text style={ { fontSize: 14, color: "white", marginLeft: 8 } }>{ item.label }</Text>
-            ) }
+        <View style={[styles.btn, { backgroundColor: focused ? null : item.alphaClr }]}>
+          <Image source={focused ? item.focusedImage : item.unfocusedImage} style={{ width: 24, height: 24 }} />
+          <Animated.View style={animatedTextStyle}>
+            {focused && <Text style={{ fontSize: 14, color: "white", marginLeft: 8 }}>{item.label}</Text>}
           </Animated.View>
         </View>
       </View>
     </TouchableOpacity>
   );
 };
-const MainTabNavigation = (props) => {
 
+const MainTabNavigation = () => (
+  <Tab.Navigator
+    screenOptions={{
+      headerShown: false,
+      tabBarStyle: {
+        height: 60,
+        position: 'absolute',
+        paddingHorizontal: 20,
+      },
+    }}
+  >
+    {TabArr.map((item, index) => (
+      <Tab.Screen
+        key={index}
+        name={item.route}
+        component={item.component}
+        options={{
+          tabBarShowLabel: false,
+          tabBarButton: (props) => <TabButton {...props} item={item} />,
+        }}
+      />
+    ))}
+  </Tab.Navigator>
+);
 
-  return (
-    <Tab.Navigator
-      screenOptions={ {
-        headerShown: false,
-        tabBarStyle: {
-          height: 60,
-          position: 'absolute',
-          paddingHorizontal: 20
+const Router = () => {
+  return <MainStackNavigation />;
+};
 
-        },
-      } }
-    >
-      { TabArr.map((item, index) => {
-        return (
-          <Tab.Screen
-            key={ index }
-            name={ item.route }
-            component={ item.component }
-            options={ {
-              tabBarShowLabel: false,
-              tabBarButton: (props) => <TabButton { ...props } item={ item } />,
-            } }
-          />
-        );
-      }) }
-    </Tab.Navigator>
-  )
-}
-
-const Router = (props) => {
-
-  return (
-    <MainStackNavigation />
-  );
-}
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
@@ -223,13 +171,12 @@ const styles = StyleSheet.create({
   },
   btn: {
     flexDirection: 'row',
-
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 16,
     alignItems: 'center',
-    justifyContent: 'center'
-
+    justifyContent: 'center',
   },
 });
-export default Router
+
+export default Router;

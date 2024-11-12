@@ -26,27 +26,27 @@ function App(): React.JSX.Element {
 
 
 
-    // <Provider store={ store }>
-    //   <SafeAreaView style={ { flex: 1 } }>
-    //     <StatusBar
+    <Provider store={ store }>
+      <SafeAreaView style={ { flex: 1 } }>
+        <StatusBar
 
-    //       barStyle={ 'dark-content' }
-    //       backgroundColor="rgba(255, 255, 255, 1)"
-    //     />
-    //     <NavigationContainer linking={ linking }>
-    //       <Router />
-    //     </NavigationContainer>
-    //     {/* <CinemaSelect navigation={undefined} route={undefined}/> */ }
-
-
+          barStyle={ 'dark-content' }
+          backgroundColor="rgba(255, 255, 255, 1)"
+        />
+        <NavigationContainer linking={ linking }>
+          <Router />
+        </NavigationContainer>
+        {/* <CinemaSelect navigation={undefined} route={undefined}/> */ }
 
 
-    //   </SafeAreaView>
-    // </Provider>
+
+
+      </SafeAreaView>
+    </Provider>
 
     // <Playtime />
     // <Component />
-    <Payment_Screen />
+    // <Payment_Screen />
   );
 }
 
