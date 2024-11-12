@@ -28,7 +28,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="myapp" android:host="home" />
+                <!-- Cho phép tất cả các đường dẫn sau "myapp://" -->
+            <data android:scheme="myapp" android:host="*" />
             </intent-filter>
       </activity>
     </application>
