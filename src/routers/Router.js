@@ -25,6 +25,9 @@ import TicketScreen from '../screens/Stack/TicketScreen';
 import SeatBookScreen from '../screens/Stack/SeatBook';
 import CinemaSelect from '../screens/Stack/CinemaSelect';
 import PolicyScreen from '../screens/PolicyScreen';
+import SeatSelectionScreen from '../screens/SeatSelectionScreen';
+import PaymentWebView from '../screens/PaymentWebView';
+import PaymentSuccess from '../screens/PaymentSuccess';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -49,11 +52,13 @@ const MainStackNavigation = (props) => {
       <Stack.Screen name="ticket" component={TicketScreen} />
       <Stack.Screen name="Ticket" component={TicketScreenDemo} />
       <Stack.Screen name="Policy" component={PolicyScreen} />
-
+      <Stack.Screen name="SeatSelectionScreen" component={SeatSelectionScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PaymentWebView" component={PaymentWebView} options={{ headerShown: false }} />
+      <Stack.Screen name="PaySuccess" component={PaymentSuccess} options={{ headerShown: false }} />
       <Stack.Screen name="Favour" component={Favour} />
       <Stack.Screen name="Checkout" component={Checkout} />
       <Stack.Screen name="Editprofile" component={EditProfileComponent} />
-     
+
       <Stack.Screen name="Signup" component={SignupScreen} />
 
 

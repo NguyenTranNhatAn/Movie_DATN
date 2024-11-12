@@ -24,6 +24,7 @@ const LoginScreen = ({navigation}) => {
       
     } catch (err) {
       Alert.alert( '','Đăng nhập thất bại!');
+      console.log(err)
      
     }
   };

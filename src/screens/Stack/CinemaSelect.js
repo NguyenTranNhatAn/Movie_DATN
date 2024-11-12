@@ -142,6 +142,7 @@ const CinemaSelect = ({ navigation, route }) => {
 
     dispatch(GetTime({ movieId: iD, day: selectedDate, }));
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
+    dispatch(BrandList({ movieId: iD, day: selectedDate }));
 
   };
   const allDate = () => {
@@ -150,7 +151,7 @@ const CinemaSelect = ({ navigation, route }) => {
     setEnd(24)
     setSelectedTimeIndex(0)
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: 0, endHour: 24, brandId: brandId }));
-
+   
   }
   const toggleTime = (index, item) => {
     setstart(item.start)
@@ -159,6 +160,7 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedTimeIndex(index);
     console.log(item.start, item.end)
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: item.start, endHour: item.end, brandId: brandId }));
+   
     console.log(item.start, item.end, brandId)
 
   };
@@ -197,7 +199,18 @@ const CinemaSelect = ({ navigation, route }) => {
     dispatch(clearShowtimeData())
   }
   const toggleSeat = (item, item1, index) => {
-    console.log(item1.showtimeId)
+
+    const showtimeId= item1.showtimeId
+    const startTime=formatTime(item1.startTime)
+    const endTime=formatTime(item1.endTime)
+    const day=new Date(item1.startTime)
+    const cinemaId= item.cinema._id
+    console.log(cinemaId)          
+    const date =`${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`;
+   
+   
+   navigation.navigate("SeatSelectionScreen",{startTime:startTime,day:date,showtimeId:showtimeId,movieId:iD,endTime:endTime,cinemaId:cinemaId})
+
   }
 
   return (
