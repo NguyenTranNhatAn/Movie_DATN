@@ -24,9 +24,7 @@ import TicketScreenDemo from '../screens/Stack/TicketDemo';
 import TicketScreen from '../screens/Stack/TicketScreen';
 import SeatBookScreen from '../screens/Stack/SeatBook';
 import CinemaSelect from '../screens/Stack/CinemaSelect';
-import SeatSelectionScreen from '../screens/SeatSelectionScreen';
-import PaymentWebView from '../screens/PaymentWebView';
-import PaymentSuccess from '../screens/PaymentSuccess';
+import PolicyScreen from '../screens/PolicyScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -37,6 +35,20 @@ const AuthRouter = <Stack.Navigator screenOptions={ { headerShown: false } }>
 </Stack.Navigator>
 
 const MainStackNavigation = (props) => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Tab" component={MainTabNavigation} />
+      <Stack.Screen name="Splash" component={SplashScreen} />
+      <Stack.Screen name="History" component={History} />
+      <Stack.Screen name="Test" component={SeatSelection} />
+      <Stack.Screen name="Detail" component={Details} />
+      <Stack.Screen name="Lastest" component={Latest} />
+      <Stack.Screen name="Seat" component={SeatBookScreen} />
+      <Stack.Screen name="Cinema" component={CinemaSelect} />
+      <Stack.Screen name="ticket" component={TicketScreen} />
+      <Stack.Screen name="Ticket" component={TicketScreenDemo} />
+      <Stack.Screen name="Policy" component={PolicyScreen} />
 
   return (
     <Stack.Navigator screenOptions={ { headerShown: false } }>

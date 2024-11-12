@@ -56,7 +56,7 @@ const Profile = () => {
           <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}>
+        <TouchableOpacity onPress={()=>navigation.navigate("Policy")} style={styles.optionRow}>
           <Text style={styles.optionText}>Privacy Policy</Text>
           <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
