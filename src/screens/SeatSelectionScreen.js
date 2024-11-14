@@ -8,6 +8,8 @@ import _ from 'lodash';
 import io from 'socket.io-client';
 import { useNavigation } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
+import API_BASE_URL from './config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Component ghế được memo hóa
 const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => {
   let seatStyle = styles.seat; // Mặc định là ghế thường
@@ -50,16 +52,30 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
 });
 
 
-const SeatSelectionScreen = () => {
+const SeatSelectionScreen = ({ route }) => {
+  const { startTime, day, showtimeId, movieId, endTime, cinemaId } = route.params;
+  console.log(showtimeId)
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [seatMap, setSeatMap] = useState([]);
   const [seatPrices, setSeatPrices] = useState({});
   const [originalSeatMap, setOriginalSeatMap] = useState([]);
+  const [movieName, setMovieName] = useState('');
+  const [roomName, setRoomName] = useState('MA');
+  const [cinemaName, setCinemaName] = useState('');
+  const [formattedDay, setFormattedDay] = useState('');
+  const [formattedStartTime, setFormattedStartTime] = useState('');
+  const [formattedEndTime, setFormattedEndTime] = useState('');
+
   // const socket = io('http://192.168.1.28:3006');
-  const socket = io('https://f1e5-171-252-189-233.ngrok-free.app');
-  const showtimeId = '6731b6574d9a252f21fc014f'; // Suất chiếu mẫu
-  const userId = 'RE123';
+  const socket = io(`${API_BASE_URL}`);
+  //const showtimeId = '6731b6574d9a252f21fc014f'; // Suất chiếu mẫu
+  // const userId = 'RE123';
+  const [userId, setUserId] = useState(null); // State for userID
+  const [token, setToken] = useState(null); // State for token
   const navigation = useNavigation();
+
+  // láy ra userID
+  //
   ////mở đầu
   useEffect(() => {
     // Lắng nghe sự kiện cập nhật sơ đồ ghế từ server
@@ -106,6 +122,42 @@ const SeatSelectionScreen = () => {
   useEffect(() => {
     loadSeatMap(); // Chỉ gọi một lần khi component được mount
   }, []); // Truyền mảng rỗng để đảm bảo chỉ gọi một lần
+  const loadUserData = async () => {
+    try {
+      // Lấy token từ AsyncStorage
+      const storedToken = await AsyncStorage.getItem('token');
+      setToken(storedToken);
+
+      if (storedToken) {
+        // Gọi API để lấy userId từ token
+        const response = await fetch(`https://be-movie-sooty.vercel.app/api/user-info`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+
+        const data = await response.json();
+        console.log(data)
+        // Giả sử `userId` có trong `data.userId`
+        setUserId(data._id);
+        console.log("UserID:", data.userId); // In ra userId để kiểm tra
+      } else {
+        Alert.alert("Error", "Không tìm thấy token, vui lòng đăng nhập lại.");
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      Alert.alert("Error", "Không thể lấy thông tin người dùng.");
+    }
+  };
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      // Sau khi có userId, bạn có thể gọi các hàm cần userId ở đây
+      loadSeatMap();
+    }
+  }, [userId]);
 
   const loadSeatMap = async () => {
     if (!userId) {
@@ -115,10 +167,42 @@ const SeatSelectionScreen = () => {
 
     try {
       //const response = await fetch(`http://192.168.1.28:3000/showtimes/${showtimeId}`);
-      const response = await fetch(`https://be-movie-sooty.vercel.app/showtimes/${showtimeId}`);
+      const response = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}`, {
+        method: 'POST', // Chuyển sang POST
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cinemaId }) // Truyền cinemaId trong body
+      });
       const data = await response.json();
       console.log('Dữ liệu từ API:', data); // In ra dữ liệu gốc từ API
-      console.log('dữ liệu API moive nam:', data.movieId.name);
+      console.log('dữ liệu API moive nam:', data.movieName);
+      console.log("dữ liệu cinemaName:", data.cinemaName);
+      const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN', {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit',
+        });
+      };
+
+      const formatTime = (dateString) => {
+        const date = new Date(dateString); // Chỉ tạo đối tượng Date
+        return date.toLocaleTimeString('vi-VN', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      };
+
+
+      setFormattedDay(formatDate(data.day));
+      setFormattedStartTime(formatTime(data.startTime));
+      setFormattedEndTime(formatTime(data.endTime));
+      setMovieName(data.movieName);
+      setCinemaName(data.cinemaName);
+      setRoomName(data.roomName);
+
       // Lưu trữ giá ghế từ API vào state
       const prices = {};
       data.seatTypes.forEach(type => {
@@ -234,20 +318,25 @@ const SeatSelectionScreen = () => {
     const bookingData = {
       showtimeId: showtimeId,
       seats: seatsData,
-      cinemaName: 'CGV Thủ Đức',
-      roomName: 'Phòng 1',
-      showTime: '14:50',
-      showDate: '2024-11-01',
-      movieName: 'Venom',
+      cinemaName: cinemaName,
+      roomName: roomName,
+      showTime: formattedStartTime,
+      showDate: formattedDay,
+      movieName: movieName,
       userId: userId,
-      movieId: '670ad1a7320f37a6308bc5a2',
-      //amount: totalPrice,
-      amount: 5000,
+      movieId: movieId,
+      amount: totalPrice,
+      // amount: 5000,
       description: `Thanh toán vé phim`,
       returnUrl: 'myapp://home', // URL để trở về sau khi thanh toán thành công
       cancelUrl: 'myapp://Seat'  // URL khi người dùng hủy thanh toán
     };
-    //
+    navigation.navigate('Combo', {
+      bookingData: bookingData, // Truyền dữ liệu đặt vé sang màn hình Combo nếu cần
+    });
+
+
+    /*
     try {
       const response = await fetch('https://be-movie-sooty.vercel.app/order/create', {
         method: 'POST',
@@ -281,25 +370,9 @@ const SeatSelectionScreen = () => {
       console.error('Lỗi khi gửi yêu cầu đặt vé:', error);
       Alert.alert('Lỗi', 'Không thể kết nối đến server.');
     }
+     */
   };
-  /*
-    // Hàm xử lý khi người dùng quay lại từ trang thanh toán
-    const handleOpenURL = (event) => {
-      if (event.url === 'myapp://home') {
-        Alert.alert('Thanh toán thành công', 'Bạn sẽ được chuyển đến trang xác nhận.');
-        navigation.navigate('PaySuccess'); // Điều hướng về màn hình PaySuccess
-      }
-    };
-  
-    useEffect(() => {
-      // Đăng ký sự kiện khi ứng dụng mở một URL
-      Linking.addEventListener('url', handleOpenURL);
-      return () => {
-        // Gỡ bỏ sự kiện khi component bị hủy
-        Linking.removeEventListener('url', handleOpenURL);
-      };
-    }, []);
-  */
+
   //đặt vé kết thúc
 
 
@@ -385,8 +458,8 @@ const SeatSelectionScreen = () => {
           <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } />
         </TouchableOpacity>
         <View style={ styles.headerTitleContainer }>
-          <Text style={ styles.headerText }>CGV Vincom Thủ Đức</Text>
-          <Text style={ styles.showTimeTextHeader }>STARIUM, 01/11/24, 14:50~17:05</Text>
+          <Text style={ styles.headerText }>{ cinemaName }</Text>
+          <Text style={ styles.showTimeTextHeader }>{ roomName }, { formattedDay }, { formattedStartTime }~{ formattedEndTime }</Text>
         </View>
         <TouchableOpacity>
           <Ionicons name="menu" size={ 24 } color="red" style={ styles.menuButton } />
@@ -451,7 +524,7 @@ const SeatSelectionScreen = () => {
       </View>
 
       <View style={ styles.footer }>
-        <Text style={ styles.movieTitle }>VENOM: KÈO CUỐI</Text>
+        <Text style={ styles.movieTitle }>{ movieName }</Text>
         <Text style={ styles.movieDetails }>2D Phụ Đề Việt | Rạp STARIUM</Text>
         <Text style={ styles.price }>{ `${totalPrice.toLocaleString()} ₫` }</Text>
         <Text style={ styles.seatCount }>{ seatCount > 0 ? `${seatCount} ghế` : '0 ghế' }</Text>

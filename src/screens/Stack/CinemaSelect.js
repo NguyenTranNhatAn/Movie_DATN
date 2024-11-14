@@ -46,7 +46,7 @@ import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
 const CinemaSelect = ({ navigation, route }) => {
   const { id, image } = route.params;
   const [iD, setID] = useState(id);
-  const [dateArray, setDateArray] = useState(getDateList("2024-10-31", "2024-11-08"));
+  const [dateArray, setDateArray] = useState(getDateList("2024-11-14", "2024-12-15"));
 
 
   const dispatch = useDispatch();
@@ -209,7 +209,8 @@ const CinemaSelect = ({ navigation, route }) => {
     const date =`${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`;
    
    
-   navigation.navigate("SeatSelectionScreen",{startTime:startTime,day:date,showtimeId:showtimeId,movieId:iD,endTime:endTime,cinemaId:cinemaId})
+   navigation.navigate("Seat",{
+    startTime:startTime,day:date,showtimeId:showtimeId,movieId:iD,endTime:endTime,cinemaId:cinemaId})
 
   }
 

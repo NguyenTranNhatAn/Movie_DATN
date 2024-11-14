@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-
+import API_BASE_URL from '../screens/config';
 const PaymentSuccess = ({ route }) => {
     const { orderCode } = route.params;
 
     useEffect(() => {
         const updatePaymentStatus = async () => {
             try {
-                const response = await fetch('https://60d8-171-252-189-233.ngrok-free.app/order/update-payment-status', {
+                const response = await fetch(`${API_BASE_URL}/order/update-payment-status`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -11,6 +11,7 @@ import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import Playtime from './src/screens/Playtime';
 import Component from './src/screens/Component';
 import Payment_Screen from './src/screens/Payment_Screen';
+import TicketScreen from './src/screens/Stack/TicketScreen';
 
 function App(): React.JSX.Element {
   // Cấu hình linking
@@ -44,9 +45,10 @@ function App(): React.JSX.Element {
       </SafeAreaView>
     </Provider>
 
-    // <Playtime />
-    // <Component />
+    //<Playtime />
+    //<Component />
     // <Payment_Screen />
+    //<TicketScreen route={ undefined } navigation={ undefined } />
   );
 }
 

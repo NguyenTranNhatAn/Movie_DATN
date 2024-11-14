@@ -9,20 +9,24 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-export default function Component() {
+import { useNavigation } from '@react-navigation/native';
+import API_BASE_URL from './config';
+const Component = ({ route }) => {
+  // Lấy dữ liệu bookingData từ route
+  const { bookingData } = route.params;
+  console.log(bookingData);
   const [combos, setCombos] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
-  const API = 'https://f1e5-171-252-189-233.ngrok-free.app';
 
+  // /https://c24f-171-252-189-233.ngrok-free.app
   useEffect(() => {
     fetchCombos();
   }, []);
 
   const fetchCombos = async () => {
     try {
-      const response = await fetch(`${API}/combo/getAll`);
+      const response = await fetch(`${API_BASE_URL}/combo/getAll`);
       const data = await response.json();
       setCombos(data);
       const initialQuantities = data.reduce((acc, combo) => {
@@ -40,11 +44,12 @@ export default function Component() {
     let total = 0;
     comboData.forEach((combo) => {
       const quantity = updatedQuantities[combo._id] || 0;
-      const price = parseFloat(combo.price.replace(/[^\d.-]/g, ''));
+      const price = parseFloat(combo.price); // No need to use replace here
       total += price * quantity;
     });
     setTotalPrice(total.toFixed(3) + ' đ');
   };
+
 
   const increaseQuantity = (id) => {
     const updatedQuantities = {
@@ -63,73 +68,104 @@ export default function Component() {
     setQuantities(updatedQuantities);
     calculateTotalPrice(updatedQuantities);
   };
+  const navigation = useNavigation();
+  const handlePay = () => {
+    // Chuẩn bị thông tin combo được chọn để truyền
+    const selectedCombos = combos
+      .filter(combo => quantities[combo._id] > 0)
+      .map(combo => ({
+        comboId: combo._id,
+        comboName: combo.name,
+        quantity: quantities[combo._id],
+        price: parseFloat(combo.price), // No need to use replace here
+      }));
+
+
+    // Loại bỏ "đ" khỏi `totalPrice` và chuyển đổi thành số
+    const numericTotalPrice = parseFloat(totalPrice.replace(/[^\d.-]/g, ''));
+
+    // Tính tổng amount mới
+    const totalAmount = parseFloat(bookingData.amount) + numericTotalPrice;
+
+    // Tạo paymentData để truyền sang màn hình tiếp theo
+    const paymentData = {
+      ...bookingData,
+      combos: selectedCombos,
+      amount: totalAmount,
+    };
+
+    // Điều hướng sang màn hình thanh toán và truyền dữ liệu
+    navigation.navigate('Pay_Screen', { paymentData });
+  };
+
+
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
+    <SafeAreaView style={ styles.container }>
+      {/* Header */ }
+      <View style={ styles.header }>
         <TouchableOpacity>
-          <Ionicons name="arrow-back" size={24} color="red" style={styles.backButton} />
+          <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } />
         </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>CGV Vincom Thủ Đức</Text>
-          <Text style={styles.headerSubtitle}>STARIUM, 10/11/24, 19:30~21:58</Text>
+        <View style={ styles.headerCenter }>
+          <Text style={ styles.headerTitle }>CGV Vincom Thủ Đức</Text>
+          <Text style={ styles.headerSubtitle }>STARIUM, 10/11/24, 19:30~21:58</Text>
         </View>
       </View>
 
-      {/* Banner */}
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>
+      {/* Banner */ }
+      <View style={ styles.banner }>
+        <Text style={ styles.bannerText }>
           Áp dụng giá Lễ, Tết cho một số sản phẩm bắp nước đối với các giao dịch có suất chiếu vào ngày Lễ, Tết
         </Text>
       </View>
 
-      {/* Combo List */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {combos.map((combo) => (
-          <View key={combo._id} style={styles.comboItem}>
-            <View style={styles.comboContent}>
+      {/* Combo List */ }
+      <ScrollView style={ styles.content } showsVerticalScrollIndicator={ false }>
+        { combos.map((combo) => (
+          <View key={ combo._id } style={ styles.comboItem }>
+            <View style={ styles.comboContent }>
               <Image
-                source={{ uri: combo.image }}
-                style={styles.comboImage}
+                source={ { uri: combo.image } }
+                style={ styles.comboImage }
               />
-              <View style={styles.comboInfo}>
-                <Text style={styles.comboName}>{combo.name}</Text>
-                <Text style={styles.comboPrice}>{combo.price}</Text>
-                <Text style={styles.comboDescription}>{combo.description}</Text>
-                <Text style={styles.comboNote}>{combo.note}</Text>
+              <View style={ styles.comboInfo }>
+                <Text style={ styles.comboName }>{ combo.name }</Text>
+                <Text style={ styles.comboPrice }>{ combo.price }</Text>
+                <Text style={ styles.comboDescription }>{ combo.description }</Text>
+                <Text style={ styles.comboNote }>{ combo.note }</Text>
               </View>
             </View>
-            <View style={styles.quantityControl}>
+            <View style={ styles.quantityControl }>
               <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => decreaseQuantity(combo._id)}
+                style={ styles.quantityButton }
+                onPress={ () => decreaseQuantity(combo._id) }
               >
-                <Text style={styles.quantityButtonText}>-</Text>
+                <Text style={ styles.quantityButtonText }>-</Text>
               </TouchableOpacity>
-              <Text style={styles.quantityText}>
-                {quantities[combo._id] || 0}
+              <Text style={ styles.quantityText }>
+                { quantities[combo._id] || 0 }
               </Text>
               <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => increaseQuantity(combo._id)}
+                style={ styles.quantityButton }
+                onPress={ () => increaseQuantity(combo._id) }
               >
-                <Text style={styles.quantityButtonText}>+</Text>
+                <Text style={ styles.quantityButtonText }>+</Text>
               </TouchableOpacity>
             </View>
           </View>
-        ))}
+        )) }
       </ScrollView>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <View style={styles.ticketInfo}>
-          <Text style={styles.ticketTitle}>MẬT MÃ ĐỎ</Text>
-          <Text style={styles.ticketSubtitle}>2D Phụ Đề Việt | Rạp STARIUM</Text>
-          <Text style={styles.ticketPrice}>{totalPrice}</Text>
+      {/* Footer */ }
+      <View style={ styles.footer }>
+        <View style={ styles.ticketInfo }>
+          <Text style={ styles.ticketTitle }>MẬT MÃ ĐỎ</Text>
+          <Text style={ styles.ticketSubtitle }>2D Phụ Đề Việt | Rạp STARIUM</Text>
+          <Text style={ styles.ticketPrice }>{ totalPrice }</Text>
         </View>
-        <TouchableOpacity style={styles.checkoutButton}>
-          <Text style={styles.checkoutButtonText}>THANH TOÁN</Text>
+        <TouchableOpacity style={ styles.checkoutButton } onPress={ handlePay }>
+          <Text style={ styles.checkoutButtonText }>THANH TOÁN</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -264,3 +300,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+export default Component;

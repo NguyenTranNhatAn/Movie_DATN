@@ -7,6 +7,10 @@ import { UploadUsers } from '../../reducers/UploadUserslide';
 const Profile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  handleTicket = () => {
+    //chuyển sang màn hình mytickets
+    navigation.navigate('Ticket');
+  }
 
   // Lấy dữ liệu người dùng từ Redux store
   const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
@@ -19,56 +23,56 @@ const Profile = () => {
   }, [UploadUsersStatus, dispatch]);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.profileName1}>Profile</Text>
-      <View style={styles.profileSection}>
+    <ScrollView style={ styles.container }>
+      <Text style={ styles.profileName1 }>Profile</Text>
+      <View style={ styles.profileSection }>
         <Image
-          source={require('../../../Img/anhspidermen.png')}
-          style={styles.profileImage}
+          source={ require('../../../Img/anhspidermen.png') }
+          style={ styles.profileImage }
         />
-        <Text style={styles.profileName}>
-          {UploadUsersData.name || 'N/A'}
+        <Text style={ styles.profileName }>
+          { UploadUsersData.name || 'N/A' }
         </Text>
-        <Text style={styles.profilePhone}>
-          {UploadUsersData.phone || 'N/A'}
+        <Text style={ styles.profilePhone }>
+          { UploadUsersData.phone || 'N/A' }
         </Text>
       </View>
 
-      <View style={styles.optionsContainer}>
+      <View style={ styles.optionsContainer }>
         <TouchableOpacity
-          style={styles.optionRow}
-          onPress={() => navigation.navigate('Editprofile')}
+          style={ styles.optionRow }
+          onPress={ () => navigation.navigate('Editprofile') }
         >
-          <Text style={styles.optionText}>Edit Profile</Text>
-          <Image source={require('../../../Img/Vector.png')} />
+          <Text style={ styles.optionText }>Edit Profile</Text>
+          <Image source={ require('../../../Img/Vector.png') } />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}>
-          <View style={styles.editicon}>
-            <Image source={require('../../../Img/ticket.png')} />
-            <Text style={styles.optionText}>My tickets</Text>
+        <TouchableOpacity style={ styles.optionRow }  onPress={ handleTicket }>
+          <View style={ styles.editicon }>
+            <Image source={ require('../../../Img/ticket.png') } />
+            <Text style={ styles.optionText }>My tickets</Text>
           </View>
-          <Image source={require('../../../Img/Vector.png')} />
+          <Image source={ require('../../../Img/Vector.png') } />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}>
-          <Text style={styles.optionText}>Change Password</Text>
-          <Image source={require('../../../Img/Vector.png')} />
+        <TouchableOpacity style={ styles.optionRow }>
+          <Text style={ styles.optionText }>Change Password</Text>
+          <Image source={ require('../../../Img/Vector.png') } />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={()=>navigation.navigate("Policy")} style={styles.optionRow}>
-          <Text style={styles.optionText}>Privacy Policy</Text>
-          <Image source={require('../../../Img/Vector.png')} />
+        <TouchableOpacity onPress={ () => navigation.navigate("Policy") } style={ styles.optionRow }>
+          <Text style={ styles.optionText }>Privacy Policy</Text>
+          <Image source={ require('../../../Img/Vector.png') } />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}>
-          <Text style={styles.optionText}>Terms & Conditions</Text>
-          <Image source={require('../../../Img/Vector.png')} />
+        <TouchableOpacity style={ styles.optionRow }>
+          <Text style={ styles.optionText }>Terms & Conditions</Text>
+          <Image source={ require('../../../Img/Vector.png') } />
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.logoutButton}>
-        <Text style={styles.logoutText}>Logout</Text>
+      <TouchableOpacity style={ styles.logoutButton }>
+        <Text style={ styles.logoutText }>Logout</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -99,9 +103,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#000',
-    
-    alignSelf:'center'
-    
+
+    alignSelf: 'center'
+
   },
   profilePhone: {
     fontSize: 16,
@@ -138,8 +142,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  editicon:{
-    flexDirection:'row'
+  editicon: {
+    flexDirection: 'row'
   }
 });
 
