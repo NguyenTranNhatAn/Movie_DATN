@@ -17,6 +17,10 @@ const Profile = () => {
       dispatch(UploadUsers());
     }
   }, [UploadUsersStatus, dispatch]);
+  const handleLogout = () => {
+    // Thêm logic logout ở đây nếu cần, ví dụ: xóa token hoặc reset trạng thái
+    navigation.replace('login'); // Chuyển hướng đến màn hình 'Login'
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -35,41 +39,71 @@ const Profile = () => {
       </View>
 
       <View style={styles.optionsContainer}>
-        <TouchableOpacity
-          style={styles.optionRow}
-          onPress={() => navigation.navigate('editprofile')}
+        
+      <TouchableOpacity style={styles.optionRow}
+        onPress={() => navigation.navigate('editprofile')}
         >
-          <Text style={styles.optionText}>Edit Profile</Text>
-          <Image source={require('../Img/Vector.png')} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.optionRow}>
+          
           <View style={styles.editicon}>
-            <Image source={require('../Img/ticket.png')} />
-            <Text style={styles.optionText}>My tickets</Text>
+            
+            <Image style={{width:25,height:25}} source={require('../Img/editpencil.png')} />
+            <Text style={styles.optionText}> Edit Profile</Text>
           </View>
           <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}>
-          <Text style={styles.optionText}>Change Password</Text>
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image source={require('../Img/ticket.png')} />
+            <Text style={styles.optionText}> My tickets</Text>
+          </View>
           <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}>
-          <Text style={styles.optionText}>Privacy Policy</Text>
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../Img/lock.png')} />
+            <Text style={styles.optionText}> Change Password</Text>
+          </View>
           <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}>
-          <Text style={styles.optionText}>Terms & Conditions</Text>
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../Img/check.png')} />
+            <Text style={styles.optionText}> Privacy Policy</Text>
+          </View>
+          <Image source={require('../Img/Vector.png')} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../Img/board.png')} />
+            <Text style={styles.optionText}> Terms & Conditions</Text>
+          </View>
           <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.logoutButton}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <Text style={styles.logoutText}>Logout</Text>
+    </TouchableOpacity>
     </ScrollView>
   );
 };
