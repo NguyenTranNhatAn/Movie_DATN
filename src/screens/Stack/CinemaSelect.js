@@ -209,9 +209,8 @@ const CinemaSelect = ({ navigation, route }) => {
     const date =`${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`;
    
    
-   navigation.navigate("Seat",{
-    startTime:startTime,day:date,showtimeId:showtimeId,movieId:iD,endTime:endTime,cinemaId:cinemaId})
-
+    navigation.navigate("Seat",{
+      startTime:startTime,day:date,showtimeId:showtimeId,movieId:iD,endTime:endTime,cinemaId:cinemaId})
   }
 
   return (
