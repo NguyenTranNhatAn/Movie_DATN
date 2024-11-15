@@ -41,7 +41,7 @@ const Profile = () => {
       <View style={ styles.optionsContainer }>
         <TouchableOpacity
           style={ styles.optionRow }
-          onPress={ () => navigation.navigate('Editprofile') }
+          onPress={ () => navigation.navigate('EditProfile') }
         >
           <Text style={ styles.optionText }>Edit Profile</Text>
           <Image source={ require('../../../Img/Vector.png') } />
