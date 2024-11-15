@@ -1,216 +1,181 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, TextInput } from 'react-native';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-
+import API_BASE_URL from '../config'; // make sure this is the correct path to your config
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Category = () => {
+  const navigation = useNavigation();
   const [selectedTab, setSelectedTab] = useState('Upcoming');
-  const sheetRef = useRef(null); // Tham chiếu đến BottomSheet
-  const [isSheetOpen, setIsSheetOpen] = useState(false); // Kiểm soát trạng thái BottomSheet
-  const [selectedReason, setSelectedReason] = useState(''); // Kiểm soát lý do hủy chọn
-  const [additionalReason, setAdditionalReason] = useState(''); // Lưu lý do nhập thêm
+  const [tickets, setTickets] = useState([]);
+  const sheetRef = useRef(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedReason, setSelectedReason] = useState('');
+  const [additionalReason, setAdditionalReason] = useState('');
+  const [userId, setUserId] = useState(null); // State for userID
+  const [token, setToken] = useState(null); // State for token
 
-  const upcomingTickets = [
-    { title: 'Fast & Furious 7', language: 'English, Hindi', status: 'Paid' },
-    { title: 'Spider Man', language: 'English, Hindi', status: 'Paid' },
-    { title: 'Sultan', language: 'Hindi', status: 'Paid' },
-  ];
+  const loadUserData = async () => {
+    try {
+      // Lấy token từ AsyncStorage
+      const storedToken = await AsyncStorage.getItem('token');
+      setToken(storedToken);
 
-  const pastTickets = [
-    { title: 'Fast & Furious 7', language: 'English, Hindi', status: 'Paid' },
-    { title: 'Spider Man', language: 'English, Hindi', status: 'Paid' },
-    { title: 'Sultan', language: 'Hindi', status: 'Paid' },
-  ];
+      if (storedToken) {
+        // Gọi API để lấy userId từ token
+        const response = await fetch(`https://be-movie-sooty.vercel.app/api/user-info`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
 
-  const cancelledTickets = [
-    { title: 'Sultan', language: 'Hindi', status: 'Paid' },
-    { title: 'Fast & Furious 7', language: 'English, Hindi', status: 'Paid' },
-    { title: 'Spider Man', language: 'English, Hindi', status: 'Paid' },
-  ];
+        const data = await response.json();
+        console.log(data)
+        // Giả sử `userId` có trong `data.userId`
+        setUserId(data._id);
+        console.log("UserID:", data.userId); // In ra userId để kiểm tra
+      } else {
+        Alert.alert("Error", "Không tìm thấy token, vui lòng đăng nhập lại.");
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      Alert.alert("Error", "Không thể lấy thông tin người dùng.");
+    }
+  };
+  useEffect(() => {
+    loadUserData();
+  }, []);
+  // Fetch tickets based on selectedTab
+  useEffect(() => {
+    const fetchTickets = async () => {
+      // const userId = 'RE123'; // Replace with dynamic userId if needed
+      const url = `${API_BASE_URL}/ticket/${selectedTab.toLowerCase()}/${userId}`;
 
-  // Nội dung của BottomSheet
-  const renderBottomSheetContent = () => (
-    <View style={styles.bottomSheet}>
-      <Text style={styles.sheetTitle}>Cancel Booking</Text>
-      <Text style={styles.sheetSubtitle}>Please select the reason for cancellation</Text>
+      try {
+        const response = await fetch(url);
+        const result = await response.json();
+        // Log each ticket's ticketId
+        result.data.forEach(ticket => {
+          console.log(ticket.ticketId); // Đây là nơi bạn lấy được ticketId
+        });
+        if (result.error === 0) {
+          setTickets(result.data);
+        } else {
+          console.error("Error fetching tickets:", result.message);
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+      }
+    };
 
-      {/* Các lý do hủy */}
-      <TouchableOpacity style={styles.radioContainer} onPress={() => setSelectedReason('I have better deal')}>
-        <View style={[styles.radioButton, selectedReason === 'I have better deal' && styles.radioButtonSelected]}>
-          {selectedReason === 'I have better deal' && <View style={styles.radioInner} />}
-        </View>
-        <Text style={styles.radioText}>I have better deal</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.radioContainer} onPress={() => setSelectedReason('Some other work, can’t come')}>
-        <View style={[styles.radioButton, selectedReason === 'Some other work, can’t come' && styles.radioButtonSelected]}>
-          {selectedReason === 'Some other work, can’t come' && <View style={styles.radioInner} />}
-        </View>
-        <Text style={styles.radioText}>Some other work, can’t come</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.radioContainer} onPress={() => setSelectedReason('I want to book another movie')}>
-        <View style={[styles.radioButton, selectedReason === 'I want to book another movie' && styles.radioButtonSelected]}>
-          {selectedReason === 'I want to book another movie' && <View style={styles.radioInner} />}
-        </View>
-        <Text style={styles.radioText}>I want to book another movie</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.radioContainer} onPress={() => setSelectedReason('Location is too far from my location')}>
-        <View style={[styles.radioButton, selectedReason === 'Location is too far from my location' && styles.radioButtonSelected]}>
-          {selectedReason === 'Location is too far from my location' && <View style={styles.radioInner} />}
-        </View>
-        <Text style={styles.radioText}>Location is too far from my location</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.radioContainer} onPress={() => setSelectedReason('Another reason')}>
-        <View style={[styles.radioButton, selectedReason === 'Another reason' && styles.radioButtonSelected]}>
-          {selectedReason === 'Another reason' && <View style={styles.radioInner} />}
-        </View>
-        <Text style={styles.radioText}>Another reason</Text>
-      </TouchableOpacity>
-
-      {/* Hiển thị hộp nhập lý do nếu chọn "Another reason" */}
-      {selectedReason === 'Another reason' && (
-        <TextInput
-          style={styles.input}
-          placeholder="Tell us reason"
-          value={additionalReason}
-          onChangeText={setAdditionalReason}
-        />
-      )}
-
-      {/* Nút Submit */}
-      <TouchableOpacity style={styles.submitButton} onPress={() => sheetRef.current?.close()}>
-        <Text style={styles.submitText}>Submit</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  // Tạo backdrop để nhấn ra ngoài đóng BottomSheet
-  const renderBackdrop = (props) => (
-    <BottomSheetBackdrop
-      {...props}
-      opacity={0.5}  // Độ mờ của nền
-      disappearsOnIndex={-1}  // Đóng khi nhấn ra ngoài
-      appearsOnIndex={0}  // Hiển thị backdrop khi mở BottomSheet
-    />
-  );
+    fetchTickets();
+  }, [selectedTab]);
 
   const renderTickets = () => {
-    let ticketsToRender = [];
-
-    if (selectedTab === 'Upcoming') {
-      ticketsToRender = upcomingTickets;
-    } else if (selectedTab === 'Past') {
-      ticketsToRender = pastTickets;
-    } else if (selectedTab === 'Cancelled') {
-      ticketsToRender = cancelledTickets;
-    }
-
-    return ticketsToRender.map((ticket, index) => (
-      <View key={index}>
-        <View>
-        <View style={styles.ticketContainer}>
-          <Image source={require('../../../Img/anhspidermen.png')} style={styles.image} />
-          <View style={styles.ticketInfo}>
-            <Text style={styles.title}>{ticket.title}</Text>
-            <Text style={styles.subtitle}>Bollywood Movie</Text>
-            <Text style={styles.subtitle}>Language: {ticket.language}</Text>
+    return tickets.map((ticket, index) => (
+      <View key={ index } style={ styles.ticketWrapper }>
+        <View style={ styles.ticketContainer }>
+          <Image source={ { uri: ticket.movieImage } } style={ styles.image } />
+          <View style={ styles.ticketInfo }>
+            <Text style={ styles.title }>{ ticket.movieName }</Text>
+            <Text style={ styles.subtitle }>{ ticket.cinemaName }</Text>
+            <Text style={ styles.subtitle }>Room: { ticket.roomName }</Text>
+            <Text style={ styles.subtitle }>Show Date: { new Date(ticket.showDate).toLocaleDateString() }</Text>
+            <Text style={ styles.subtitle }>Price: { ticket.totalPrice }₫</Text>
           </View>
-          <View style={styles.statusContainer}>
-            <Text style={styles.statusText}>{ticket.status}</Text>
+          <View style={ styles.statusContainer }>
+            <Text style={ styles.statusText }>{ ticket.status }</Text>
           </View>
-          
         </View>
-        
-        </View>
-        
-        <View style={styles.ticketContainer1}>
-        {selectedTab === 'Upcoming' && (
+
+        <View style={ styles.ticketActions }>
+          { selectedTab === 'Upcoming' && (
             <TouchableOpacity
-            style={styles.viewButton}
-              onPress={() => {
-                setIsSheetOpen(true);  // Mở BottomSheet
-                sheetRef.current.expand();  // Mở BottomSheet tại vị trí đầu tiên
-              }}
+              style={ styles.viewButton }
+              onPress={ () => {
+                setIsSheetOpen(true);
+                sheetRef.current.expand();
+              } }
             >
-              <Text style={styles.buttonText}>Cancel Booking</Text>
+              <Text style={ styles.buttonText }>Cancel Booking</Text>
             </TouchableOpacity>
-          )}
-          {selectedTab === 'Upcoming' && (
-            <TouchableOpacity
-            style={styles.cancelButton}
-              
-            >
-              <Text style={styles.cancelButtonText}>View Details</Text>
-            </TouchableOpacity>
-          )}
-        
-          {selectedTab === 'Past' && (
-            
-            <TouchableOpacity  style={styles.viewButton}>
-            <Text style={styles.buttonText}>View Details</Text>
+          ) }
+          <TouchableOpacity
+            style={ selectedTab === 'Past' ? styles.reviewButton : styles.cancelButton }
+            onPress={ () => navigation.navigate('TicketDetails', { ticketId: ticket.ticketId }) } // Truyền ticketId
+
+          >
+            <Text style={ selectedTab === 'Past' ? styles.buttonText1 : styles.cancelButtonText }>
+              { selectedTab === 'Past' ? 'Write a Review' : 'View Details' }
+            </Text>
           </TouchableOpacity>
-            
-          )}
-          
-          {selectedTab === 'Past' && (
-            
-            <TouchableOpacity style={styles.reviewButton}>
-              <Text style={styles.buttonText1}>Write a Review</Text>
-            </TouchableOpacity>
-            
-          )}
-          {selectedTab === 'Cancelled' && (
-            <TouchableOpacity
-            style={styles.viewButton}
-              
-            >
-              <Text style={styles.buttonText}>View Details</Text>
-            </TouchableOpacity>
-          )}
-          
         </View>
       </View>
     ));
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.headerText}>My Tickets</Text>
+  const renderBottomSheetContent = () => (
+    <View style={ styles.bottomSheet }>
+      <Text style={ styles.sheetTitle }>Cancel Booking</Text>
+      <Text style={ styles.sheetSubtitle }>Please select the reason for cancellation</Text>
 
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tabButton, selectedTab === 'Upcoming' && styles.activeTab]}
-          onPress={() => setSelectedTab('Upcoming')}
-        >
-          <Text style={[styles.tabText, selectedTab === 'Upcoming' && styles.activeTabText]}>Upcoming</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, selectedTab === 'Past' && styles.activeTab]}
-          onPress={() => setSelectedTab('Past')}
-        >
-          <Text style={[styles.tabText, selectedTab === 'Past' && styles.activeTabText]}>Past</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabButton, selectedTab === 'Cancelled' && styles.activeTab]}
-          onPress={() => setSelectedTab('Cancelled')}
-        >
-          <Text style={[styles.tabText, selectedTab === 'Cancelled' && styles.activeTabText]}>Cancelled</Text>
-        </TouchableOpacity>
+      {/* Cancellation reasons */ }
+      { ["I have better deal", "Some other work, can’t come", "I want to book another movie",
+        "Location is too far from my location", "Another reason"].map((reason) => (
+          <TouchableOpacity key={ reason } style={ styles.radioContainer } onPress={ () => setSelectedReason(reason) }>
+            <View style={ [styles.radioButton, selectedReason === reason && styles.radioButtonSelected] }>
+              { selectedReason === reason && <View style={ styles.radioInner } /> }
+            </View>
+            <Text style={ styles.radioText }>{ reason }</Text>
+          </TouchableOpacity>
+        )) }
+
+      {/* Additional input for "Another reason" */ }
+      { selectedReason === 'Another reason' && (
+        <TextInput
+          style={ styles.input }
+          placeholder="Tell us reason"
+          value={ additionalReason }
+          onChangeText={ setAdditionalReason }
+        />
+      ) }
+
+      {/* Submit button */ }
+      <TouchableOpacity style={ styles.submitButton } onPress={ () => sheetRef.current?.close() }>
+        <Text style={ styles.submitText }>Submit</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderBackdrop = (props) => (
+    <BottomSheetBackdrop { ...props } opacity={ 0.5 } disappearsOnIndex={ -1 } appearsOnIndex={ 0 } />
+  );
+
+  return (
+    <SafeAreaView style={ styles.container }>
+      <Text style={ styles.headerText }>My Tickets</Text>
+
+      <View style={ styles.tabContainer }>
+        { ["Upcoming", "Past", "Cancelled"].map((tab) => (
+          <TouchableOpacity
+            key={ tab }
+            style={ [styles.tabButton, selectedTab === tab && styles.activeTab] }
+            onPress={ () => setSelectedTab(tab) }
+          >
+            <Text style={ [styles.tabText, selectedTab === tab && styles.activeTabText] }>{ tab }</Text>
+          </TouchableOpacity>
+        )) }
       </View>
 
-      <ScrollView>{renderTickets()}</ScrollView>
+      <ScrollView>{ renderTickets() }</ScrollView>
 
-      {/* Bottom Sheet */}
+      {/* Bottom Sheet */ }
       <BottomSheet
-        ref={sheetRef}
-        snapPoints={['60%']} // Đặt các điểm snap
-        index={-1} // Ẩn BottomSheet khi khởi động
-        onClose={() => setIsSheetOpen(false)}
-        backdropComponent={renderBackdrop} // Nền để nhấn ra ngoài đóng BottomSheet
+        ref={ sheetRef }
+        snapPoints={ ['60%'] }
+        index={ -1 }
+        onClose={ () => setIsSheetOpen(false) }
+        backdropComponent={ renderBackdrop }
       >
-        {renderBottomSheetContent()}
+        { renderBottomSheetContent() }
       </BottomSheet>
     </SafeAreaView>
   );
@@ -252,6 +217,9 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: '#fff',
   },
+  ticketWrapper: {
+    marginBottom: 15,
+  },
   ticketContainer: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -265,19 +233,14 @@ const styles = StyleSheet.create({
     elevation: 2,
     alignItems: 'center',
   },
-  ticketContainer1: {
+  ticketActions: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    margin: 10,
+    marginHorizontal: 10,
     padding: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
     alignItems: 'center',
-    marginTop:-23,
-    borderEndEndRadius:10,
-    borderStartEndRadius:10
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   image: {
     width: 80,
@@ -298,13 +261,6 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 5,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom:10,
-    marginLeft:10,
-    marginRight:10
-  },
   viewButton: {
     backgroundColor: '#fff',
     borderColor: '#A9A2A3',
@@ -314,7 +270,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flex: 1,
     marginRight: 10,
-    
   },
   cancelButton: {
     backgroundColor: '#ff3366',
@@ -325,7 +280,6 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: '#fff',
-    
     textAlign: 'center',
   },
   reviewButton: {
@@ -401,16 +355,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  buttonText:{
-    
-    color:'#000000',
+  buttonText: {
+    color: '#000000',
     textAlign: 'center',
   },
-  buttonText1:{
-    
-    color:'#FFFFFF',
+  buttonText1: {
+    color: '#FFFFFF',
     textAlign: 'center',
-  }
+  },
 });
 
 export default Category;

@@ -25,6 +25,7 @@ const EditProfileComponent = () => {
         setLoading(true);
         console.log('Gọi API UploadUsers');
         await dispatch(UploadUsers());
+      
       } catch (error) {
         console.error('Lỗi khi gọi API UploadUsers:', error);
         Alert.alert('Lỗi', 'Không thể tải thông tin người dùng.');

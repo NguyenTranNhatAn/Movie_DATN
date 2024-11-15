@@ -8,10 +8,21 @@ import { Provider } from 'react-redux';
 import { store } from './src/store/store';
 import CinemaSelect from './src/screens/Stack/CinemaSelect';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-
+import Playtime from './src/screens/Playtime';
+import Component from './src/screens/Component';
+import Payment_Screen from './src/screens/Payment_Screen';
+import TicketScreen from './src/screens/Stack/TicketScreen';
 
 function App(): React.JSX.Element {
-
+  // Cấu hình linking
+  const linking = {
+    prefixes: ['myapp://'],
+    config: {
+      screens: {
+        Seat: 'Seat',
+      },
+    },
+  };
   return (
 
 
@@ -23,7 +34,7 @@ function App(): React.JSX.Element {
           barStyle={ 'dark-content' }
           backgroundColor="rgba(255, 255, 255, 1)"
         />
-        <NavigationContainer>
+        <NavigationContainer linking={ linking }>
           <Router />
         </NavigationContainer>
         {/* <CinemaSelect navigation={undefined} route={undefined}/> */ }
@@ -34,20 +45,13 @@ function App(): React.JSX.Element {
       </SafeAreaView>
     </Provider>
 
-
-
+    //<Playtime />
+    //<Component />
+    // <Payment_Screen />
+    //<TicketScreen route={ undefined } navigation={ undefined } />
   );
 }
 
 
+
 export default gestureHandlerRootHOC(App);
-
-
-
-
-
-
-
-
-
-

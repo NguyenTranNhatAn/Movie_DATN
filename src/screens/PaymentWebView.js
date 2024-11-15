@@ -20,6 +20,7 @@ const PaymentWebView = ({ route, navigation }) => {
                 if (navState.url.includes('success')) { // Kiểm tra nếu URL có chứa 'success'
                     navigation.navigate('PaySuccess', { orderCode }); // Điều hướng về màn hình PaySuccess
                 }
+
             } }
         />
     );
