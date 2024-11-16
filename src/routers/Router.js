@@ -44,7 +44,7 @@ const MainStackNavigation = () => {
       <Stack.Screen name="Test" component={ SeatSelection } />
       <Stack.Screen name="Detail" component={ Details } />
       <Stack.Screen name="Latest" component={ Latest } />
-      <Stack.Screen name="Seat" component={ SeatSelectionn } />
+      <Stack.Screen name="Seat" component={ SeatSelectionScreen } />
       <Stack.Screen name="Combo" component={ Component } />
       <Stack.Screen name="Pay_Screen" component={ PaymentScreen } />
       <Stack.Screen name="PaymentWebView" component={ PaymentWebView } />
