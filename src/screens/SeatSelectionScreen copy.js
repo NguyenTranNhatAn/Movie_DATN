@@ -10,8 +10,9 @@ import { useNavigation } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import API_BASE_URL from './config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { current } from '@reduxjs/toolkit';
 // Component ghế được memo hóa
-const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => {
+const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType,isGeted }) => {
   let seatStyle = styles.seat; // Mặc định là ghế thường
 
   // Xác định màu sắc ghế dựa vào loại
@@ -29,6 +30,8 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
       seatStyle = styles.legendColorReserved;
       break;
     case 'P':
+      isGeted?
+      seatStyle = styles.legendColorOtherSelected:
       seatStyle = styles.legendColorSelected;
       break;
     default:
@@ -41,7 +44,8 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
       style={ [
         seatStyle,
         isMinimap && styles.minimapSeat,
-        isSelected && (isMinimap ? styles.minimapSelectedSeat : styles.selectedSeat),
+         isSelected && (isMinimap ? styles.minimapSelectedSeat : styles.selectedSeat),
+         isGeted&& (isMinimap?styles.minimapgetorder:styles.getedSeat)
       ] }
       onPress={ () => onSeatPress(seatId) }
       disabled={ isMinimap } // Không cho phép chọn ghế trong minimap
@@ -56,7 +60,9 @@ const SeatSelectionn = ({ route }) => {
   const { startTime, day, showtimeId, movieId, endTime, cinemaId } = route.params;
   // console.log(showtimeId)
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [selectByOther, setSelectByOther] = useState([]);
   const [seatMap, setSeatMap] = useState([]);
+  const [seatMapId, setSeatMapId] = useState([]);
   const [seatPrices, setSeatPrices] = useState({});
   const [originalSeatMap, setOriginalSeatMap] = useState([]);
   const [movieName, setMovieName] = useState('');
@@ -79,10 +85,15 @@ const SeatSelectionn = ({ route }) => {
   ////mở đầu
   useEffect(() => {
     // Lắng nghe sự kiện cập nhật sơ đồ ghế từ server
-    socket.on('seat_map_updated', () => {
+    socket.on('seat_map_updated', (seatMap) => {
+      if(seatMap){
+       setSeatMapId(seatMap.seatMap)
+       
+      }
+     
       loadSeatMap(); // Tự động tải lại sơ đồ ghế khi có sự thay đổi
     });
-
+    //console.log(seatMapId)
     // Lắng nghe khi ghế được chọn
     socket.on('seat_selected', ({ row, col, userId: selectedUserId }) => {
       if (userId !== selectedUserId) {
@@ -92,25 +103,28 @@ const SeatSelectionn = ({ route }) => {
             return seat;
           })
         );
+       
         setSeatMap(updatedSeatMap);
+        
       }
     });
-
-
-
-
+    
+    
+    
     // Xử lý khi có lỗi
     socket.on('error', ({ message }) => {
       Alert.alert('Error', message);
     });
-
+   
     return () => {
       socket.disconnect();
     };
-  }, [seatMap, userId]);
+  }, [seatMap, userId,seatMapId]);
 
 
+  
   useEffect(() => {
+    
     loadSeatMap(); // Chỉ gọi một lần khi component được mount
   }, []); // Truyền mảng rỗng để đảm bảo chỉ gọi một lần
   const loadUserData = async () => {
@@ -217,7 +231,7 @@ const SeatSelectionn = ({ route }) => {
 
   // In ra `seatMap` mỗi khi nó thay đổi để kiểm tra
   useEffect(() => {
-    // console.log('seatMap hiện tại:', seatMap);
+    //  console.log(' hiện tại:', seatMap);
   }, [seatMap]);
 
 
@@ -229,8 +243,10 @@ const SeatSelectionn = ({ route }) => {
   const zoomableViewRef = useRef(null);
 
   useEffect(() => {
+    
     // Lắng nghe sự kiện khi một ghế được chọn bởi người dùng khác
     socket.on('select_seat', ({ showtimeId: selectedShowtimeId, row, col, userId: selectedUserId, currentSeatUser }) => {
+   
       if (selectedShowtimeId === showtimeId) {
         if (selectedUserId !== userId) {
           // Nếu người dùng khác chọn ghế, cập nhật trạng thái seatMap mà không thêm vào selectedSeats
@@ -270,21 +286,25 @@ const SeatSelectionn = ({ route }) => {
   }, [seatMap, userId]);
 
 
-  const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
+  const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => { 
+   
     if (seatType === 'U' || seatType === '_') {
       Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
       return;
     }
 
-    if (seatType === 'P') {
-      const currentSeatUser = originalSeatMap[rowIndex][colIndex]?.userId;
-      if (currentSeatUser && currentSeatUser !== userId) {
+    if (seatType === 'P') {      
+      const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId;
+      console.log(currentSeatUser)
+      if ( currentSeatUser !== userId) {     
         Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
         return;
       }
     }
 
     const seatPrice = seatPrices[seatType] || 0;
+     
+   
 
     setSelectedSeats((prevSeats) => {
       const isSeatSelected = prevSeats.some(seat => seat.seatId === seatId);
@@ -303,6 +323,7 @@ const SeatSelectionn = ({ route }) => {
           )
         );
       } else {
+      
         // Nếu ghế chưa được chọn, chọn ghế đó
         updatedSeats = [...prevSeats, { seatId, rowIndex, colIndex, price: seatPrice }];
         socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
@@ -317,7 +338,9 @@ const SeatSelectionn = ({ route }) => {
 
       return updatedSeats;
     });
-  }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId]);
+  
+  }
+  , [seatMap, originalSeatMap, seatPrices, showtimeId, userId]);
 
 
 
@@ -386,6 +409,7 @@ const SeatSelectionn = ({ route }) => {
 
   //render ghế 
   const renderSeats = useCallback(
+    
     (isMinimap = false) => {
       if (!Array.isArray(seatMap) || seatMap.length === 0) {
         // console.log('Không có dữ liệu trong seatMap');
@@ -400,13 +424,14 @@ const SeatSelectionn = ({ route }) => {
             if (char !== '_') {
               const seatId = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`; // Ký hiệu A1, B2, ...
               // const isSelected = selectedSeats.includes(seatId);
-              const isSelected = Array.isArray(selectedSeats) && selectedSeats.includes(seatId);
-
+              const isGeted = seatMapId[rowIndex] && seatMapId[rowIndex][colIndex]?.userId !== userId &&seatMapId[rowIndex][colIndex]?.userId!=null;
+              const isSelected =isGeted?false: Array.isArray(selectedSeats) && selectedSeats.includes(seatId);
               return (
                 <Seat
                   key={ seatId }
                   seatId={ seatId }
                   isSelected={ isSelected }
+                  isGeted={isGeted}
                   onSeatPress={ () => handleSeatPress(seatId, rowIndex, colIndex, char) }
                   isMinimap={ isMinimap }
                   seatType={ char } // Truyền ký tự để xác định màu sắc ghế
@@ -607,6 +632,12 @@ const styles = StyleSheet.create({
   },
   selectedSeat: {
     backgroundColor: '#4CAF50',
+  },
+  minimapgetorder: {
+    backgroundColor: 'gray',
+  },
+  getedSeat:{
+    backgroundColor: 'gray',
   },
   minimapSelectedSeat: {
     backgroundColor: '#4CAF50',
