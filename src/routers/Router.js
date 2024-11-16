@@ -28,6 +28,7 @@ import SeatSelectionScreen from '../screens/SeatSelectionScreen';
 import Component from '../screens/Component';
 import PaymentScreen from '../screens/Payment_Screen';
 import TicketDetail from '../screens/Stack/TicketDetail';
+import SeatSelectionn from '../screens/SeatSelectionScreen copy';
 
 
 const Tab = createBottomTabNavigator();
@@ -43,7 +44,7 @@ const MainStackNavigation = () => {
       <Stack.Screen name="Test" component={ SeatSelection } />
       <Stack.Screen name="Detail" component={ Details } />
       <Stack.Screen name="Latest" component={ Latest } />
-      <Stack.Screen name="Seat" component={ SeatSelectionScreen } />
+      <Stack.Screen name="Seat" component={ SeatSelectionn } />
       <Stack.Screen name="Combo" component={ Component } />
       <Stack.Screen name="Pay_Screen" component={ PaymentScreen } />
       <Stack.Screen name="PaymentWebView" component={ PaymentWebView } />

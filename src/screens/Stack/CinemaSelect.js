@@ -205,7 +205,7 @@ const CinemaSelect = ({ navigation, route }) => {
     const endTime=formatTime(item1.endTime)
     const day=new Date(item1.startTime)
     const cinemaId= item.cinema._id
-    console.log(cinemaId)          
+    // console.log(cinemaId)          
     const date =`${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`;
    
    
