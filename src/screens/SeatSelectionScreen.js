@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import API_BASE_URL from './config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useDebounce from '../hook/useDebounce';
 // Component ghế được memo hóa
 const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => {
   let seatStyle = styles.seat; // Mặc định là ghế thường
@@ -268,7 +269,22 @@ const SeatSelectionScreen = ({ route }) => {
       socket.off('deselect_seat');
     };
   }, [seatMap, userId]);
+  useEffect(() => {
+    // Lắng nghe sự kiện khi ghế được chọn bởi người dùng khác
+    socket.on('error', ({ message, currentSeatUser }) => {
+      console.log('User ID server:', currentSeatUser);
+    });
 
+    return () => {
+      socket.off('error');
+    };
+  }, []);
+
+  // Debounce cho handleSeatPress
+  const debouncedSeatPress = useDebounce((seatId, rowIndex, colIndex, seatType) => {
+
+    handleSeatPress(seatId, rowIndex, colIndex, seatType);
+  }, 50);
 
   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
     if (seatType === 'U' || seatType === '_') {
@@ -278,6 +294,7 @@ const SeatSelectionScreen = ({ route }) => {
 
     if (seatType === 'P') {
       const currentSeatUser = originalSeatMap[rowIndex][colIndex]?.userId;
+      console.log(currentSeatUser);
       if (currentSeatUser && currentSeatUser !== userId) {
         Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
         return;
@@ -317,7 +334,7 @@ const SeatSelectionScreen = ({ route }) => {
 
       return updatedSeats;
     });
-  }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId]);
+  }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
 
 
 
@@ -408,19 +425,20 @@ const SeatSelectionScreen = ({ route }) => {
   */
   const [totalPrice, setTotalPrice] = useState(0);
   const [seatCount, setSeatCount] = useState(0);
-
   useEffect(() => {
-    // Tính lại tổng giá tiền
+    // Calculate total price
     const newTotalPrice = Array.isArray(selectedSeats)
       ? selectedSeats.reduce((sum, seat) => sum + seat.price, 0)
       : 0;
 
-    // Chỉ cập nhật số ghế khi tổng giá tiền thay đổi
-    if (newTotalPrice !== totalPrice) {
-      setTotalPrice(newTotalPrice);
-      setSeatCount(selectedSeats.length);
-    }
-  }, [selectedSeats, totalPrice]);
+    // Update total price
+    setTotalPrice(newTotalPrice);
+
+    // Calculate seat count based on total price
+    const averageSeatPrice = Object.values(seatPrices).reduce((sum, price) => sum + price, 0) / Object.values(seatPrices).length;
+    const estimatedSeatCount = Math.round(newTotalPrice / averageSeatPrice);
+    setSeatCount(estimatedSeatCount);
+  }, [selectedSeats, seatPrices]);
 
   //render ghế 
   const renderSeats = useCallback(
@@ -436,7 +454,7 @@ const SeatSelectionScreen = ({ route }) => {
         if (row.length > 0) {
           const seatRow = row.map((char, colIndex) => {
             if (char !== '_') {
-              const seatId = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`; // Ký hiệu A1, B2, ...
+              const seatId = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1} `; // Ký hiệu A1, B2, ...
               // const isSelected = selectedSeats.includes(seatId);
               const isSelected = Array.isArray(selectedSeats) && selectedSeats.includes(seatId);
 
@@ -446,6 +464,7 @@ const SeatSelectionScreen = ({ route }) => {
                   seatId={ seatId }
                   isSelected={ isSelected }
                   onSeatPress={ () => handleSeatPress(seatId, rowIndex, colIndex, char) }
+
                   isMinimap={ isMinimap }
                   seatType={ char } // Truyền ký tự để xác định màu sắc ghế
                 />
@@ -455,7 +474,7 @@ const SeatSelectionScreen = ({ route }) => {
           });
 
           return (
-            <View key={ `row-${rowIndex}` } style={ styles.seatRow }>
+            <View key={ `row - ${rowIndex} ` } style={ styles.seatRow }>
               { seatRow }
             </View>
           );
