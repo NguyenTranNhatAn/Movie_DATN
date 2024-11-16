@@ -83,7 +83,11 @@ const SeatSelectionn = ({ route }) => {
   // láy ra userID
   //
   ////mở đầu
+  useEffect(()=>{
+    socket.emit('send_showtime', { showtimeId }); 
+  },[])
   useEffect(() => {
+   
     // Lắng nghe sự kiện cập nhật sơ đồ ghế từ server
     socket.on('seat_map_updated', (seatMap) => {
       if(seatMap){
@@ -295,6 +299,7 @@ const SeatSelectionn = ({ route }) => {
 
     if (seatType === 'P') {      
       const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId;
+      console.log(currentSeatUser)
       console.log(currentSeatUser)
       if ( currentSeatUser !== userId) {     
         Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
