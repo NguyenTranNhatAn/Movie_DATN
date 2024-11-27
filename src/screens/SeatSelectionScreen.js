@@ -98,6 +98,7 @@ const SeatSelectionScreen = ({ route }) => {
   };
   // Hàm kiểm tra trạng thái ghế đã lưu và reset
   const resetSeatsState = async () => {
+    /*
     try {
       // Lấy trạng thái ghế đã lưu từ AsyncStorage
       const storedSeats = await AsyncStorage.getItem('selectedSeats');
@@ -134,6 +135,7 @@ const SeatSelectionScreen = ({ route }) => {
     } catch (error) {
       console.error('Lỗi khi kiểm tra và reset trạng thái ghế: ', error);
     }
+      */
   };
 
 
@@ -338,7 +340,7 @@ const SeatSelectionScreen = ({ route }) => {
     }
   };
   useEffect(() => {
-    if (reset ) {
+    if (reset) {
       console.log("Reset ghế khi vào màn hình Seat");
       resetSeatsState(); // Chỉ reset khi seat map đã được tải
     }
