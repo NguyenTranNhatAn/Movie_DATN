@@ -20,7 +20,7 @@ const Details = ({ route, navigation }) => {
     const getUserInfo = async () => {
       if (token) {
         try {
-          const response = await axios.get('https://be-movie-sooty.vercel.app/api/user-info', {
+          const response = await axios.get('http://103.130.213.92:3006/api/user-info', {
             headers: { Authorization: `Bearer ${token}` },
           });
         
@@ -48,7 +48,7 @@ const Details = ({ route, navigation }) => {
     try {
      
       const response = await axios.get(
-        `https://be-movie-sooty.vercel.app/movie/addWishList?movieId=${item._id}`, 
+        `http://103.130.213.92:3006/movie/addWishList?movieId=${item._id}`, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

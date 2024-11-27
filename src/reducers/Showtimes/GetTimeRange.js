@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const GetTime = createAsyncThunk('gettime', async data => {
-  const response = await fetch('https://be-movie-sooty.vercel.app/showtime/getFilterTime?movieId='+data.movieId+'&day='+data.day);
+  const response = await fetch('http://103.130.213.92:3006/showtime/getFilterTime?movieId='+data.movieId+'&day='+data.day);
  
   if (!response.ok) {
     throw new Error('Failed1');

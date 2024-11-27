@@ -13,7 +13,7 @@ export const EditProfile = createAsyncThunk(
       }
 
       const response = await axios.post(
-        'https://be-movie-sooty.vercel.app/api/edit-profile',
+        'http://103.130.213.92:3006/api/edit-profile',
         { name, phone, address, email },
         {
           headers: {

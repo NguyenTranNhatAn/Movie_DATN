@@ -15,7 +15,7 @@ export const UploadUsers = createAsyncThunk(
 
       // Gọi API với token trong header Authorization
       const response = await axios.get(
-        'https://be-movie-sooty.vercel.app/api/user-info',
+        'http://103.130.213.92:3006/api/user-info',
         {
           headers: {
             'Content-Type': 'application/json',

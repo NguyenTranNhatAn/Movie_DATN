@@ -277,7 +277,7 @@ const Playtime = () => {
             try {
                 //192.168.1.28
                 //const response = await fetch('http://10.0.2.2:3000/api/playtimes/670ad1a7320f37a6308bc5a2');
-                const response = await fetch('https://be-movie-sooty.vercel.app/api/playtimes/670ad1a7320f37a6308bc5a2');
+                const response = await fetch('http://103.130.213.92:3006/api/playtimes/670ad1a7320f37a6308bc5a2');
                 const result = await response.json();
                 console.log(result);
                 setCinemaData(result);

@@ -139,7 +139,7 @@ const SeatSelectionn = ({ route }) => {
 
       if (storedToken) {
         // Gọi API để lấy userId từ token
-        const response = await fetch(`https://be-movie-sooty.vercel.app/api/user-info`, {
+        const response = await fetch(`http://103.130.213.92:3006/api/user-info`, {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 
