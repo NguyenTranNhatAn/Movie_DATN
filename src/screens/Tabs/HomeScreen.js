@@ -72,7 +72,7 @@ const HomeScreen = (props) => {
         },[dispatch,movieData,genreData])
     const renderComingSoon = ({ item }) => {
         return (
-            <TouchableOpacity  onPress={()=> navigation.navigate('Detail', { item })} style={{ width: 173, paddingHorizontal: 10, alignItems: 'flex-start' }}>
+            <TouchableOpacity  onPress={()=> navigation.navigate('Detail', { item, viewOnly: true })} style={{ width: 173, paddingHorizontal: 10, alignItems: 'flex-start' }}>
                 <Image style={{ width: '100%',height:244,  borderRadius: 16 }} source={{ uri: item.images[0] }} />
             <Text  style={[styles.nameMovie,{textAlign:'left'}]}>
                 {item.name}
