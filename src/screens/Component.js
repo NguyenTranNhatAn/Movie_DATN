@@ -18,6 +18,7 @@ const Component = ({ route }) => {
   const [combos, setCombos] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   // /https://c24f-171-252-189-233.ngrok-free.app
   useEffect(() => {
@@ -26,9 +27,11 @@ const Component = ({ route }) => {
 
   const fetchCombos = async () => {
     try {
+      setIsLoading(true); // Bắt đầu loading
       const response = await fetch(`${API_BASE_URL}/combo/getAll`);
       const data = await response.json();
       setCombos(data);
+
       const initialQuantities = data.reduce((acc, combo) => {
         acc[combo._id] = combo.quantity;
         return acc;
@@ -37,8 +40,11 @@ const Component = ({ route }) => {
       calculateTotalPrice(initialQuantities, data);
     } catch (error) {
       console.error('Error fetching combos:', error);
+    } finally {
+      setIsLoading(false); // Kết thúc loading
     }
   };
+
 
   const calculateTotalPrice = (updatedQuantities, comboData = combos) => {
     let total = 0;
@@ -113,56 +119,69 @@ const Component = ({ route }) => {
         </View>
       </View>
 
-      {/* Banner */ }
-      <View style={ styles.banner }>
-        <Text style={ styles.bannerText }>
-          Áp dụng giá Lễ, Tết cho một số sản phẩm bắp nước đối với các giao dịch có suất chiếu vào ngày Lễ, Tết
-        </Text>
-      </View>
-
-      {/* Combo List */ }
-      <ScrollView style={ styles.content } showsVerticalScrollIndicator={ false }>
-        { combos.map((combo) => (
-          <View key={ combo._id } style={ styles.comboItem }>
-            <View style={ styles.comboContent }>
-              <Image
-                source={ { uri: combo.image } }
-                style={ styles.comboImage }
-              />
-              <View style={ styles.comboInfo }>
-                <Text style={ styles.comboName }>{ combo.name }</Text>
-                <Text style={ styles.comboPrice }>{ combo.price }</Text>
-                <Text style={ styles.comboDescription }>{ combo.description }</Text>
-                <Text style={ styles.comboNote }>{ combo.note }</Text>
-              </View>
-            </View>
-            <View style={ styles.quantityControl }>
-              <TouchableOpacity
-                style={ styles.quantityButton }
-                onPress={ () => decreaseQuantity(combo._id) }
-              >
-                <Text style={ styles.quantityButtonText }>-</Text>
-              </TouchableOpacity>
-              <Text style={ styles.quantityText }>
-                { quantities[combo._id] || 0 }
-              </Text>
-              <TouchableOpacity
-                style={ styles.quantityButton }
-                onPress={ () => increaseQuantity(combo._id) }
-              >
-                <Text style={ styles.quantityButtonText }>+</Text>
-              </TouchableOpacity>
-            </View>
+      {/* Hiển thị Loading */ }
+      { isLoading ? (
+        <View style={ styles.loadingContainer }>
+          <Text style={ styles.loadingText }>Đang tải dữ liệu...</Text>
+          <Image
+            style={ styles.loadingImage }
+            source={ require('../assets/image/loading.gif') } // Thay bằng hình GIF loading của bạn
+          />
+        </View>
+      ) : (
+        <>
+          {/* Banner */ }
+          <View style={ styles.banner }>
+            <Text style={ styles.bannerText }>
+              Áp dụng giá Lễ, Tết cho một số sản phẩm bắp nước đối với các giao dịch có suất chiếu vào ngày Lễ, Tết
+            </Text>
           </View>
-        )) }
-      </ScrollView>
+
+          {/* Combo List */ }
+          <ScrollView style={ styles.content } showsVerticalScrollIndicator={ false }>
+            { combos.map((combo) => (
+              <View key={ combo._id } style={ styles.comboItem }>
+                <View style={ styles.comboContent }>
+                  <Image
+                    source={ { uri: combo.image } }
+                    style={ styles.comboImage }
+                  />
+                  <View style={ styles.comboInfo }>
+                    <Text style={ styles.comboName }>{ combo.name }</Text>
+                    <Text style={ styles.comboPrice }>{ combo.price }</Text>
+                    <Text style={ styles.comboDescription }>{ combo.description }</Text>
+                    <Text style={ styles.comboNote }>{ combo.note }</Text>
+                  </View>
+                </View>
+                <View style={ styles.quantityControl }>
+                  <TouchableOpacity
+                    style={ styles.quantityButton }
+                    onPress={ () => decreaseQuantity(combo._id) }
+                  >
+                    <Text style={ styles.quantityButtonText }>-</Text>
+                  </TouchableOpacity>
+                  <Text style={ styles.quantityText }>
+                    { quantities[combo._id] || 0 }
+                  </Text>
+                  <TouchableOpacity
+                    style={ styles.quantityButton }
+                    onPress={ () => increaseQuantity(combo._id) }
+                  >
+                    <Text style={ styles.quantityButtonText }>+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )) }
+          </ScrollView>
+        </>
+      ) }
 
       {/* Footer */ }
       <View style={ styles.footer }>
         <View style={ styles.ticketInfo }>
           <Text style={ styles.ticketTitle }>MẬT MÃ ĐỎ</Text>
           <Text style={ styles.ticketSubtitle }>2D Phụ Đề Việt | Rạp STARIUM</Text>
-          <Text style={ styles.ticketPrice }>{ totalPrice }</Text>
+          <Text style={ styles.ticketPrice }>{ totalPrice }+{ bookingData.amount }đ+{ bookingData.seats.length }ghế</Text>
         </View>
         <TouchableOpacity style={ styles.checkoutButton } onPress={ handlePay }>
           <Text style={ styles.checkoutButtonText }>THANH TOÁN</Text>
@@ -176,6 +195,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 10,
+  },
+  loadingImage: {
+    width: 50,
+    height: 50,
   },
   header: {
     flexDirection: 'row',

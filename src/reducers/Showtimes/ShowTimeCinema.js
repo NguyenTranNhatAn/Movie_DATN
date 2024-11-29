@@ -3,15 +3,15 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 export const ShowCine = createAsyncThunk('showcine', async data => {
   var response;
   if (data.brandId == undefined) {
-    response = await fetch('http://103.130.213.92:3006/showtime/getCinemaMain?movieId=' + data.movieId + '&day=' + data.day + '&startHour=' + data.startHour + '&endHour=' + data.endHour);
-    // console.log('run3')
+    response = await fetch('https://be-movie-sooty.vercel.app/showtime/getCinemaMain?movieId=' + data.movieId + '&day=' + data.day + '&startHour=' + data.startHour + '&endHour=' + data.endHour);
+    console.log('run3')
   }
   else {
-    response = await fetch('http://103.130.213.92:3006/showtime/getCinemaMain?movieId=' + data.movieId + '&day=' + data.day + '&startHour=' + data.startHour + '&endHour=' + data.endHour + '&brandId=' + data.brandId);
-// console.log('run4')
+    response = await fetch('https://be-movie-sooty.vercel.app/showtime/getCinemaMain?movieId=' + data.movieId + '&day=' + data.day + '&startHour=' + data.startHour + '&endHour=' + data.endHour + '&brandId=' + data.brandId);
+    console.log('run4')
   }
   if (!response.ok) {
-    throw new Error('Failed2');
+    throw new Error('Failed');
   }
   return await response.json();
 });
