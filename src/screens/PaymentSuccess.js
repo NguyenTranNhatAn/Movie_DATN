@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import API_BASE_URL from '../screens/config';
-const PaymentSuccess = ({ route }) => {
+const PaymentSuccess = ({navigation, route }) => {
     const { orderCode } = route.params;
 
     useEffect(() => {

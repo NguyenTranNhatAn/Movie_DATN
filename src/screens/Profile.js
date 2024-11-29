@@ -7,7 +7,7 @@ import TicketIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Privacy from 'react-native-vector-icons/MaterialIcons';
 import Terms from 'react-native-vector-icons/MaterialIcons';
 import Logout from 'react-native-vector-icons/AntDesign';
-const Profile = () => {
+const Profilef = () => {
     handleLogout = () => {
         console.log("User logged out");
     }
@@ -171,4 +171,4 @@ const styles = StyleSheet.create({
     }
 
 });
-export default Profile
+export default Profilef

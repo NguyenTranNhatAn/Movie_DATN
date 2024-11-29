@@ -28,6 +28,7 @@ import SeatSelectionScreen from '../screens/SeatSelectionScreen';
 import Component from '../screens/Component';
 import PaymentScreen from '../screens/Payment_Screen';
 import TicketDetail from '../screens/Stack/TicketDetail';
+import Profilef from '../screens/Profile';
 
 
 const Tab = createBottomTabNavigator();
@@ -99,7 +100,7 @@ const TabArr = [
     label: 'Profile',
     focusedImage: require('../../assets/image/user-square-f.png'),
     unfocusedImage: require('../../assets/image/user-square.png'),
-    component: Profile,
+    component: Profilef,
     color: "#FF515A",
   },
 ];
