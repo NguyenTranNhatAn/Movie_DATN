@@ -9,6 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useDebounce from '../hook/useDebounce';
 import API_BASE_URL from './config';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 // Component ghế được memo hóa
 const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => {
@@ -37,24 +39,26 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
 
   return (
     <TouchableOpacity
-      key={seatId}
-      style={[
+      key={ seatId }
+      style={ [
         seatStyle,
         isMinimap && styles.minimapSeat,
         isSelected && (isMinimap ? styles.minimapSelectedSeat : styles.selectedSeat),
-      ]}
-      onPress={() => onSeatPress(seatId)}
-      disabled={isMinimap} // Không cho phép chọn ghế trong minimap
+      ] }
+      onPress={ () => onSeatPress(seatId) }
+      disabled={ isMinimap } // Không cho phép chọn ghế trong minimap
     >
-      {!isMinimap && <Text style={styles.seatText}>{seatId}</Text>}
+      { !isMinimap && <Text style={ styles.seatText }>{ seatId }</Text> }
     </TouchableOpacity>
   );
 });
 
 const SeatSelectionScreen = ({ route }) => {
-  const { startTime, day, showtimeId, movieId, endTime, cinemaId } = route.params;
+
+  const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset } = route.params;
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [seatMap, setSeatMap] = useState([]);
+  const [seatMapId, setSeatMapId] = useState([]);
   const [seatPrices, setSeatPrices] = useState({});
   const [originalSeatMap, setOriginalSeatMap] = useState([]);
   const [movieName, setMovieName] = useState('');
@@ -75,13 +79,115 @@ const SeatSelectionScreen = ({ route }) => {
   const socket = io(`${API_BASE_URL}`);
   const zoomableViewRef = useRef(null);
 
+
+
+
+
+
+
+  //reset ghế
+  // Hàm lưu trạng thái ghế vào AsyncStorage
+  const saveSeatState = async () => {
+    try {
+      const seatsData = JSON.stringify(selectedSeats);
+      await AsyncStorage.setItem('selectedSeats', seatsData);
+      console.log('Trạng thái ghế đã được lưu:', selectedSeats);
+    } catch (error) {
+      console.error('Lỗi khi lưu trạng thái ghế:', error);
+    }
+  };
+  // Hàm kiểm tra trạng thái ghế đã lưu và reset
+  const resetSeatsState = async () => {
+    /*
+    try {
+      // Lấy trạng thái ghế đã lưu từ AsyncStorage
+      const storedSeats = await AsyncStorage.getItem('selectedSeats');
+      if (storedSeats !== null) {
+        const selectedSeats = JSON.parse(storedSeats);
+        console.log('Trạng thái ghế đã lưu: ', selectedSeats);
+
+        // Tạo bản sao của seatMap từ originalSeatMap để reset
+        const updatedSeatMap = _.cloneDeep(originalSeatMap);
+
+        // Gửi socket để bỏ chọn các ghế đã chọn
+        selectedSeats.forEach(seat => {
+          const { rowIndex, colIndex } = seat;
+          if (updatedSeatMap[rowIndex] && updatedSeatMap[rowIndex][colIndex] !== '_') {
+            updatedSeatMap[rowIndex][colIndex] = '_';
+            console.log(`Reset ghế tại hàng ${rowIndex}, cột ${colIndex}`);
+          }
+
+          socket.emit('deselect_seat', {
+            showtimeId,
+            row: rowIndex,
+            col: colIndex,
+            userId,
+          });
+        });
+
+        // Cập nhật state
+        setSeatMap(updatedSeatMap);
+        setSelectedSeats([]);
+        console.log("Đã reset trạng thái ghế về ban đầu:", updatedSeatMap);
+      } else {
+        console.log("Không có trạng thái ghế nào đã lưu.");
+      }
+    } catch (error) {
+      console.error('Lỗi khi kiểm tra và reset trạng thái ghế: ', error);
+    }
+      */
+  };
+
+
+
   useEffect(() => {
+    // Kiểm tra tham số reset và gọi hàm resetSeatsState nếu cần
+    if (reset) {
+      console.log("Reset ghế khi vào màn hình Seat");
+      resetSeatsState(); // Gọi hàm reset ghế
+    }
+  }, [reset]); // Chạy lại mỗi khi tham số reset thay đổi
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (reset) {
+        console.log("Reset ghế khi quay lại màn hình Seat");
+        resetSeatsState();
+      }
+    }, [reset])
+  );
+  /// reset ghế
+
+
+
+  useEffect(() => {
+
+
+
     loadUserData();
     loadSeatMap();
 
-    socket.on('seat_map_updated', () => {
+
+    socket.on('seat_map_updated', ({ seatMap }) => {
+      // Chuyển đổi seatMap từ server thành dữ liệu sử dụng tại client
+      const newSeatMapId = seatMap.map((row) =>
+        row.map((seat) => ({
+          userId: seat.userId, // ID người dùng giữ ghế
+          status: seat.status, // Trạng thái ghế (T, V, D, P, U)
+        }))
+      );
+
+      // Lưu thông tin seatMapId vào state
+      setSeatMapId(newSeatMapId);
+
+      // Cập nhật sơ đồ ghế hiển thị
+      setSeatMap(seatMap.map((row) => row.map((seat) => seat.status)));
       loadSeatMap();
     });
+
+
+
+
 
     socket.on('seat_selected', ({ row, col, userId: selectedUserId }) => {
       if (userId !== selectedUserId) {
@@ -104,6 +210,55 @@ const SeatSelectionScreen = ({ route }) => {
     };
   }, []);
 
+
+
+
+  useEffect(() => {
+    // Lắng nghe socket chỉ một lần khi component mount
+    socket.on('seat_map_updated', ({ seatMap }) => {
+      const newSeatMapId = seatMap.map((row) =>
+        row.map((seat) => ({
+          userId: seat.userId, // ID người dùng giữ ghế
+          status: seat.status, // Trạng thái ghế
+        }))
+      );
+
+      setSeatMapId(newSeatMapId);
+      setSeatMap(seatMap.map((row) => row.map((seat) => seat.status)));
+    });
+
+    socket.on('seat_selected', ({ row, col, userId: selectedUserId }) => {
+      if (userId !== selectedUserId) {
+        setSeatMap((prevMap) =>
+          prevMap.map((rowSeats, rowIndex) =>
+            rowSeats.map((seat, colIndex) =>
+              rowIndex === row && colIndex === col ? 'P' : seat
+            )
+          )
+        );
+      }
+    });
+
+    socket.on('error', ({ message }) => {
+      Alert.alert('Error', message);
+    });
+
+    return () => {
+      // Ngắt kết nối socket khi component unmount
+      socket.disconnect();
+    };
+  }, []); // Lắng nghe chỉ một lần
+
+
+
+
+
+
+
+
+
+
+
   const loadUserData = async () => {
     try {
       const storedToken = await AsyncStorage.getItem('token');
@@ -124,6 +279,8 @@ const SeatSelectionScreen = ({ route }) => {
       Alert.alert("Error", "Không thể lấy thông tin người dùng.");
     }
   };
+
+
 
   const loadSeatMap = async () => {
     setIsLoading(true);
@@ -170,6 +327,7 @@ const SeatSelectionScreen = ({ route }) => {
       if (data.Room_Shape) {
         const rows = data.Room_Shape.split('/').map(row => row.split(''));
         setSeatMap(rows);
+        console.log("Ghế hiện tại:", seatMap);
         setOriginalSeatMap(_.cloneDeep(rows));
       } else {
         Alert.alert('Error', 'Không tìm thấy layout ghế');
@@ -181,6 +339,36 @@ const SeatSelectionScreen = ({ route }) => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    if (reset) {
+      console.log("Reset ghế khi vào màn hình Seat");
+      resetSeatsState(); // Chỉ reset khi seat map đã được tải
+    }
+  }, [reset]);
+  useEffect(() => {
+    // Gọi hàm cập nhật seatMap
+    console.log("Ghế hiện tại sau khi cập nhật123:", seatMap);
+
+  }, [seatMap]); // Gây vòng lặp vô hạn vì loadSeatMap cập nhật seatMap
+
+
+
+  // Gọi API để tải sơ đồ ghế khi màn hình được mở
+  useEffect(() => {
+    loadSeatMap();
+  }, []);
+
+
+
+
+
+
+  // Gọi API để tải `seatMap` khi màn hình được mở
+  useEffect(() => {
+    loadSeatMap();
+  }, []);
+
+
 
   useEffect(() => {
     const newTotalPrice = Array.isArray(selectedSeats)
@@ -194,6 +382,14 @@ const SeatSelectionScreen = ({ route }) => {
     setSeatCount(estimatedSeatCount);
   }, [selectedSeats, seatPrices]);
 
+
+
+
+
+
+
+
+
   const debouncedSeatPress = useDebounce((seatId, rowIndex, colIndex, seatType) => {
     handleSeatPress(seatId, rowIndex, colIndex, seatType);
   }, 50);
@@ -205,12 +401,15 @@ const SeatSelectionScreen = ({ route }) => {
     }
 
     if (seatType === 'P') {
-      const currentSeatUser = originalSeatMap[rowIndex][colIndex]?.userId;
-      if ( currentSeatUser !== userId) {
+      const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
+      console.log('User giữ ghế:', currentSeatUser);
+
+      if (currentSeatUser && currentSeatUser !== userId) {
         Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
         return;
       }
     }
+
 
     const seatPrice = seatPrices[seatType] || 0;
 
@@ -245,6 +444,8 @@ const SeatSelectionScreen = ({ route }) => {
     });
   }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
 
+
+
   const handleBook = async () => {
     if (selectedSeats.length === 0) {
       Alert.alert('Thông báo', 'Vui lòng chọn ít nhất một ghế.');
@@ -268,18 +469,98 @@ const SeatSelectionScreen = ({ route }) => {
       movieId: movieId,
       amount: totalPrice,
       description: `Thanh toán vé phim`,
-      returnUrl: 'myapp://home',
-      cancelUrl: 'myapp://Seat'
+      returnUrl: 'myapp://home123',
+      cancelUrl: 'myapp://home123'
     };
+    /*
     navigation.navigate('Combo', {
+      
       bookingData: bookingData,
     });
+    */
+    try {
+      // Lưu trạng thái ghế trước khi chuyển màn hình
+      await saveSeatState();
+
+      // Chuyển màn hình
+      navigation.navigate('Combo', {
+        bookingData: bookingData,
+      });
+    } catch (error) {
+      console.error('Lỗi khi lưu trạng thái hoặc điều hướng:', error);
+    }
   };
 
+
+  // goBack
+  /*
+  const handleGoBack = () => {
+    Alert.alert(
+      'Thoát màn hình',
+      'Bạn có chắc chắn muốn thoát? Các lựa chọn ghế của bạn sẽ bị mất.',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        {
+          text: 'Thoát',
+          onPress: () => {
+            // Reset trạng thái
+            selectedSeats.forEach(seat => {
+              socket.emit('deselect_seat', {
+                showtimeId,
+                row: seat.rowIndex,
+                col: seat.colIndex,
+                userId,
+              });
+            });
+            setSelectedSeats([]);
+            setSeatMap(_.cloneDeep(originalSeatMap));
+  
+            // Điều hướng quay lại
+            navigation.goBack();
+          },
+        },
+      ]
+    );
+  };
+  */
+  const handleGoBack = () => {
+    Alert.alert(
+      'Thoát màn hình',
+      'Bạn có chắc chắn muốn thoát? Các lựa chọn ghế của bạn sẽ bị mất.',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        {
+          text: 'Thoát',
+          onPress: async () => {
+            await saveSeatState();
+
+            // Gửi yêu cầu qua socket để bỏ chọn các ghế
+            selectedSeats.forEach(seat => {
+              socket.emit('deselect_seat', {
+                showtimeId,
+                row: seat.rowIndex,
+                col: seat.colIndex,
+                userId,
+              });
+            });
+
+            // Reset trạng thái local
+            setSelectedSeats([]);
+            setSeatMap(_.cloneDeep(originalSeatMap));
+
+            navigation.goBack();
+          },
+        },
+      ]
+    );
+  };
+
+
+  //goBack
   const renderSeats = useCallback(
     (isMinimap = false) => {
       if (!Array.isArray(seatMap) || seatMap.length === 0) {
-        return <Text style={{ color: 'white' }}>Đang tải dữ liệu ghế...</Text>;
+        return <Text style={ { color: 'white' } }>Đang tải dữ liệu ghế...</Text>;
       }
 
       const seats = seatMap.map((row, rowIndex) => {
@@ -291,12 +572,12 @@ const SeatSelectionScreen = ({ route }) => {
 
               return (
                 <Seat
-                  key={seatId}
-                  seatId={seatId}
-                  isSelected={isSelected}
-                  onSeatPress={() => handleSeatPress(seatId, rowIndex, colIndex, char)}
-                  isMinimap={isMinimap}
-                  seatType={char}
+                  key={ seatId }
+                  seatId={ seatId }
+                  isSelected={ isSelected }
+                  onSeatPress={ () => handleSeatPress(seatId, rowIndex, colIndex, char) }
+                  isMinimap={ isMinimap }
+                  seatType={ char }
                 />
               );
             }
@@ -304,8 +585,8 @@ const SeatSelectionScreen = ({ route }) => {
           });
 
           return (
-            <View key={`row-${rowIndex}`} style={styles.seatRow}>
-              {seatRow}
+            <View key={ `row-${rowIndex}` } style={ styles.seatRow }>
+              { seatRow }
             </View>
           );
         }
@@ -339,47 +620,47 @@ const SeatSelectionScreen = ({ route }) => {
   const viewportHeight = Math.min((screenHeight * minimapScale) / zoomLevel, minimapHeight);
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <View style={styles.header}>
+    <GestureHandlerRootView style={ styles.container }>
+      <View style={ styles.header }>
         <TouchableOpacity>
-          <Ionicons name="arrow-back" size={24} color="red" style={styles.backButton} />
+          <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } onPress={ handleGoBack } />
         </TouchableOpacity>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerText}>{cinemaName}</Text>
-          <Text style={styles.showTimeTextHeader}>{roomName}, {formattedDay}, {formattedStartTime}~{formattedEndTime}</Text>
+        <View style={ styles.headerTitleContainer }>
+          <Text style={ styles.headerText }>{ cinemaName }</Text>
+          <Text style={ styles.showTimeTextHeader }>{ roomName }, { formattedDay }, { formattedStartTime }~{ formattedEndTime }</Text>
         </View>
         <TouchableOpacity>
-          <Ionicons name="menu" size={24} color="red" style={styles.menuButton} />
+          <Ionicons name="menu" size={ 24 } color="red" style={ styles.menuButton } />
         </TouchableOpacity>
       </View>
 
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
+      { isLoading ? (
+        <View style={ styles.loadingContainer }>
           <ActivityIndicator size="large" color="#0000ff" />
-          <Text style={styles.loadingText}>Đang cập nhật sơ đồ ghế...</Text>
+          <Text style={ styles.loadingText }>Đang cập nhật sơ đồ ghế...</Text>
         </View>
       ) : (
         <ReactNativeZoomableView
-          ref={zoomableViewRef}
-          maxZoom={4.0}
-          minZoom={0.5}
-          zoomStep={0.5}
-          initialZoom={1}
-          bindToBorders={true}
-          onZoomAfter={handleZoomAfter}
-          style={styles.zoomableView}
+          ref={ zoomableViewRef }
+          maxZoom={ 4.0 }
+          minZoom={ 0.5 }
+          zoomStep={ 0.5 }
+          initialZoom={ 1 }
+          bindToBorders={ true }
+          onZoomAfter={ handleZoomAfter }
+          style={ styles.zoomableView }
         >
-          <View style={styles.seatMap}>{renderSeats()}</View>
+          <View style={ styles.seatMap }>{ renderSeats() }</View>
         </ReactNativeZoomableView>
-      )}
+      ) }
 
-      <View style={styles.minimapContainer}>
-        <View style={[styles.minimap, { width: minimapWidth, height: minimapHeight }]}>
-          <View style={[styles.seatMap, { transform: [{ scale: minimapScale }] }]}>
-            {renderSeats(true)}
+      <View style={ styles.minimapContainer }>
+        <View style={ [styles.minimap, { width: minimapWidth, height: minimapHeight }] }>
+          <View style={ [styles.seatMap, { transform: [{ scale: minimapScale }] }] }>
+            { renderSeats(true) }
           </View>
           <View
-            style={[
+            style={ [
               styles.minimapViewport,
               {
                 width: viewportWidth,
@@ -389,41 +670,41 @@ const SeatSelectionScreen = ({ route }) => {
                   { translateY: -viewPosition.y * minimapScale },
                 ],
               },
-            ]}
+            ] }
           />
         </View>
       </View>
 
-      <View style={styles.legendContainer}>
-        <View style={styles.legendItem}>
-          <View style={styles.legendColorSelected} />
-          <Text style={styles.legendText}>Đang chọn</Text>
+      <View style={ styles.legendContainer }>
+        <View style={ styles.legendItem }>
+          <View style={ styles.legendColorSelected } />
+          <Text style={ styles.legendText }>Đang chọn</Text>
         </View>
-        <View style={styles.legendItem}>
-          <View style={styles.legendColorReserved} />
-          <Text style={styles.legendText}>Đã đặt</Text>
+        <View style={ styles.legendItem }>
+          <View style={ styles.legendColorReserved } />
+          <Text style={ styles.legendText }>Đã đặt</Text>
         </View>
-        <View style={styles.legendItem}>
-          <View style={styles.legendColorStandard} />
-          <Text style={styles.legendText}>Thường</Text>
+        <View style={ styles.legendItem }>
+          <View style={ styles.legendColorStandard } />
+          <Text style={ styles.legendText }>Thường</Text>
         </View>
-        <View style={styles.legendItem}>
-          <View style={styles.legendColorVIP} />
-          <Text style={styles.legendText}>VIP</Text>
+        <View style={ styles.legendItem }>
+          <View style={ styles.legendColorVIP } />
+          <Text style={ styles.legendText }>VIP</Text>
         </View>
-        <View style={styles.legendItem}>
-          <View style={styles.legendColorSweetBox} />
-          <Text style={styles.legendText}>Sweet Box</Text>
+        <View style={ styles.legendItem }>
+          <View style={ styles.legendColorSweetBox } />
+          <Text style={ styles.legendText }>Sweet Box</Text>
         </View>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.movieTitle}>{movieName}</Text>
-        <Text style={styles.movieDetails}>2D Phụ Đề Việt | Rạp STARIUM</Text>
-        <Text style={styles.price}>{`${totalPrice.toLocaleString()} ₫`}</Text>
-        <Text style={styles.seatCount}>{seatCount > 0 ? `${seatCount} ghế` : '0 ghế'}</Text>
-        <TouchableOpacity style={styles.bookButton} onPress={handleBook}>
-          <Text style={styles.bookButtonText}>ĐẶT VÉ</Text>
+      <View style={ styles.footer }>
+        <Text style={ styles.movieTitle }>{ movieName }</Text>
+        <Text style={ styles.movieDetails }>2D Phụ Đề Việt | Rạp STARIUM</Text>
+        <Text style={ styles.price }>{ `${totalPrice.toLocaleString()} ₫` }</Text>
+        <Text style={ styles.seatCount }>{ seatCount > 0 ? `${seatCount} ghế` : '0 ghế' }</Text>
+        <TouchableOpacity style={ styles.bookButton } onPress={ handleBook }>
+          <Text style={ styles.bookButtonText }>ĐẶT VÉ</Text>
         </TouchableOpacity>
       </View>
     </GestureHandlerRootView>
