@@ -20,6 +20,8 @@ function App(): React.JSX.Element {
     config: {
       screens: {
         Seat: 'Seat',
+        Cinema: 'Cinema',
+        home123: 'home123'
       },
     },
   };

@@ -5,7 +5,7 @@ export const createPayment = createAsyncThunk(
   'payment/createPayment',
   async (paymentData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://192.168.1.51/payment', paymentData);
+      const response = await axios.post('http://192.168.1.51:3006/payment', paymentData);
 
       if (!response.data || !response.data.data) {
         throw new Error('Phản hồi không hợp lệ từ API');

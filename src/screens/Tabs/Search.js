@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingHorizontal: 10,
         paddingTop: 20,
-        paddingBottom:50,
     },
     searchContainer: {
         flexDirection: 'row',

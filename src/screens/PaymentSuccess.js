@@ -21,7 +21,17 @@ const PaymentSuccess = ({ route }) => {
 
                 const result = JSON.parse(text); // Parse JSON nếu phản hồi là JSON hợp lệ
                 if (result.error === 0) {
-                    Alert.alert("Thành công", "Trạng thái vé đã được cập nhật thành công!");
+                    Alert.alert(
+                        "Thành công",
+                        "Trạng thái vé đã được cập nhật thành công!",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate('Home'), // Điều hướng về Home
+                            },
+                        ]
+                    );
+
                 } else {
                     Alert.alert("Lỗi", "Không thể cập nhật trạng thái vé.");
                 }
