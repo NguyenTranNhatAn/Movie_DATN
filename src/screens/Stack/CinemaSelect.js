@@ -243,7 +243,8 @@ const CinemaSelect = ({ navigation, route }) => {
 
 
     navigation.navigate("Seat", {
-      startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId
+      startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId,
+      reset: true
     })
 
   }
