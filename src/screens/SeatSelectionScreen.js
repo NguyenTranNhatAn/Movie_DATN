@@ -1,15 +1,17 @@
-
 import React, { useState, useRef, useCallback, memo, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert, Linking, ActivityIndicator } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import _ from 'lodash';
 import io from 'socket.io-client';
 import { useNavigation } from '@react-navigation/native';
-import { WebView } from 'react-native-webview';
-import API_BASE_URL from './config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useDebounce from '../hook/useDebounce';
+import API_BASE_URL from './config';
+import { useFocusEffect } from '@react-navigation/native';
+
+
 // Component ghế được memo hóa
 const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => {
   let seatStyle = styles.seat; // Mặc định là ghế thường
@@ -51,12 +53,12 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
   );
 });
 
-
 const SeatSelectionScreen = ({ route }) => {
-  const { startTime, day, showtimeId, movieId, endTime, cinemaId } = route.params;
-  console.log(showtimeId)
+
+  const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset } = route.params;
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [seatMap, setSeatMap] = useState([]);
+  const [seatMapId, setSeatMapId] = useState([]);
   const [seatPrices, setSeatPrices] = useState({});
   const [originalSeatMap, setOriginalSeatMap] = useState([]);
   const [movieName, setMovieName] = useState('');
@@ -65,41 +67,140 @@ const SeatSelectionScreen = ({ route }) => {
   const [formattedDay, setFormattedDay] = useState('');
   const [formattedStartTime, setFormattedStartTime] = useState('');
   const [formattedEndTime, setFormattedEndTime] = useState('');
+  const [userId, setUserId] = useState(null);
+  const [token, setToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [seatCount, setSeatCount] = useState(0);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
 
-  // const socket = io('http://192.168.1.28:3006');
-  const socket = io(`${API_BASE_URL}`);
-  //const showtimeId = '6731b6574d9a252f21fc014f'; // Suất chiếu mẫu
-  // const userId = 'RE123';
-  const [userId, setUserId] = useState(null); // State for userID
-  const [token, setToken] = useState(null); // State for token
   const navigation = useNavigation();
+  const socket = io(`${API_BASE_URL}`);
+  const zoomableViewRef = useRef(null);
 
-  // láy ra userID
-  //
-  ////mở đầu
+
+
+
+
+
+
+  //reset ghế
+  // Hàm lưu trạng thái ghế vào AsyncStorage
+  const saveSeatState = async () => {
+    try {
+      const seatsData = JSON.stringify(selectedSeats);
+      await AsyncStorage.setItem('selectedSeats', seatsData);
+      console.log('Trạng thái ghế đã được lưu:', selectedSeats);
+    } catch (error) {
+      console.error('Lỗi khi lưu trạng thái ghế:', error);
+    }
+  };
+  // Hàm kiểm tra trạng thái ghế đã lưu và reset
+  const resetSeatsState = async () => {
+    /*
+    try {
+      // Lấy trạng thái ghế đã lưu từ AsyncStorage
+      const storedSeats = await AsyncStorage.getItem('selectedSeats');
+      if (storedSeats !== null) {
+        const selectedSeats = JSON.parse(storedSeats);
+        console.log('Trạng thái ghế đã lưu: ', selectedSeats);
+
+        // Tạo bản sao của seatMap từ originalSeatMap để reset
+        const updatedSeatMap = _.cloneDeep(originalSeatMap);
+
+        // Gửi socket để bỏ chọn các ghế đã chọn
+        selectedSeats.forEach(seat => {
+          const { rowIndex, colIndex } = seat;
+          if (updatedSeatMap[rowIndex] && updatedSeatMap[rowIndex][colIndex] !== '_') {
+            updatedSeatMap[rowIndex][colIndex] = '_';
+            console.log(`Reset ghế tại hàng ${rowIndex}, cột ${colIndex}`);
+          }
+
+          socket.emit('deselect_seat', {
+            showtimeId,
+            row: rowIndex,
+            col: colIndex,
+            userId,
+          });
+        });
+
+        // Cập nhật state
+        setSeatMap(updatedSeatMap);
+        setSelectedSeats([]);
+        console.log("Đã reset trạng thái ghế về ban đầu:", updatedSeatMap);
+      } else {
+        console.log("Không có trạng thái ghế nào đã lưu.");
+      }
+    } catch (error) {
+      console.error('Lỗi khi kiểm tra và reset trạng thái ghế: ', error);
+    }
+      */
+  };
+
+
+
   useEffect(() => {
-    // Lắng nghe sự kiện cập nhật sơ đồ ghế từ server
-    socket.on('seat_map_updated', () => {
-      loadSeatMap(); // Tự động tải lại sơ đồ ghế khi có sự thay đổi
+    // Kiểm tra tham số reset và gọi hàm resetSeatsState nếu cần
+    if (reset) {
+      console.log("Reset ghế khi vào màn hình Seat");
+      resetSeatsState(); // Gọi hàm reset ghế
+    }
+  }, [reset]); // Chạy lại mỗi khi tham số reset thay đổi
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (reset) {
+        console.log("Reset ghế khi quay lại màn hình Seat");
+        resetSeatsState();
+      }
+    }, [reset])
+  );
+  /// reset ghế
+
+
+
+  useEffect(() => {
+
+
+
+    loadUserData();
+    loadSeatMap();
+
+
+    socket.on('seat_map_updated', ({ seatMap }) => {
+      // Chuyển đổi seatMap từ server thành dữ liệu sử dụng tại client
+      const newSeatMapId = seatMap.map((row) =>
+        row.map((seat) => ({
+          userId: seat.userId, // ID người dùng giữ ghế
+          status: seat.status, // Trạng thái ghế (T, V, D, P, U)
+        }))
+      );
+
+      // Lưu thông tin seatMapId vào state
+      setSeatMapId(newSeatMapId);
+
+      // Cập nhật sơ đồ ghế hiển thị
+      setSeatMap(seatMap.map((row) => row.map((seat) => seat.status)));
+      loadSeatMap();
     });
 
-    // Lắng nghe khi ghế được chọn
+
+
+
+
     socket.on('seat_selected', ({ row, col, userId: selectedUserId }) => {
       if (userId !== selectedUserId) {
-        const updatedSeatMap = seatMap.map((rowSeats, rowIndex) =>
-          rowSeats.map((seat, colIndex) => {
-            if (rowIndex === row && colIndex === col) return 'P'; // Đánh dấu ghế đang chờ thanh toán
-            return seat;
-          })
+        setSeatMap(prevMap =>
+          prevMap.map((rowSeats, rowIndex) =>
+            rowSeats.map((seat, colIndex) =>
+              rowIndex === row && colIndex === col ? 'P' : seat
+            )
+          )
         );
-        setSeatMap(updatedSeatMap);
       }
     });
 
-
-
-
-    // Xử lý khi có lỗi
     socket.on('error', ({ message }) => {
       Alert.alert('Error', message);
     });
@@ -107,29 +208,69 @@ const SeatSelectionScreen = ({ route }) => {
     return () => {
       socket.disconnect();
     };
-  }, [seatMap, userId]);
+  }, []);
+
+
 
 
   useEffect(() => {
-    loadSeatMap(); // Chỉ gọi một lần khi component được mount
-  }, []); // Truyền mảng rỗng để đảm bảo chỉ gọi một lần
+    // Lắng nghe socket chỉ một lần khi component mount
+    socket.on('seat_map_updated', ({ seatMap }) => {
+      const newSeatMapId = seatMap.map((row) =>
+        row.map((seat) => ({
+          userId: seat.userId, // ID người dùng giữ ghế
+          status: seat.status, // Trạng thái ghế
+        }))
+      );
+
+      setSeatMapId(newSeatMapId);
+      setSeatMap(seatMap.map((row) => row.map((seat) => seat.status)));
+    });
+
+    socket.on('seat_selected', ({ row, col, userId: selectedUserId }) => {
+      if (userId !== selectedUserId) {
+        setSeatMap((prevMap) =>
+          prevMap.map((rowSeats, rowIndex) =>
+            rowSeats.map((seat, colIndex) =>
+              rowIndex === row && colIndex === col ? 'P' : seat
+            )
+          )
+        );
+      }
+    });
+
+    socket.on('error', ({ message }) => {
+      Alert.alert('Error', message);
+    });
+
+    return () => {
+      // Ngắt kết nối socket khi component unmount
+      socket.disconnect();
+    };
+  }, []); // Lắng nghe chỉ một lần
+
+
+
+
+
+
+
+
+
+
+
   const loadUserData = async () => {
     try {
-      // Lấy token từ AsyncStorage
       const storedToken = await AsyncStorage.getItem('token');
       setToken(storedToken);
 
       if (storedToken) {
-        // Gọi API để lấy userId từ token
-        const response = await fetch(`https://be-movie-sooty.vercel.app/api/user-info`, {
+        const response = await fetch(`${API_BASE_URL}/api/user-info`, {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 
         const data = await response.json();
-        console.log(data)
-        // Giả sử `userId` có trong `data.userId`
         setUserId(data._id);
-        console.log("UserID:", data.userId); // In ra userId để kiểm tra
       } else {
         Alert.alert("Error", "Không tìm thấy token, vui lòng đăng nhập lại.");
       }
@@ -139,36 +280,20 @@ const SeatSelectionScreen = ({ route }) => {
     }
   };
 
-  useEffect(() => {
-    loadUserData();
-  }, []);
 
-  useEffect(() => {
-    if (userId) {
-      // Sau khi có userId, bạn có thể gọi các hàm cần userId ở đây
-      loadSeatMap();
-    }
-  }, [userId]);
 
   const loadSeatMap = async () => {
-    // if (!userId) {
-    //   Alert.alert('Error', 'Vui lòng truyền userId vô');
-    //   return;
-    // }
-
+    setIsLoading(true);
     try {
-      //const response = await fetch(`http://192.168.1.28:3000/showtimes/${showtimeId}`);
       const response = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}`, {
-        method: 'POST', // Chuyển sang POST
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ cinemaId }) // Truyền cinemaId trong body
+        body: JSON.stringify({ cinemaId })
       });
       const data = await response.json();
-      console.log('Dữ liệu từ API:', data); // In ra dữ liệu gốc từ API
-      console.log('dữ liệu API moive nam:', data.movieName);
-      console.log("dữ liệu cinemaName:", data.cinemaName);
+
       const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN', {
@@ -179,13 +304,12 @@ const SeatSelectionScreen = ({ route }) => {
       };
 
       const formatTime = (dateString) => {
-        const date = new Date(dateString); // Chỉ tạo đối tượng Date
+        const date = new Date(dateString);
         return date.toLocaleTimeString('vi-VN', {
           hour: '2-digit',
           minute: '2-digit',
         });
       };
-
 
       setFormattedDay(formatDate(data.day));
       setFormattedStartTime(formatTime(data.startTime));
@@ -194,81 +318,81 @@ const SeatSelectionScreen = ({ route }) => {
       setCinemaName(data.cinemaName);
       setRoomName(data.roomName);
 
-      // Lưu trữ giá ghế từ API vào state
       const prices = {};
       data.seatTypes.forEach(type => {
         prices[type.typeSeatName] = type.typeSeatPrice;
       });
       setSeatPrices(prices);
+
       if (data.Room_Shape) {
         const rows = data.Room_Shape.split('/').map(row => row.split(''));
-        //const rows = data.Room_Shape;
         setSeatMap(rows);
-        setOriginalSeatMap(_.cloneDeep(rows)); // Lưu bản sao ban đầu
-        console.log('Dữ liệu sau khi xử lý:', rows); // In ra dữ liệu sau khi xử lý thành mảng
+        console.log("Ghế hiện tại:", seatMap);
+        setOriginalSeatMap(_.cloneDeep(rows));
       } else {
         Alert.alert('Error', 'Không tìm thấy layout ghế');
       }
     } catch (error) {
       Alert.alert('Error', 'Lỗi khi lấy dữ liệu ghế');
       console.error('Chi tiết lỗi:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  // In ra `seatMap` mỗi khi nó thay đổi để kiểm tra
   useEffect(() => {
-    console.log('seatMap hiện tại:', seatMap);
-  }, [seatMap]);
+    if (reset) {
+      console.log("Reset ghế khi vào màn hình Seat");
+      resetSeatsState(); // Chỉ reset khi seat map đã được tải
+    }
+  }, [reset]);
+  useEffect(() => {
+    // Gọi hàm cập nhật seatMap
+    console.log("Ghế hiện tại sau khi cập nhật123:", seatMap);
+
+  }, [seatMap]); // Gây vòng lặp vô hạn vì loadSeatMap cập nhật seatMap
 
 
 
-  ////cuối cùng
+  // Gọi API để tải sơ đồ ghế khi màn hình được mở
+  useEffect(() => {
+    loadSeatMap();
+  }, []);
 
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
-  const zoomableViewRef = useRef(null);
+
+
+
+
+
+  // Gọi API để tải `seatMap` khi màn hình được mở
+  useEffect(() => {
+    loadSeatMap();
+  }, []);
+
+
 
   useEffect(() => {
-    // Lắng nghe sự kiện khi một ghế được chọn bởi người dùng khác
-    socket.on('select_seat', ({ showtimeId: selectedShowtimeId, row, col, userId: selectedUserId, currentSeatUser }) => {
-      if (selectedShowtimeId === showtimeId) {
-        if (selectedUserId !== userId) {
-          // Nếu người dùng khác chọn ghế, cập nhật trạng thái seatMap mà không thêm vào selectedSeats
-          setSeatMap(prevMap =>
-            prevMap.map((rowSeats, rowIndex) =>
-              rowSeats.map((seat, colIndex) =>
-                rowIndex === row && colIndex === col ? 'P' : seat
-              )
-            )
-          );
-          // Hiển thị thông báo cho biết ghế đã được người dùng khác chọn
-          if (currentSeatUser) {
-            Alert.alert('Thông báo', `Ghế này đã được chọn bởi người dùng khác (ID: ${currentSeatUser}).`);
-          }
-        }
-      }
-    });
+    const newTotalPrice = Array.isArray(selectedSeats)
+      ? selectedSeats.reduce((sum, seat) => sum + seat.price, 0)
+      : 0;
 
-    // Lắng nghe sự kiện khi một ghế được bỏ chọn bởi người dùng khác
-    socket.on('deselect_seat', ({ showtimeId: deselectedShowtimeId, row, col, userId: deselectedUserId }) => {
-      if (deselectedShowtimeId === showtimeId && deselectedUserId !== userId) {
-        // Khôi phục trạng thái ghế nếu ghế được bỏ chọn bởi người dùng khác
-        setSeatMap(prevMap =>
-          prevMap.map((rowSeats, rowIndex) =>
-            rowSeats.map((seat, colIndex) =>
-              rowIndex === row && colIndex === col ? originalSeatMap[rowIndex][colIndex] : seat
-            )
-          )
-        );
-      }
-    });
+    setTotalPrice(newTotalPrice);
 
-    return () => {
-      socket.off('select_seat');
-      socket.off('deselect_seat');
-    };
-  }, [seatMap, userId]);
+    const averageSeatPrice = Object.values(seatPrices).reduce((sum, price) => sum + price, 0) / Object.values(seatPrices).length;
+    const estimatedSeatCount = Math.round(newTotalPrice / averageSeatPrice);
+    setSeatCount(estimatedSeatCount);
+  }, [selectedSeats, seatPrices]);
 
+
+
+
+
+
+
+
+
+  const debouncedSeatPress = useDebounce((seatId, rowIndex, colIndex, seatType) => {
+    handleSeatPress(seatId, rowIndex, colIndex, seatType);
+  }, 50);
 
   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
     if (seatType === 'U' || seatType === '_') {
@@ -277,12 +401,15 @@ const SeatSelectionScreen = ({ route }) => {
     }
 
     if (seatType === 'P') {
-      const currentSeatUser = originalSeatMap[rowIndex][colIndex]?.userId;
+      const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
+      console.log('User giữ ghế:', currentSeatUser);
+
       if (currentSeatUser && currentSeatUser !== userId) {
         Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
         return;
       }
     }
+
 
     const seatPrice = seatPrices[seatType] || 0;
 
@@ -291,7 +418,6 @@ const SeatSelectionScreen = ({ route }) => {
       let updatedSeats;
 
       if (isSeatSelected) {
-        // Nếu ghế đã được chọn, bỏ chọn ghế đó
         updatedSeats = prevSeats.filter(seat => seat.seatId !== seatId);
         socket.emit('deselect_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
         const originalType = originalSeatMap[rowIndex][colIndex];
@@ -303,7 +429,6 @@ const SeatSelectionScreen = ({ route }) => {
           )
         );
       } else {
-        // Nếu ghế chưa được chọn, chọn ghế đó
         updatedSeats = [...prevSeats, { seatId, rowIndex, colIndex, price: seatPrice }];
         socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
         setSeatMap((prevMap) =>
@@ -317,19 +442,10 @@ const SeatSelectionScreen = ({ route }) => {
 
       return updatedSeats;
     });
-  }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId]);
+  }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
 
 
 
-
-
-  ///kết thúc chọn ghế
-
-
-
-  //đặt vé mở đầu
-
-  // Hàm xử lý khi đặt vé và chuyển sang trang thanh toán
   const handleBook = async () => {
     if (selectedSeats.length === 0) {
       Alert.alert('Thông báo', 'Vui lòng chọn ít nhất một ghế.');
@@ -352,92 +468,106 @@ const SeatSelectionScreen = ({ route }) => {
       userId: userId,
       movieId: movieId,
       amount: totalPrice,
-      // amount: 5000,
       description: `Thanh toán vé phim`,
-      returnUrl: 'myapp://home', // URL để trở về sau khi thanh toán thành công
-      cancelUrl: 'myapp://Seat'  // URL khi người dùng hủy thanh toán
+      returnUrl: 'myapp://home123',
+      cancelUrl: 'myapp://home123'
     };
-    navigation.navigate('Combo', {
-      bookingData: bookingData, // Truyền dữ liệu đặt vé sang màn hình Combo nếu cần
-    });
-
-
     /*
+    navigation.navigate('Combo', {
+      
+      bookingData: bookingData,
+    });
+    */
     try {
-      const response = await fetch('https://be-movie-sooty.vercel.app/order/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData),
+      // Lưu trạng thái ghế trước khi chuyển màn hình
+      await saveSeatState();
+
+      // Chuyển màn hình
+      navigation.navigate('Combo', {
+        bookingData: bookingData,
       });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result)
-        if (result.error === 0) {
-          Alert.alert('Thành công', 'Vé đã được tạo, chuyển đến trang thanh toán.');
-          // Linking.openURL(result.data.checkoutUrl);
-          // Thay vì mở URL, điều hướng đến PaymentWebView và truyền URL thanh toán qua params
-          navigation.navigate('PaymentWebView', {
-            checkoutUrl: result.data.checkoutUrl,
-            orderCode: result.data.orderCode, // Truyền orderCode
-
-          });
-          // Optional: Thực hiện các hành động khác nếu cần, như cập nhật trạng thái ghế
-        } else {
-          Alert.alert('Lỗi', 'Không thể tạo liên kết thanh toán.');
-        }
-      } else {
-        const error = await response.json();
-        Alert.alert('Lỗi', error.message || 'Đặt vé thất bại');
-      }
     } catch (error) {
-      console.error('Lỗi khi gửi yêu cầu đặt vé:', error);
-      Alert.alert('Lỗi', 'Không thể kết nối đến server.');
+      console.error('Lỗi khi lưu trạng thái hoặc điều hướng:', error);
     }
-     */
   };
 
-  //đặt vé kết thúc
 
+  // goBack
   /*
-    // Tính tổng giá tiền và số lượng ghế đã chọn
-    const totalPrice = Array.isArray(selectedSeats) ? selectedSeats.reduce((sum, seat) => sum + seat.price, 0) : 0;
-    const seatCount = Array.isArray(selectedSeats) ? selectedSeats.length : 0;
+  const handleGoBack = () => {
+    Alert.alert(
+      'Thoát màn hình',
+      'Bạn có chắc chắn muốn thoát? Các lựa chọn ghế của bạn sẽ bị mất.',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        {
+          text: 'Thoát',
+          onPress: () => {
+            // Reset trạng thái
+            selectedSeats.forEach(seat => {
+              socket.emit('deselect_seat', {
+                showtimeId,
+                row: seat.rowIndex,
+                col: seat.colIndex,
+                userId,
+              });
+            });
+            setSelectedSeats([]);
+            setSeatMap(_.cloneDeep(originalSeatMap));
+  
+            // Điều hướng quay lại
+            navigation.goBack();
+          },
+        },
+      ]
+    );
+  };
   */
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [seatCount, setSeatCount] = useState(0);
+  const handleGoBack = () => {
+    Alert.alert(
+      'Thoát màn hình',
+      'Bạn có chắc chắn muốn thoát? Các lựa chọn ghế của bạn sẽ bị mất.',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        {
+          text: 'Thoát',
+          onPress: async () => {
+            await saveSeatState();
 
-  useEffect(() => {
-    // Tính lại tổng giá tiền
-    const newTotalPrice = Array.isArray(selectedSeats)
-      ? selectedSeats.reduce((sum, seat) => sum + seat.price, 0)
-      : 0;
+            // Gửi yêu cầu qua socket để bỏ chọn các ghế
+            selectedSeats.forEach(seat => {
+              socket.emit('deselect_seat', {
+                showtimeId,
+                row: seat.rowIndex,
+                col: seat.colIndex,
+                userId,
+              });
+            });
 
-    // Chỉ cập nhật số ghế khi tổng giá tiền thay đổi
-    if (newTotalPrice !== totalPrice) {
-      setTotalPrice(newTotalPrice);
-      setSeatCount(selectedSeats.length);
-    }
-  }, [selectedSeats, totalPrice]);
+            // Reset trạng thái local
+            setSelectedSeats([]);
+            setSeatMap(_.cloneDeep(originalSeatMap));
 
-  //render ghế 
+            navigation.goBack();
+          },
+        },
+      ]
+    );
+  };
+
+
+  //goBack
   const renderSeats = useCallback(
     (isMinimap = false) => {
       if (!Array.isArray(seatMap) || seatMap.length === 0) {
-        console.log('Không có dữ liệu trong seatMap');
         return <Text style={ { color: 'white' } }>Đang tải dữ liệu ghế...</Text>;
       }
-      console.log("seatMap hiện tại:", seatMap);
 
       const seats = seatMap.map((row, rowIndex) => {
-        // Kiểm tra nếu row không rỗng
         if (row.length > 0) {
           const seatRow = row.map((char, colIndex) => {
             if (char !== '_') {
-              const seatId = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`; // Ký hiệu A1, B2, ...
-              // const isSelected = selectedSeats.includes(seatId);
+              const seatId = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`;
               const isSelected = Array.isArray(selectedSeats) && selectedSeats.includes(seatId);
 
               return (
@@ -447,11 +577,11 @@ const SeatSelectionScreen = ({ route }) => {
                   isSelected={ isSelected }
                   onSeatPress={ () => handleSeatPress(seatId, rowIndex, colIndex, char) }
                   isMinimap={ isMinimap }
-                  seatType={ char } // Truyền ký tự để xác định màu sắc ghế
+                  seatType={ char }
                 />
               );
             }
-            return null; // Không render nếu là '_'
+            return null;
           });
 
           return (
@@ -468,9 +598,6 @@ const SeatSelectionScreen = ({ route }) => {
     [seatMap, selectedSeats, handleSeatPress]
   );
 
-
-
-  // Throttle việc cập nhật minimap để giảm độ trễ
   const handleZoomAfter = useCallback(
     _.throttle((event, gestureState, zoomableViewEventObject) => {
       setZoomLevel(zoomableViewEventObject.zoomLevel);
@@ -496,7 +623,7 @@ const SeatSelectionScreen = ({ route }) => {
     <GestureHandlerRootView style={ styles.container }>
       <View style={ styles.header }>
         <TouchableOpacity>
-          <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } />
+          <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } onPress={ handleGoBack } />
         </TouchableOpacity>
         <View style={ styles.headerTitleContainer }>
           <Text style={ styles.headerText }>{ cinemaName }</Text>
@@ -507,18 +634,25 @@ const SeatSelectionScreen = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      <ReactNativeZoomableView
-        ref={ zoomableViewRef }
-        maxZoom={ 4.0 }
-        minZoom={ 0.5 }
-        zoomStep={ 0.5 }
-        initialZoom={ 1 }
-        bindToBorders={ true }
-        onZoomAfter={ handleZoomAfter }
-        style={ styles.zoomableView }
-      >
-        <View style={ styles.seatMap }>{ renderSeats() }</View>
-      </ReactNativeZoomableView>
+      { isLoading ? (
+        <View style={ styles.loadingContainer }>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text style={ styles.loadingText }>Đang cập nhật sơ đồ ghế...</Text>
+        </View>
+      ) : (
+        <ReactNativeZoomableView
+          ref={ zoomableViewRef }
+          maxZoom={ 4.0 }
+          minZoom={ 0.5 }
+          zoomStep={ 0.5 }
+          initialZoom={ 1 }
+          bindToBorders={ true }
+          onZoomAfter={ handleZoomAfter }
+          style={ styles.zoomableView }
+        >
+          <View style={ styles.seatMap }>{ renderSeats() }</View>
+        </ReactNativeZoomableView>
+      ) }
 
       <View style={ styles.minimapContainer }>
         <View style={ [styles.minimap, { width: minimapWidth, height: minimapHeight }] }>
@@ -678,12 +812,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  legendColorOtherSelected: {
-    width: 15,
-    height: 15,
-    backgroundColor: '#FFD700', // Màu vàng cho ghế của người dùng khác
-    marginRight: 5,
-  },
   legendColorSelected: {
     width: 15,
     height: 15,
@@ -757,9 +885,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1e1e1e',
+  },
+  loadingText: {
+    color: '#fff',
+    marginTop: 10,
+  },
 });
 
 export default SeatSelectionScreen;
-
-
-

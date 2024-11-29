@@ -28,7 +28,6 @@ import SeatSelectionScreen from '../screens/SeatSelectionScreen';
 import Component from '../screens/Component';
 import PaymentScreen from '../screens/Payment_Screen';
 import TicketDetail from '../screens/Stack/TicketDetail';
-import SeatSelectionn from '../screens/SeatSelectionScreen copy';
 
 
 const Tab = createBottomTabNavigator();
@@ -44,24 +43,26 @@ const MainStackNavigation = () => {
       <Stack.Screen name="Test" component={ SeatSelection } />
       <Stack.Screen name="Detail" component={ Details } />
       <Stack.Screen name="Latest" component={ Latest } />
-      <Stack.Screen name="Seat" component={ SeatSelectionn } />
+      <Stack.Screen name="Seat" component={ SeatSelectionScreen } />
       <Stack.Screen name="Combo" component={ Component } />
       <Stack.Screen name="Pay_Screen" component={ PaymentScreen } />
       <Stack.Screen name="PaymentWebView" component={ PaymentWebView } />
       <Stack.Screen name="PaySuccess" component={ PaymentSuccess } />
       <Stack.Screen name="Cinema" component={ CinemaSelect } />
-      <Stack.Screen name="TicketDetails" component={ TicketDetail} />
+      <Stack.Screen name="TicketDetails" component={ TicketDetail } />
       <Stack.Screen name="Favour" component={ Favour } />
       <Stack.Screen name="Checkout" component={ Checkout } />
       <Stack.Screen name="EditProfile" component={ EditProfileComponent } />
       <Stack.Screen name="Signup" component={ SignupScreen } />
       <Stack.Screen name="Policy" component={ PolicyScreen } />
+      <Stack.Screen name="home123" component={ HomeScreen } />
     </Stack.Navigator>
   );
 };
 
 const TabArr = [
   {
+
     route: 'Home',
     label: 'Home',
     focusedImage: require('../../assets/image/homeFocus.png'),
