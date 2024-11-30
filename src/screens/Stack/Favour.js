@@ -29,7 +29,7 @@ const Favour = ({ navigation }) => {
 
             const fetchFavourMovies = async (token) => {
                 try {
-                    const response = await axios.get('https://be-movie-sooty.vercel.app/user/getWishList', {
+                    const response = await axios.get('http://http://103.130.213.92:3006/user/getWishList', {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },

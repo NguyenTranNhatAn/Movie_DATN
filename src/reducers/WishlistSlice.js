@@ -14,18 +14,18 @@ export const addToWishlist = createAsyncThunk(
       }
 
       const response = await axios.get(
-        `https://be-movie-sooty.vercel.app/movie/addWishList?movieId=${movieId}`, 
+        `http://http://103.130.213.92:3006/movie/addWishList?movieId=${movieId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
 
       return response.data;
     } catch (error) {
-      console.log(error.response); 
+      console.log(error.response);
       return rejectWithValue(error.response?.data?.message || 'Có lỗi xảy ra');
     }
   }

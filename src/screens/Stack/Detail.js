@@ -20,7 +20,7 @@ const Details = ({ route, navigation }) => {
     const getUserInfo = async () => {
       if (token) {
         try {
-          const response = await axios.get('https://be-movie-sooty.vercel.app/api/user-info', {
+          const response = await axios.get('http://http://103.130.213.92:3006/api/user-info', {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUserWishlist(response.data.wishlist); // Set the wishlist of the user
@@ -49,7 +49,7 @@ const Details = ({ route, navigation }) => {
     try {
       // Gọi API để thêm hoặc xóa bộ phim từ wishlist
       const response = await axios.get(
-        `https://be-movie-sooty.vercel.app/movie/addWishList?movieId=${item._id}`,
+        `http://http://103.130.213.92:3006/movie/addWishList?movieId=${item._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -66,70 +66,70 @@ const Details = ({ route, navigation }) => {
   };
 
   return (
-    <View style={ styles.container }>
-      {/* Header */ }
-      <View style={ styles.header }>
-        <TouchableOpacity onPress={ () => navigation.goBack() }>
-          <Image source={ require('../../../assets/image/arrow-left.png') } style={ styles.arrowIcon } />
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image source={require('../../../assets/image/arrow-left.png')} style={styles.arrowIcon} />
         </TouchableOpacity>
-        <Text style={ styles.headerTitle }>Movie Details</Text>
+        <Text style={styles.headerTitle}>Movie Details</Text>
         <View></View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={ false }>
-        {/* Movie Poster and Info */ }
-        <View style={ styles.posterInfoContainer }>
-          <Image source={ { uri: item.images[0] } } style={ styles.moviePoster } />
-          <View style={ styles.infoContainer }>
-            <View style={ styles.infoBox }>
-              <Image source={ require('../../../assets/icon/videocam.png') } style={ styles.arrowIcon } />
-              <Text style={ styles.infoLabel }>Type</Text>
-              <Text style={ styles.infoValue }>{ item.genreName }</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Movie Poster and Info */}
+        <View style={styles.posterInfoContainer}>
+          <Image source={{ uri: item.images[0] }} style={styles.moviePoster} />
+          <View style={styles.infoContainer}>
+            <View style={styles.infoBox}>
+              <Image source={require('../../../assets/icon/videocam.png')} style={styles.arrowIcon} />
+              <Text style={styles.infoLabel}>Type</Text>
+              <Text style={styles.infoValue}>{item.genreName}</Text>
             </View>
-            <View style={ styles.infoBox }>
-              <Image source={ require('../../../assets/icon/clock.png') } style={ styles.arrowIcon } />
-              <Text style={ styles.infoLabel }>Duration</Text>
-              <Text style={ styles.infoValue }>{ converTime(item.duration) }</Text>
+            <View style={styles.infoBox}>
+              <Image source={require('../../../assets/icon/clock.png')} style={styles.arrowIcon} />
+              <Text style={styles.infoLabel}>Duration</Text>
+              <Text style={styles.infoValue}>{converTime(item.duration)}</Text>
             </View>
-            <View style={ styles.infoBox }>
-              <Image source={ require('../../../assets/icon/star.png') } style={ styles.arrowIcon } />
-              <Text style={ styles.infoLabel }>Rating</Text>
-              <Text style={ styles.infoValue }>{ item.rating }</Text>
+            <View style={styles.infoBox}>
+              <Image source={require('../../../assets/icon/star.png')} style={styles.arrowIcon} />
+              <Text style={styles.infoLabel}>Rating</Text>
+              <Text style={styles.infoValue}>{item.rating}</Text>
             </View>
           </View>
         </View>
 
-        {/* Movie Title and Description with Heart Icon */ }
-        <View style={ styles.movieDetails }>
-          <Text style={ styles.movieTitle }>{ item.name }</Text>
-          <View style={ styles.descriptionRow }>
-            <View style={ styles.descriptionContainer }>
-              <Text style={ styles.descriptionTitle }>Descriptions</Text>
-              <Text numberOfLines={ 7 } style={ styles.descriptionText }>{ item.description }</Text>
+        {/* Movie Title and Description with Heart Icon */}
+        <View style={styles.movieDetails}>
+          <Text style={styles.movieTitle}>{item.name}</Text>
+          <View style={styles.descriptionRow}>
+            <View style={styles.descriptionContainer}>
+              <Text style={styles.descriptionTitle}>Descriptions</Text>
+              <Text numberOfLines={7} style={styles.descriptionText}>{item.description}</Text>
             </View>
-            {/* Heart Button */ }
-            <TouchableOpacity onPress={ handleAddToWishlist } style={ styles.wishlistCircle }>
-              <Text style={ styles.wishlistButtonText }>
-                { isFavorite ? '❤️' : '🤍' }
+            {/* Heart Button */}
+            <TouchableOpacity onPress={handleAddToWishlist} style={styles.wishlistCircle}>
+              <Text style={styles.wishlistButtonText}>
+                {isFavorite ? '❤️' : '🤍'}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Trailer Video */ }
-        <Text style={ styles.trailerTitle }>Trailer</Text>
-        <View style={ styles.videoContainer }>
+        {/* Trailer Video */}
+        <Text style={styles.trailerTitle}>Trailer</Text>
+        <View style={styles.videoContainer}>
           <WebView
-            source={ { uri: item.trailer } }
-            style={ styles.webview }
-            allowsFullscreenVideo={ true }
+            source={{ uri: item.trailer }}
+            style={styles.webview}
+            allowsFullscreenVideo={true}
           />
         </View>
       </ScrollView>
 
-      {/* Select Seat Button */ }
-      <TouchableOpacity onPress={ () => navigation.navigate('Cinema', { id: item._id, image: item.images }) } style={ styles.selectButton }>
-        <Text style={ styles.selectButtonText }>Select Seat</Text>
+      {/* Select Seat Button */}
+      <TouchableOpacity onPress={() => navigation.navigate('Cinema', { id: item._id, image: item.images })} style={styles.selectButton}>
+        <Text style={styles.selectButtonText}>Select Seat</Text>
       </TouchableOpacity>
     </View>
   );
