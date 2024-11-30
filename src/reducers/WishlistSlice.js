@@ -14,7 +14,7 @@ export const addToWishlist = createAsyncThunk(
       }
 
       const response = await axios.get(
-        `https://be-movie-sooty.vercel.app/movie/addWishList?movieId=${movieId}`, 
+        `http://103.130.213.92:3006/movie/addWishList?movieId=${movieId}`, 
         {
           headers: {
             Authorization: `Bearer ${token}`,
