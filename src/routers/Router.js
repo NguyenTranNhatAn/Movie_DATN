@@ -9,7 +9,7 @@ import Search from '../screens/Tabs/Search';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Image } from 'react-native-animatable';
 import Details from '../screens/Stack/Detail';
-import Profile from '../screens/Tabs/Profile';
+import Profile from '../screens/Profile';
 import Latest from '../screens/Stack/Latest';
 import Category from '../screens/Tabs/Category';
 import Checkout from '../screens/Stack/Checkout';
