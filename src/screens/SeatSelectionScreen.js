@@ -56,6 +56,7 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
 const SeatSelectionScreen = ({ route }) => {
 
   const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset } = route.params;
+
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [seatMap, setSeatMap] = useState([]);
   const [seatMapId, setSeatMapId] = useState([]);
@@ -181,10 +182,10 @@ const SeatSelectionScreen = ({ route }) => {
       setSeatMapId(newSeatMapId);
 
       // Cập nhật sơ đồ ghế hiển thị
+
       setSeatMap(seatMap.map((row) => row.map((seat) => seat.status)));
       loadSeatMap();
     });
-
 
 
 
@@ -394,11 +395,13 @@ const SeatSelectionScreen = ({ route }) => {
     handleSeatPress(seatId, rowIndex, colIndex, seatType);
   }, 50);
 
+
   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
     if (seatType === 'U' || seatType === '_') {
       Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
       return;
     }
+
 
     if (seatType === 'P') {
       const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
@@ -409,6 +412,10 @@ const SeatSelectionScreen = ({ route }) => {
         return;
       }
     }
+
+
+
+
 
 
     const seatPrice = seatPrices[seatType] || 0;
@@ -446,6 +453,22 @@ const SeatSelectionScreen = ({ route }) => {
 
 
 
+
+  // Lắng nghe thông tin ghế đã được chọn từ server
+  useEffect(() => {
+    socket.on('seat_selected', ({ row, col, userId }) => {
+      if (seatMap[row][col] === 'P') {
+        Alert.alert('Thông báo', `Ghế ${row}-${col} đã được chọn.`);
+      }
+    });
+
+    return () => {
+      socket.off('seat_selected');
+    };
+  }, [seatMap]);
+
+
+
   const handleBook = async () => {
     if (selectedSeats.length === 0) {
       Alert.alert('Thông báo', 'Vui lòng chọn ít nhất một ghế.');
@@ -474,7 +497,7 @@ const SeatSelectionScreen = ({ route }) => {
     };
     /*
     navigation.navigate('Combo', {
-      
+
       bookingData: bookingData,
     });
     */
@@ -492,8 +515,13 @@ const SeatSelectionScreen = ({ route }) => {
   };
 
 
+
   // goBack
-  /*
+
+
+
+
+
   const handleGoBack = () => {
     Alert.alert(
       'Thoát màn hình',
@@ -514,7 +542,7 @@ const SeatSelectionScreen = ({ route }) => {
             });
             setSelectedSeats([]);
             setSeatMap(_.cloneDeep(originalSeatMap));
-  
+
             // Điều hướng quay lại
             navigation.goBack();
           },
@@ -522,38 +550,8 @@ const SeatSelectionScreen = ({ route }) => {
       ]
     );
   };
-  */
-  const handleGoBack = () => {
-    Alert.alert(
-      'Thoát màn hình',
-      'Bạn có chắc chắn muốn thoát? Các lựa chọn ghế của bạn sẽ bị mất.',
-      [
-        { text: 'Hủy', style: 'cancel' },
-        {
-          text: 'Thoát',
-          onPress: async () => {
-            await saveSeatState();
 
-            // Gửi yêu cầu qua socket để bỏ chọn các ghế
-            selectedSeats.forEach(seat => {
-              socket.emit('deselect_seat', {
-                showtimeId,
-                row: seat.rowIndex,
-                col: seat.colIndex,
-                userId,
-              });
-            });
 
-            // Reset trạng thái local
-            setSelectedSeats([]);
-            setSeatMap(_.cloneDeep(originalSeatMap));
-
-            navigation.goBack();
-          },
-        },
-      ]
-    );
-  };
 
 
   //goBack
@@ -702,7 +700,7 @@ const SeatSelectionScreen = ({ route }) => {
         <Text style={ styles.movieTitle }>{ movieName }</Text>
         <Text style={ styles.movieDetails }>2D Phụ Đề Việt | Rạp STARIUM</Text>
         <Text style={ styles.price }>{ `${totalPrice.toLocaleString()} ₫` }</Text>
-        <Text style={ styles.seatCount }>{ seatCount > 0 ? `${seatCount} ghế` : '0 ghế' }</Text>
+        <Text style={ styles.seatCount }>{ selectedSeats.length > 0 ? `${selectedSeats.length} ghế` : '0 ghế' }</Text>
         <TouchableOpacity style={ styles.bookButton } onPress={ handleBook }>
           <Text style={ styles.bookButtonText }>ĐẶT VÉ</Text>
         </TouchableOpacity>

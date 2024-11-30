@@ -56,6 +56,7 @@ const MainStackNavigation = () => {
       <Stack.Screen name="Signup" component={ SignupScreen } />
       <Stack.Screen name="Policy" component={ PolicyScreen } />
       <Stack.Screen name="home123" component={ HomeScreen } />
+      <Stack.Screen name="ticket_nice" component={ TicketScreen } />
     </Stack.Navigator>
   );
 };
