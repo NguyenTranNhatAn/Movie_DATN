@@ -115,12 +115,12 @@ const HomeScreen = (props) => {
                         </TouchableOpacity>
                         <Text style={{ marginLeft: 12, fontSize: 18, fontWeight: 'regular' }}>Search</Text>
                     </TouchableOpacity>
-                    <View style={styles.rightSearch}>
+                  {/* {  <View style={styles.rightSearch}>
                         <Image style={{ height: 24, width: 24 }} source={require('../../../assets/image/adj.png')} />
-                    </View>
+                    </View>} */}
                 </View>
                 {/* service */}
-                <View style={{ marginTop: 20, marginHorizontal: 23 }}>
+                {/* <View style={{ marginTop: 20, marginHorizontal: 23 }}>
                     <Text style={[styles.title, {}]}>Service</Text>
                     <View style={styles.menuList}>
                         <View style={styles.itemMenu}>
@@ -142,7 +142,7 @@ const HomeScreen = (props) => {
 
                     </View>
 
-                </View>
+                </View> */}
                 {/*  */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
