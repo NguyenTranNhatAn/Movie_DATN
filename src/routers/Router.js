@@ -52,6 +52,7 @@ const MainStackNavigation = () => {
       <Stack.Screen name="TicketDetails" component={ TicketDetail } />
       <Stack.Screen name="Favour" component={ Favour } />
       <Stack.Screen name="Checkout" component={ Checkout } />
+      <Stack.Screen name="Lastest" component={ Latest } />
       <Stack.Screen name="EditProfile" component={ EditProfileComponent } />
       <Stack.Screen name="Signup" component={ SignupScreen } />
       <Stack.Screen name="Policy" component={ PolicyScreen } />
