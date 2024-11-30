@@ -27,7 +27,7 @@ const PaymentSuccess = ({navigation, route }) => {
                         [
                             {
                                 text: "OK",
-                                onPress: () => navigation.navigate('Home'), // Điều hướng về Home
+                                onPress: () => navigation.replace('Tab'), // Điều hướng về Home
                             },
                         ]
                     );
