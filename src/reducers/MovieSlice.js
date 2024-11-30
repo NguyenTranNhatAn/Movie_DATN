@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const GetMovieList = createAsyncThunk('listMovie', async data => {
-  const response = await fetch('http://http://103.130.213.92:3006/movie/getAll');
+  const response = await fetch('http://103.130.213.92:3006/movie/getAll');
   if (!response.ok) {
     throw new Error('Failed');
   }

@@ -20,7 +20,7 @@ const Details = ({ route, navigation }) => {
     const getUserInfo = async () => {
       if (token) {
         try {
-          const response = await axios.get('http://http://103.130.213.92:3006/api/user-info', {
+          const response = await axios.get('http://103.130.213.92:3006/api/user-info', {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUserWishlist(response.data.wishlist); // Set the wishlist of the user
@@ -49,7 +49,7 @@ const Details = ({ route, navigation }) => {
     try {
       // Gọi API để thêm hoặc xóa bộ phim từ wishlist
       const response = await axios.get(
-        `http://http://103.130.213.92:3006/movie/addWishList?movieId=${item._id}`,
+        `http://103.130.213.92:3006/movie/addWishList?movieId=${item._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

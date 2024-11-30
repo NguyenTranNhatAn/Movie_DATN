@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const GenreList = createAsyncThunk('listGenre', async data => {
-  const response = await fetch('http://http://103.130.213.92:3006/genre/getAll');
+  const response = await fetch('http://103.130.213.92:3006/genre/getAll');
   if (!response.ok) {
     throw new Error('Failed');
   }
