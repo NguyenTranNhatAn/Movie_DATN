@@ -1,174 +1,180 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
-import Avatar from '../assets/image/avatar.png';
-import Icon1 from 'react-native-vector-icons/Feather';
-import EditIcon from 'react-native-vector-icons/FontAwesome5';
-import TicketIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Privacy from 'react-native-vector-icons/MaterialIcons';
-import Terms from 'react-native-vector-icons/MaterialIcons';
-import Logout from 'react-native-vector-icons/AntDesign';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+// import { UploadUsers } from './Reducer/UploadUserslide';
+
 const Profile = () => {
-    handleLogout = () => {
-        console.log("User logged out");
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  // Lấy dữ liệu người dùng từ Redux store
+  const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
+
+  // Gọi API khi component được render
+  useEffect(() => {
+    if (UploadUsersStatus === 'idle') {
+      dispatch(UploadUsers());
     }
-    return (
-        <View style={ styles.container }>
-            <View style={ styles.header }>
-                <Text style={ styles.font }>Profile</Text>
+  }, [UploadUsersStatus, dispatch]);
+  const handleLogout = () => {
+    // Thêm logic logout ở đây nếu cần, ví dụ: xóa token hoặc reset trạng thái
+    navigation.replace('login'); // Chuyển hướng đến màn hình 'Login'
+  };
 
-                <View style={ styles.parent }>
-                    <Image source={ Avatar } style={ styles.imgAvatar } />
-                    <View style={ styles.child }>
-                        <View style={ styles.iconWrapper }>
-                            <Icon1 name="edit-3" style={ styles.iconEdit } />
-                        </View>
-                    </View>
-                </View>
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.profileName1}>Profile</Text>
+      <View style={styles.profileSection}>
+        <Image
+          source={require('../../Img/anhspidermen.png')}
+          style={styles.profileImage}
+        />
+        <Text style={styles.profileName}>
+          {UploadUsersData.name || 'N/A'}
+        </Text>
+        <Text style={styles.profilePhone}>
+          {UploadUsersData.phone || 'N/A'}
+        </Text>
+      </View>
 
-                <Text style={ { color: 'black', fontSize: 20, fontWeight: 'bold', marginTop: 10 } }>Zhao LI YING</Text>
-                <Text style={ { fontSize: 16, marginTop: 3 } }>(+84) 0967 98330 </Text>
+      <View style={styles.optionsContainer}>
+        
+      <TouchableOpacity style={styles.optionRow}
+        onPress={() => navigation.navigate('EditProfile')}
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:25}} source={require('../../assets/icon/edit.png')} />
+            <Text style={styles.optionText}> Edit Profile</Text>
+          </View>
+          <Image source={require('../../Img/Vector.png')} />
+        </TouchableOpacity>
 
-            </View>
-            <View style={ { marginTop: 20 } }></View>
-            <View style={ styles.body }>
-                <View style={ styles.iconAndText }>
-                    <EditIcon name="edit" style={ styles.IconChange } />
-                    <Text style={ styles.textStyle }>Edit Profile</Text>
-                </View>
-                <Icon1 name="chevron-right" style={ styles.iconBody } />
-            </View>
-            <View style={ styles.body }>
-                <View style={ styles.iconAndText }>
-                    <TicketIcon name="ticket-confirmation-outline" style={ styles.IconChange } />
-                    <Text style={ styles.textStyle }>My TIckets</Text>
-                </View>
-                <Icon1 name="chevron-right" style={ styles.iconBody } />
-            </View>
-            <View style={ styles.body }>
-                <View style={ styles.iconAndText }>
-                    <Icon1 name="lock" style={ styles.IconChange } />
-                    <Text style={ styles.textStyle }>Change Password</Text>
-                </View>
-                <Icon1 name="chevron-right" style={ styles.iconBody } />
-            </View>
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image source={require('../../Img/ticket.png')} />
+            <Text style={styles.optionText}> My tickets</Text>
+          </View>
+          <Image source={require('../../Img/Vector.png')} />
+        </TouchableOpacity>
 
-            <View style={ styles.body }>
-                <View style={ styles.iconAndText }>
-                    <Privacy name="privacy-tip" style={ styles.IconChange } />
-                    <Text style={ styles.textStyle }>Privacy Policy</Text>
-                </View>
-                <Icon1 name="chevron-right" style={ styles.iconBody } />
-            </View>
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../../assets/icon/clock.png')} />
+            <Text style={styles.optionText}> Change Password</Text>
+          </View>
+          <Image source={require('../../Img/Vector.png')} />
+        </TouchableOpacity>
 
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../../assets/icon/shield.png')} />
+            <Text style={styles.optionText}> Privacy Policy</Text>
+          </View>
+          <Image source={require('../../Img/Vector.png')} />
+        </TouchableOpacity>
 
-            <View style={ styles.body }>
-                <View style={ styles.iconAndText }>
-                    <Terms name="event-note" style={ styles.IconChange } />
-                    <Text style={ styles.textStyle }>Terms & Conditons</Text>
-                </View>
-                <Icon1 name="chevron-right" style={ styles.iconBody } />
-            </View>
-            <TouchableOpacity style={ styles.button } onPress={ handleLogout }>
-                <Logout name="logout" style={ styles.IconFoot } />
-                <Text style={ styles.TextFoot } >Logout</Text>
-            </TouchableOpacity>
-        </View>
-    )
-}
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../../assets/icon/list.png')} />
+            <Text style={styles.optionText}> Terms & Conditions</Text>
+          </View>
+          <Image source={require('../../Img/Vector.png')} />
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <Text style={styles.logoutText}>Logout</Text>
+    </TouchableOpacity>
+    </ScrollView>
+  );
+};
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff', // Thay đổi màu nền
-    },
-    header: {
-        alignItems: 'center',
-        marginTop: 10
-    },
-    font: {
-        fontSize: 20,
-        color: 'black',
-        fontStyle: 'normal',
-        fontWeight: 'bold'
-    },
-    imgAvatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 15
-    },
-    parent: {
-        position: 'relative',
-        marginTop: 25
-    },
-    child: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-
-    },
-    iconWrapper: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        backgroundColor: '#FF515A',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2, // Độ dày của đường viền
-        borderColor: '#FFF', // Màu sắc của đường viền
-    },
-    iconEdit: {
-        color: 'white'
-    },
-    body: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',  // Để căn giữa theo trục dọc
-        height: 65,
-        marginHorizontal: 20,
-        backgroundColor: '#FFF',
-        borderRadius: 10,
-        borderBottomWidth: 2,
-        borderBottomColor: '#f6f6f6'
-
-    },
-    iconAndText: {
-        flexDirection: 'row',  // Sắp xếp icon và text theo hàng ngang
-        alignItems: 'center',  // Đảm bảo icon và text được căn giữa theo trục dọc
-    },
-    IconChange: {
-        fontSize: 25,
-        color: '#302c2c',
-    },
-    textStyle: {
-        marginLeft: 8,  // Khoảng cách giữa icon và text
-        fontSize: 18,
-        color: '#302c2c',
-    },
-    iconBody: {
-        fontSize: 30,
-        color: '#302c2c',
-    },
-    button: {
-        position: 'absolute',
-        bottom: 80,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 335,
-        height: 56,
-        backgroundColor: '#FF515A',
-        borderRadius: 10,
-        marginHorizontal: 33
-
-    },
-    IconFoot: {
-        fontSize: 16,
-        color: '#FFF'
-    },
-    TextFoot: {
-        fontSize: 16,
-        color: '#FFF',
-        marginLeft: 10
-    }
-
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  profileSection: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 25,
+    marginBottom: 10,
+  },
+  profileName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  profileName1: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#000',
+    
+    alignSelf:'center'
+    
+  },
+  profilePhone: {
+    fontSize: 16,
+    color: '#888',
+  },
+  optionsContainer: {
+    marginVertical: 20,
+  },
+  optionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  optionText: {
+    fontSize: 18,
+    color: '#000',
+  },
+  icon: {
+    fontSize: 22,
+    color: '#000',
+  },
+  logoutButton: {
+    backgroundColor: '#ff5757',
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  editicon:{
+    flexDirection:'row'
+  }
 });
-export default Profile
+
+export default Profile;

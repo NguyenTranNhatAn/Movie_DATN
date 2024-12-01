@@ -20,7 +20,7 @@ const SignupScreen = ({navigation}) => {
     if (password === confirmPassword) {
      try {
       // "raw": "{\n  \"name\": \"hao\",\n  \"phone\": 12,\n  \"email\": \"nhatan\",\n  \"password\": \"gg\",\n  \"address\":\"Lamdong\"\n}\n"
-      const response = await axios.post('https://be-movie-sooty.vercel.app/user/register', {name,phone,email,password,address});
+      const response = await axios.post('http://103.130.213.92:3006/user/register', {name,phone,email,password,address});
       Alert.alert( '','Đăng kí thanh cong!');
       console.log('Token:', response.data.token);
     } catch (err) {

@@ -9,7 +9,7 @@ import Search from '../screens/Tabs/Search';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Image } from 'react-native-animatable';
 import Details from '../screens/Stack/Detail';
-import Profile from '../screens/Tabs/Profile';
+import Profile from '../screens/Profile';
 import Latest from '../screens/Stack/Latest';
 import Category from '../screens/Tabs/Category';
 import Checkout from '../screens/Stack/Checkout';
@@ -28,7 +28,6 @@ import SeatSelectionScreen from '../screens/SeatSelectionScreen';
 import Component from '../screens/Component';
 import PaymentScreen from '../screens/Payment_Screen';
 import TicketDetail from '../screens/Stack/TicketDetail';
-import SeatSelectionn from '../screens/SeatSelectionScreen copy';
 
 
 const Tab = createBottomTabNavigator();
@@ -50,18 +49,21 @@ const MainStackNavigation = () => {
       <Stack.Screen name="PaymentWebView" component={ PaymentWebView } />
       <Stack.Screen name="PaySuccess" component={ PaymentSuccess } />
       <Stack.Screen name="Cinema" component={ CinemaSelect } />
-      <Stack.Screen name="TicketDetails" component={ TicketDetail} />
+      <Stack.Screen name="TicketDetails" component={ TicketDetail } />
       <Stack.Screen name="Favour" component={ Favour } />
       <Stack.Screen name="Checkout" component={ Checkout } />
+      <Stack.Screen name="Lastest" component={ Latest } />
       <Stack.Screen name="EditProfile" component={ EditProfileComponent } />
       <Stack.Screen name="Signup" component={ SignupScreen } />
       <Stack.Screen name="Policy" component={ PolicyScreen } />
+      <Stack.Screen name="home123" component={ HomeScreen } />
     </Stack.Navigator>
   );
 };
 
 const TabArr = [
   {
+
     route: 'Home',
     label: 'Home',
     focusedImage: require('../../assets/image/homeFocus.png'),

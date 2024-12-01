@@ -10,7 +10,7 @@ export const Login = createAsyncThunk(
       console.log('Dữ liệu gửi đi:', data); // Log dữ liệu đăng nhập
 
       const response = await axios.post(
-        'https://be-movie-sooty.vercel.app/api/login',
+        'http://103.130.213.92:3006/api/login',
         data, // Không cần JSON.stringify, axios tự chuyển đổi
         {
           headers: {
