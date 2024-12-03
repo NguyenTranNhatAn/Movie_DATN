@@ -7,7 +7,25 @@ const LoginScreen = ({navigation}) => {
   const [phone, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [error, setError] = useState('');
   
+  const validatePhoneNumber = (text) => {
+    setPhoneNumber(text);
+    // Không hiển thị lỗi khi người dùng đang nhập
+    if (error) setError('');
+  };
+  const handleBlur = () => {
+    // Regex cho số điện thoại Việt Nam (bắt đầu bằng số 0 và gồm 10 chữ số)
+    const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
+    
+    if (phone.length === 0) {
+      setError('Số điện thoại không được để trống');
+    } else if (!phoneRegex.test(phone)) {
+      setError('Số điện thoại không hợp lệ');
+    } else {
+      setError('');
+    }
+  };
 
 
   const handleLogin = async () => {
@@ -65,8 +83,10 @@ const LoginScreen = ({navigation}) => {
       <TextInput
         style={styles.input}
         placeholder="Mobile Number"
+        maxLength={10}
         value={phone}
-        onChangeText={setPhoneNumber}
+        onChangeText={validatePhoneNumber}
+        onBlur={handleBlur} 
         keyboardType="phone-pad"
       />
 
