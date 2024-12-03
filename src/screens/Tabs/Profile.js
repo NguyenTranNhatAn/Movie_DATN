@@ -2,15 +2,11 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { UploadUsers } from '../../reducers/UploadUserslide';
+import { UploadUsers } from './Reducer/UploadUserslide';
 
 const Profile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  handleTicket = () => {
-    //chuyển sang màn hình mytickets
-    navigation.navigate('Ticket');
-  }
 
   // Lấy dữ liệu người dùng từ Redux store
   const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
@@ -21,59 +17,93 @@ const Profile = () => {
       dispatch(UploadUsers());
     }
   }, [UploadUsersStatus, dispatch]);
+  const handleLogout = () => {
+    // Thêm logic logout ở đây nếu cần, ví dụ: xóa token hoặc reset trạng thái
+    navigation.replace('login'); // Chuyển hướng đến màn hình 'Login'
+  };
 
   return (
-    <ScrollView style={ styles.container }>
-      <Text style={ styles.profileName1 }>Profile</Text>
-      <View style={ styles.profileSection }>
+    <ScrollView style={styles.container}>
+      <Text style={styles.profileName1}>Profile</Text>
+      <View style={styles.profileSection}>
         <Image
-          source={ require('../../../Img/anhspidermen.png') }
-          style={ styles.profileImage }
+          source={require('../Img/anhspidermen.png')}
+          style={styles.profileImage}
         />
-        <Text style={ styles.profileName }>
-          { UploadUsersData.name || 'N/A' }
+        <Text style={styles.profileName}>
+          {UploadUsersData.name || 'N/A'}
         </Text>
-        <Text style={ styles.profilePhone }>
-          { UploadUsersData.phone || 'N/A' }
+        <Text style={styles.profilePhone}>
+          {UploadUsersData.phone || 'N/A'}
         </Text>
       </View>
 
-      <View style={ styles.optionsContainer }>
-        <TouchableOpacity
-          style={ styles.optionRow }
-          onPress={ () => navigation.navigate('EditProfile') }
+      <View style={styles.optionsContainer}>
+        
+      <TouchableOpacity style={styles.optionRow}
+        onPress={() => navigation.navigate('editprofile')}
         >
-          <Text style={ styles.optionText }>Edit Profile</Text>
-          <Image source={ require('../../../Img/Vector.png') } />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={ styles.optionRow }  onPress={ handleTicket }>
-          <View style={ styles.editicon }>
-            <Image source={ require('../../../Img/ticket.png') } />
-            <Text style={ styles.optionText }>My tickets</Text>
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:25}} source={require('../Img/editpencil.png')} />
+            <Text style={styles.optionText}> Edit Profile</Text>
           </View>
-          <Image source={ require('../../../Img/Vector.png') } />
+          <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={ styles.optionRow }>
-          <Text style={ styles.optionText }>Change Password</Text>
-          <Image source={ require('../../../Img/Vector.png') } />
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image source={require('../Img/ticket.png')} />
+            <Text style={styles.optionText}> My tickets</Text>
+          </View>
+          <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={ () => navigation.navigate("Policy") } style={ styles.optionRow }>
-          <Text style={ styles.optionText }>Privacy Policy</Text>
-          <Image source={ require('../../../Img/Vector.png') } />
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../Img/lock.png')} />
+            <Text style={styles.optionText}> Change Password</Text>
+          </View>
+          <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={ styles.optionRow }>
-          <Text style={ styles.optionText }>Terms & Conditions</Text>
-          <Image source={ require('../../../Img/Vector.png') } />
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../Img/check.png')} />
+            <Text style={styles.optionText}> Privacy Policy</Text>
+          </View>
+          <Image source={require('../Img/Vector.png')} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.optionRow}
+        
+        >
+          
+          <View style={styles.editicon}>
+            
+            <Image style={{width:25,height:28}}  source={require('../Img/board.png')} />
+            <Text style={styles.optionText}> Terms & Conditions</Text>
+          </View>
+          <Image source={require('../Img/Vector.png')} />
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={ styles.logoutButton }>
-        <Text style={ styles.logoutText }>Logout</Text>
-      </TouchableOpacity>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <Text style={styles.logoutText}>Logout</Text>
+    </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -103,9 +133,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#000',
-
-    alignSelf: 'center'
-
+    
+    alignSelf:'center'
+    
   },
   profilePhone: {
     fontSize: 16,
@@ -142,8 +172,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  editicon: {
-    flexDirection: 'row'
+  editicon:{
+    flexDirection:'row'
   }
 });
 
