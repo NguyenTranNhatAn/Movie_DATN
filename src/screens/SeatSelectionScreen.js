@@ -449,6 +449,37 @@ const SeatSelectionScreen = ({ route }) => {
   */
 
 
+  useEffect(() => {
+    socket.on('seat_locked', ({ seatId }) => {
+      Alert.alert('Thông báo', `Ghế ${seatId} đã được giữ thành công.`);
+      // Cập nhật trạng thái ghế trên UI
+      setSeatMap((prevMap) =>
+        prevMap.map((rowSeats) =>
+          rowSeats.map((seat) => (seat.seatId === seatId ? { ...seat, type: 'P' } : seat))
+        )
+      );
+    });
+
+    socket.on('seat_unlocked', ({ row, col }) => {
+      Alert.alert('Thông báo', `Ghế tại hàng ${row}, cột ${col} đã được giải phóng.`);
+      // Cập nhật trạng thái ghế trên UI
+      setSeatMap((prevMap) =>
+        prevMap.map((rowSeats, rIndex) =>
+          rIndex === row
+            ? rowSeats.map((seat, cIndex) =>
+              cIndex === col ? { ...seat, type: 'T' } : seat
+            )
+            : rowSeats
+        )
+      );
+    });
+
+    return () => {
+      socket.off('seat_locked');
+      socket.off('seat_unlocked');
+    };
+  }, []);
+
   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
     // Kiểm tra nếu ghế đã bị khóa
     const lockedSeat = lockedSeats[`${showtimeId}-${rowIndex}-${colIndex}`];
@@ -456,6 +487,7 @@ const SeatSelectionScreen = ({ route }) => {
       Alert.alert('Thông báo', 'Ghế này đã bị khóa bởi người dùng khác.');
       return;
     }
+
 
     if (seatType === 'U' || seatType === '_') {
       Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
