@@ -8,15 +8,15 @@ const Profile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  // Lấy dữ liệu người dùng từ Redux store
-  const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
+//   // Lấy dữ liệu người dùng từ Redux store
+//   const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
 
-  // Gọi API khi component được render
-  useEffect(() => {
-    if (UploadUsersStatus === 'idle') {
-      dispatch(UploadUsers());
-    }
-  }, [UploadUsersStatus, dispatch]);
+//   // Gọi API khi component được render
+//   useEffect(() => {
+//     if (UploadUsersStatus === 'idle') {
+//       dispatch(UploadUsers());
+//     }
+//   }, [UploadUsersStatus, dispatch]);
   const handleLogout = () => {
     // Thêm logic logout ở đây nếu cần, ví dụ: xóa token hoặc reset trạng thái
     navigation.replace('login'); // Chuyển hướng đến màn hình 'Login'
@@ -30,18 +30,18 @@ const Profile = () => {
           source={require('../../Img/anhspidermen.png')}
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>
+        {/* <Text style={styles.profileName}>
           {UploadUsersData.name || 'N/A'}
         </Text>
         <Text style={styles.profilePhone}>
           {UploadUsersData.phone || 'N/A'}
-        </Text>
+        </Text> */}
       </View>
 
       <View style={styles.optionsContainer}>
         
       <TouchableOpacity style={styles.optionRow}
-        onPress={() => navigation.navigate('EditProfile')}
+        onPress={() => navigation.navigate('Editprofile')}
         >
           
           <View style={styles.editicon}>
