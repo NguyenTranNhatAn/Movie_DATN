@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   FlatList,
   ToastAndroid,
+  ActivityIndicator,
   Alert,
 } from 'react-native';
 import {
@@ -48,11 +49,11 @@ const CinemaSelect = ({ navigation, route }) => {
   const [iD, setID] = useState(id);
   const [dateArray, setDateArray] = useState(getDateList("2024-11-14", "2024-12-15"));
 
-
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [expanded, setExpanded] = useState({});
   const [showTimeByMovie, setShowTimeByMovie] = useState([]);
-  const [seats, setSeats] = useState([]);
+
   const { showtimeData, showtimeStatus } = useSelector((state) => state.showTime);
   const { brandData, brandStatus } = useSelector((state) => state.brandList);
   const { getTimeData, getTimeStatus } = useSelector((state) => state.listTime);
@@ -78,16 +79,36 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedDateIndex(0);
     setSelectedTimeIndex(0);
     setSelectedBrand(0);
-
+    setstart(0)
+   
+    setTimeARR([])
+    dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
   }, []);
 
-
+  useEffect(() => {
+    setIsLoading(true); // Start loading
+    dispatch(
+      ShowCine({ 
+        movieId: iD, 
+        day: dateArray[0].date, 
+        startHour: start ?? 0, 
+        endHour: end ?? 24, 
+        brandId: brandId 
+      })
+    )
+      .then((response) => {
+        setCinemaData(response.payload || []); // Lấy dữ liệu từ action payload
+      })
+      .finally(() => setIsLoading(false)); // Stop loading
+  }, [dispatch, iD, dateArray, start, end, brandId]);
+  
   useEffect(() => {
     if (showCinemaData.length === 0) {
 
       dispatch(ShowCine({ movieId: iD, day: dateArray[0].date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
 
     }
+    
 
 
     setCinemaData(showCinemaData);
@@ -130,16 +151,15 @@ const CinemaSelect = ({ navigation, route }) => {
       setDatanot(false)
     }
 
-
   }, [dispatch, getTimeStatus, getTimeData, id]);
 
   const toggleDate = (index) => {
-
+   
     setSelectedDateIndex(index);
-
+    setCinemaData([])
     // Lấy ngày đã chọn dựa trên chỉ mục index
     const selectedDate = dateArray[index].date;
-
+   
     dispatch(GetTime({ movieId: iD, day: selectedDate, }));
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
     dispatch(BrandList({ movieId: iD, day: selectedDate }));
@@ -205,7 +225,7 @@ const CinemaSelect = ({ navigation, route }) => {
     const endTime=formatTime(item1.endTime)
     const day=new Date(item1.startTime)
     const cinemaId= item.cinema._id
-    console.log(cinemaId)          
+    // console.log(cinemaId)          
     const date =`${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`;
    
    
@@ -260,7 +280,13 @@ const CinemaSelect = ({ navigation, route }) => {
           }}
         />
       </View>
-
+      <View style={ { marginTop: 15 } }>
+        { isLoading && (
+          <View style={ styles.loadingContainer }>
+            <ActivityIndicator size="large" color={ COLORS.Red } />
+            <Text style={ styles.loadingText }>Loading...</Text>
+          </View>
+        ) }</View>
       {!dataNot ? <View style={styles.OutterContainer}>
 
         <ScrollView
@@ -417,8 +443,20 @@ const CinemaSelect = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: COLORS.Black,
+  },
   body: {
     display: 'flex',
+    
     flex: 1,
     backgroundColor: COLORS.GreyFade,
   },
@@ -452,14 +490,14 @@ const styles = StyleSheet.create({
     color: 'white',
     padding: 10,
   },
-  empty: {
-    padding: 10,
-    margin: 5,
-  },
   container: {
     display: 'flex',
     flex: 1,
-    backgroundColor: COLORS.White,
+   
+  },
+  empty: {
+    padding: 10,
+    margin: 5,
   },
   ImageBG: {
     width: '100%',
