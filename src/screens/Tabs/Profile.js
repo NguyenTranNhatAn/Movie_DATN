@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { UploadUsers } from './Reducer/UploadUserslide';
+import { UploadUsers } from '../../reducers/UploadUserslide';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -27,7 +27,7 @@ const Profile = () => {
       <Text style={styles.profileName1}>Profile</Text>
       <View style={styles.profileSection}>
         <Image
-          source={require('../Img/anhspidermen.png')}
+          source={require('../../../Img/anhspidermen.png')}
           style={styles.profileImage}
         />
         <Text style={styles.profileName}>
@@ -41,15 +41,15 @@ const Profile = () => {
       <View style={styles.optionsContainer}>
         
       <TouchableOpacity style={styles.optionRow}
-        onPress={() => navigation.navigate('editprofile')}
+        onPress={() => navigation.navigate('EditProfile')}
         >
           
           <View style={styles.editicon}>
             
-            <Image style={{width:25,height:25}} source={require('../Img/editpencil.png')} />
+            <Image style={{width:25,height:25}} source={require('../../../Img/editpencil.png')} />
             <Text style={styles.optionText}> Edit Profile</Text>
           </View>
-          <Image source={require('../Img/Vector.png')} />
+          <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
@@ -58,10 +58,10 @@ const Profile = () => {
           
           <View style={styles.editicon}>
             
-            <Image source={require('../Img/ticket.png')} />
+            <Image source={require('../../../Img/ticket.png')} />
             <Text style={styles.optionText}> My tickets</Text>
           </View>
-          <Image source={require('../Img/Vector.png')} />
+          <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
@@ -70,10 +70,10 @@ const Profile = () => {
           
           <View style={styles.editicon}>
             
-            <Image style={{width:25,height:28}}  source={require('../Img/lock.png')} />
+            <Image style={{width:25,height:28}}  source={require('../../../Img/lock.png')} />
             <Text style={styles.optionText}> Change Password</Text>
           </View>
-          <Image source={require('../Img/Vector.png')} />
+          <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
@@ -82,10 +82,10 @@ const Profile = () => {
           
           <View style={styles.editicon}>
             
-            <Image style={{width:25,height:28}}  source={require('../Img/check.png')} />
+            <Image style={{width:25,height:28}}  source={require('../../../Img/check.png')} />
             <Text style={styles.optionText}> Privacy Policy</Text>
           </View>
-          <Image source={require('../Img/Vector.png')} />
+          <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
@@ -94,10 +94,10 @@ const Profile = () => {
           
           <View style={styles.editicon}>
             
-            <Image style={{width:25,height:28}}  source={require('../Img/board.png')} />
+            <Image style={{width:25,height:28}}  source={require('../../../Img/board.png')} />
             <Text style={styles.optionText}> Terms & Conditions</Text>
           </View>
-          <Image source={require('../Img/Vector.png')} />
+          <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
       </View>
 
