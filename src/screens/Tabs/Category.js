@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { Text, View, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Image, TextInput, ActivityIndicator, Alert, Pressable } from 'react-native';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import API_BASE_URL from '../config';
 import { useNavigation } from '@react-navigation/native';
@@ -107,7 +107,8 @@ const Category = () => {
 
   const renderTicket = ({ item: ticket }) => (
     <View style={ styles.ticketWrapper }>
-      <View style={ styles.ticketContainer }>
+      <Pressable style={ styles.ticketContainer } onPress={ () => navigation.navigate('ticket_nice', { ticketId: ticket.ticketId }) }
+      >
         <Image source={ { uri: ticket.movieImage } } style={ styles.image } />
         <View style={ styles.ticketInfo }>
           <Text style={ styles.title }>{ ticket.movieName }</Text>
@@ -121,7 +122,7 @@ const Category = () => {
         <View style={ styles.statusContainer }>
           <Text style={ styles.statusText }>{ ticket.status }</Text>
         </View>
-      </View>
+      </Pressable>
 
       <View style={ styles.ticketActions }>
         { selectedTab === 'Upcoming' && (
@@ -236,7 +237,7 @@ const Category = () => {
           isLoading ? (
             <ActivityIndicator size="large" color="#ff3366" style={ styles.loadingIndicator } />
           ) : (
-            <Text style={ styles.noTicketsText }>No tickets found</Text>
+            <Text style={ styles.noTicketsText }>No tickets data</Text>
           )
         }
       />

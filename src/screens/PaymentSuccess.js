@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import API_BASE_URL from '../screens/config';
-const PaymentSuccess = ({ route }) => {
+const PaymentSuccess = ({ navigation, route }) => {
     const { orderCode } = route.params;
 
     useEffect(() => {
@@ -16,12 +16,22 @@ const PaymentSuccess = ({ route }) => {
                 });
 
                 // Kiểm tra xem server có trả về JSON hay không
-                const text = await response.text();
+                const text = await response.text(); 
                 console.log("Server response:", text); // Log phản hồi để kiểm tra nội dung
 
                 const result = JSON.parse(text); // Parse JSON nếu phản hồi là JSON hợp lệ
                 if (result.error === 0) {
-                    Alert.alert("Thành công", "Trạng thái vé đã được cập nhật thành công!");
+                    Alert.alert(
+                        "Thành công",
+                        "Trạng thái vé đã được cập nhật thành công!",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.replace('Tab'), // Điều hướng về Home
+                            },
+                        ]
+                    );
+
                 } else {
                     Alert.alert("Lỗi", "Không thể cập nhật trạng thái vé.");
                 }
