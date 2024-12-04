@@ -8,8 +8,8 @@ import Toast from 'react-native-toast-message';
 
 const Details = ({ route, navigation }) => {
   const { item, viewOnly } = route.params;
-  const [isFavorite, setIsFavorite] = useState(false);  
-  const [token, setToken] = useState(null);  
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     const getToken = async () => {
@@ -20,10 +20,10 @@ const Details = ({ route, navigation }) => {
     const getUserInfo = async () => {
       if (token) {
         try {
-          const response = await axios.get('https://be-movie-sooty.vercel.app/api/user-info', {
+          const response = await axios.get('http://103.69.193.223:3006/api/user-info', {
             headers: { Authorization: `Bearer ${token}` },
           });
-        
+
           setIsFavorite(response.data.wishlist.includes(item._id));
         } catch (error) {
           console.error("Error fetching user info:", error);
@@ -33,7 +33,7 @@ const Details = ({ route, navigation }) => {
 
     getToken();
     if (token) getUserInfo();
-  }, [token, item._id]); 
+  }, [token, item._id]);
 
   const handleAddToWishlist = async () => {
     if (!token) {
@@ -46,14 +46,14 @@ const Details = ({ route, navigation }) => {
     }
 
     try {
-     
+
       const response = await axios.get(
-        `https://be-movie-sooty.vercel.app/movie/addWishList?movieId=${item._id}`, 
+        `http://103.69.193.223:3006/movie/addWishList?movieId=${item._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.status === 'true') {
-        setIsFavorite(!isFavorite);  
+        setIsFavorite(!isFavorite);
         Toast.show({
           type: 'success',
           text1: 'Yêu thích',
@@ -90,7 +90,7 @@ const Details = ({ route, navigation }) => {
           </Text>
         </TouchableOpacity>
       </View>
-      
+
       <ScrollView contentContainerStyle={{ paddingBottom: viewOnly ? 20 : 0 }}>
         {/* Movie Poster and Info */}
         <View style={styles.posterInfoContainer}>
@@ -114,7 +114,7 @@ const Details = ({ route, navigation }) => {
           </View>
         </View>
 
-      
+
         <View style={styles.movieDetails}>
           <Text style={styles.movieTitle}>{item.name}</Text>
           <View style={styles.descriptionRow}>
@@ -125,7 +125,7 @@ const Details = ({ route, navigation }) => {
           </View>
         </View>
 
-   
+
         <Text style={styles.trailerTitle}>Trailer</Text>
         <View style={[styles.videoContainer, viewOnly && { marginBottom: 30 }]}>
           <WebView
@@ -136,7 +136,7 @@ const Details = ({ route, navigation }) => {
         </View>
       </ScrollView>
 
-      
+
       {!viewOnly && (
         <TouchableOpacity onPress={() => navigation.navigate('Cinema', { id: item._id, image: item.images })} style={styles.selectButton}>
           <Text style={styles.selectButtonText}>Select Seat</Text>
@@ -246,10 +246,10 @@ const styles = StyleSheet.create({
   },
   wishlistCircle: {
     backgroundColor: '#FFF',
-    borderRadius: 50,  
-    padding: 1,  
-    borderWidth: 2, 
-    borderColor: '#FF515A',  
+    borderRadius: 50,
+    padding: 1,
+    borderWidth: 2,
+    borderColor: '#FF515A',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

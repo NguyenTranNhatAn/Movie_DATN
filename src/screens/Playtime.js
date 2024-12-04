@@ -277,7 +277,7 @@ const Playtime = () => {
             try {
                 //192.168.1.28
                 //const response = await fetch('http://10.0.2.2:3000/api/playtimes/670ad1a7320f37a6308bc5a2');
-                const response = await fetch('https://be-movie-sooty.vercel.app/api/playtimes/670ad1a7320f37a6308bc5a2');
+                const response = await fetch('http://103.69.193.223:3006/api/playtimes/670ad1a7320f37a6308bc5a2');
                 const result = await response.json();
                 console.log(result);
                 setCinemaData(result);
@@ -297,10 +297,10 @@ const Playtime = () => {
     const renderDayItem = ({ item }) => {
         const isSelected = item.date === selectedDate;
         return (
-            <TouchableOpacity onPress={ () => setSelectedDate(item.date) }>
-                <View style={ [styles.dayContainer, isSelected && styles.selectedDay] }>
-                    <Text style={ [styles.dayOfWeek, isSelected && styles.selectedText] }>{ item.dayOfWeek }</Text>
-                    <Text style={ [styles.day, isSelected && styles.selectedText] }>{ item.day }</Text>
+            <TouchableOpacity onPress={() => setSelectedDate(item.date)}>
+                <View style={[styles.dayContainer, isSelected && styles.selectedDay]}>
+                    <Text style={[styles.dayOfWeek, isSelected && styles.selectedText]}>{item.dayOfWeek}</Text>
+                    <Text style={[styles.day, isSelected && styles.selectedText]}>{item.day}</Text>
                 </View>
             </TouchableOpacity>
         );
@@ -311,45 +311,45 @@ const Playtime = () => {
     }
 
     return (
-        <ScrollView style={ styles.container }>
-            <View style={ styles.header }>
-                <Text style={ styles.movieTitle }>Nhà tù Shawshank 4</Text>
+        <ScrollView style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.movieTitle}>Nhà tù Shawshank 4</Text>
             </View>
             <FlatList
                 horizontal
-                data={ days }
-                keyExtractor={ (item) => item.date }
-                renderItem={ renderDayItem }
-                style={ styles.datePicker }
-                showsHorizontalScrollIndicator={ false }
+                data={days}
+                keyExtractor={(item) => item.date}
+                renderItem={renderDayItem}
+                style={styles.datePicker}
+                showsHorizontalScrollIndicator={false}
             />
-            <Text style={ styles.selectedDate }>Ngày chọn: { selectedDate }</Text>
-            { cinemaData.map((cinema, index) => (
-                <View key={ index } style={ styles.cinemaContainer }>
-                    <TouchableOpacity style={ styles.cinemaHeader } onPress={ () => toggleExpand(index) }>
-                        <Text style={ styles.cinemaName }>{ cinema.cinema_id.name }</Text>
-                        <Icon name={ expandedCinema === index ? 'up' : 'down' } size={ 24 } color="#c4001d" />
+            <Text style={styles.selectedDate}>Ngày chọn: {selectedDate}</Text>
+            {cinemaData.map((cinema, index) => (
+                <View key={index} style={styles.cinemaContainer}>
+                    <TouchableOpacity style={styles.cinemaHeader} onPress={() => toggleExpand(index)}>
+                        <Text style={styles.cinemaName}>{cinema.cinema_id.name}</Text>
+                        <Icon name={expandedCinema === index ? 'up' : 'down'} size={24} color="#c4001d" />
                     </TouchableOpacity>
-                    { expandedCinema === index && (
+                    {expandedCinema === index && (
                         cinema.dates.map((dateEntry, dateIndex) => (
                             dateEntry.date.split('T')[0] === selectedDate && (
-                                <View key={ dateIndex } style={ styles.showtimeContainer }>
-                                    <Text style={ styles.format }>
-                                        • { cinema.format }
+                                <View key={dateIndex} style={styles.showtimeContainer}>
+                                    <Text style={styles.format}>
+                                        • {cinema.format}
                                     </Text>
-                                    <View style={ styles.timeRow }>
-                                        { dateEntry.times.map((time, timeIndex) => (
-                                            <TouchableOpacity key={ timeIndex } style={ styles.timeButton }>
-                                                <Text style={ styles.timeText }>{ time }</Text>
+                                    <View style={styles.timeRow}>
+                                        {dateEntry.times.map((time, timeIndex) => (
+                                            <TouchableOpacity key={timeIndex} style={styles.timeButton}>
+                                                <Text style={styles.timeText}>{time}</Text>
                                             </TouchableOpacity>
-                                        )) }
+                                        ))}
                                     </View>
                                 </View>
                             )
                         ))
-                    ) }
+                    )}
                 </View>
-            )) }
+            ))}
         </ScrollView>
     );
 };

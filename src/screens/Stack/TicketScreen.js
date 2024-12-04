@@ -23,7 +23,7 @@
 //   const [ticketData, setTicketData] = useState(null);
 
 //   useEffect(() => {
-//     fetch(`https://be-movie-sooty.vercel.app/ticket/${ticketId}`)
+//     fetch(`http://103.69.193.223:3006/ticket/${ticketId}`)
 //       .then((response) => response.json())
 //       .then((data) => {
 //         if (data.error === 0) {
@@ -211,7 +211,7 @@ const TicketScreen = ({ route, navigation }) => {
   const [tickets, setTickets] = useState([]);
   /*
   useEffect(() => {
-    fetch(`https://be-movie-sooty.vercel.app/ticket/${ticketId}`)
+    fetch(`http://103.69.193.223:3006/ticket/${ticketId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.error === 0) {
@@ -224,7 +224,7 @@ const TicketScreen = ({ route, navigation }) => {
   }, [ticketId]);
 */
   useEffect(() => {
-    fetch(`https://be-movie-sooty.vercel.app/ticket/all/RE123`)
+    fetch(`http://103.69.193.223:3006/ticket/all/RE123`)
       .then((response) => response.json())
       .then((data) => {
         if (data.error === 0) {
@@ -245,13 +245,13 @@ const TicketScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={ styles.container }>
+    <View style={styles.container}>
       <StatusBar hidden />
-      <View style={ styles.appHeaderContainer }>
+      <View style={styles.appHeaderContainer}>
         <AppHeader
           name="close"
           header="My Tickets"
-          action={ () => navigation.goBack() }
+          action={() => navigation.goBack()}
         />
       </View>
       <ScrollView horizontal pagingEnabled style={styles.scrollView}>

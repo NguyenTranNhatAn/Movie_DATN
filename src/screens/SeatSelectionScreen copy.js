@@ -12,7 +12,7 @@ import API_BASE_URL from './config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { current } from '@reduxjs/toolkit';
 // Component ghế được memo hóa
-const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType,isGeted }) => {
+const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType, isGeted }) => {
   let seatStyle = styles.seat; // Mặc định là ghế thường
 
   // Xác định màu sắc ghế dựa vào loại
@@ -30,9 +30,9 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType,isGete
       seatStyle = styles.legendColorReserved;
       break;
     case 'P':
-      isGeted?
-      seatStyle = styles.legendColorOtherSelected:
-      seatStyle = styles.legendColorSelected;
+      isGeted ?
+        seatStyle = styles.legendColorOtherSelected :
+        seatStyle = styles.legendColorSelected;
       break;
     default:
       break;
@@ -40,17 +40,17 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType,isGete
 
   return (
     <TouchableOpacity
-      key={ seatId }
-      style={ [
+      key={seatId}
+      style={[
         seatStyle,
         isMinimap && styles.minimapSeat,
-         isSelected && (isMinimap ? styles.minimapSelectedSeat : styles.selectedSeat),
-         isGeted&& (isMinimap?styles.minimapgetorder:styles.getedSeat)
-      ] }
-      onPress={ () => onSeatPress(seatId) }
-      disabled={ isMinimap } // Không cho phép chọn ghế trong minimap
+        isSelected && (isMinimap ? styles.minimapSelectedSeat : styles.selectedSeat),
+        isGeted && (isMinimap ? styles.minimapgetorder : styles.getedSeat)
+      ]}
+      onPress={() => onSeatPress(seatId)}
+      disabled={isMinimap} // Không cho phép chọn ghế trong minimap
     >
-      { !isMinimap && <Text style={ styles.seatText }>{ seatId }</Text> }
+      {!isMinimap && <Text style={styles.seatText}>{seatId}</Text>}
     </TouchableOpacity>
   );
 });
@@ -86,11 +86,11 @@ const SeatSelectionn = ({ route }) => {
   useEffect(() => {
     // Lắng nghe sự kiện cập nhật sơ đồ ghế từ server
     socket.on('seat_map_updated', (seatMap) => {
-      if(seatMap){
-       setSeatMapId(seatMap.seatMap)
-       
+      if (seatMap) {
+        setSeatMapId(seatMap.seatMap)
+
       }
-     
+
       loadSeatMap(); // Tự động tải lại sơ đồ ghế khi có sự thay đổi
     });
     //console.log(seatMapId)
@@ -103,28 +103,28 @@ const SeatSelectionn = ({ route }) => {
             return seat;
           })
         );
-       
+
         setSeatMap(updatedSeatMap);
-        
+
       }
     });
-    
-    
-    
+
+
+
     // Xử lý khi có lỗi
     socket.on('error', ({ message }) => {
       Alert.alert('Error', message);
     });
-   
+
     return () => {
       socket.disconnect();
     };
-  }, [seatMap, userId,seatMapId]);
+  }, [seatMap, userId, seatMapId]);
 
 
-  
+
   useEffect(() => {
-    
+
     loadSeatMap(); // Chỉ gọi một lần khi component được mount
   }, []); // Truyền mảng rỗng để đảm bảo chỉ gọi một lần
   const loadUserData = async () => {
@@ -135,7 +135,7 @@ const SeatSelectionn = ({ route }) => {
 
       if (storedToken) {
         // Gọi API để lấy userId từ token
-        const response = await fetch(`https://be-movie-sooty.vercel.app/api/user-info`, {
+        const response = await fetch(`http://103.69.193.223:3006/api/user-info`, {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 
@@ -219,7 +219,7 @@ const SeatSelectionn = ({ route }) => {
         //const rows = data.Room_Shape;
         setSeatMap(rows);
         setOriginalSeatMap(_.cloneDeep(rows)); // Lưu bản sao ban đầu
-      //  console.log('Dữ liệu sau khi xử lý:', rows); // In ra dữ liệu sau khi xử lý thành mảng
+        //  console.log('Dữ liệu sau khi xử lý:', rows); // In ra dữ liệu sau khi xử lý thành mảng
       } else {
         Alert.alert('Error', 'Không tìm thấy layout ghế');
       }
@@ -243,10 +243,10 @@ const SeatSelectionn = ({ route }) => {
   const zoomableViewRef = useRef(null);
 
   useEffect(() => {
-    
+
     // Lắng nghe sự kiện khi một ghế được chọn bởi người dùng khác
     socket.on('select_seat', ({ showtimeId: selectedShowtimeId, row, col, userId: selectedUserId, currentSeatUser }) => {
-   
+
       if (selectedShowtimeId === showtimeId) {
         if (selectedUserId !== userId) {
           // Nếu người dùng khác chọn ghế, cập nhật trạng thái seatMap mà không thêm vào selectedSeats
@@ -286,25 +286,25 @@ const SeatSelectionn = ({ route }) => {
   }, [seatMap, userId]);
 
 
-  const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => { 
-   
+  const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
+
     if (seatType === 'U' || seatType === '_') {
       Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
       return;
     }
 
-    if (seatType === 'P') {      
+    if (seatType === 'P') {
       const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId;
       console.log(currentSeatUser)
-      if ( currentSeatUser !== userId) {     
+      if (currentSeatUser !== userId) {
         Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
         return;
       }
     }
 
     const seatPrice = seatPrices[seatType] || 0;
-     
-   
+
+
 
     setSelectedSeats((prevSeats) => {
       const isSeatSelected = prevSeats.some(seat => seat.seatId === seatId);
@@ -323,7 +323,7 @@ const SeatSelectionn = ({ route }) => {
           )
         );
       } else {
-      
+
         // Nếu ghế chưa được chọn, chọn ghế đó
         updatedSeats = [...prevSeats, { seatId, rowIndex, colIndex, price: seatPrice }];
         socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
@@ -338,9 +338,9 @@ const SeatSelectionn = ({ route }) => {
 
       return updatedSeats;
     });
-  
+
   }
-  , [seatMap, originalSeatMap, seatPrices, showtimeId, userId]);
+    , [seatMap, originalSeatMap, seatPrices, showtimeId, userId]);
 
 
 
@@ -385,12 +385,12 @@ const SeatSelectionn = ({ route }) => {
     });
 
 
-   
+
   };
 
   //đặt vé kết thúc
 
- 
+
   const [totalPrice, setTotalPrice] = useState(0);
   const [seatCount, setSeatCount] = useState(0);
 
@@ -409,11 +409,11 @@ const SeatSelectionn = ({ route }) => {
 
   //render ghế 
   const renderSeats = useCallback(
-    
+
     (isMinimap = false) => {
       if (!Array.isArray(seatMap) || seatMap.length === 0) {
         // console.log('Không có dữ liệu trong seatMap');
-        return <Text style={ { color: 'white' } }>Đang tải dữ liệu ghế...</Text>;
+        return <Text style={{ color: 'white' }}>Đang tải dữ liệu ghế...</Text>;
       }
       // console.log("seatMap hiện tại:", seatMap);
 
@@ -424,17 +424,17 @@ const SeatSelectionn = ({ route }) => {
             if (char !== '_') {
               const seatId = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`; // Ký hiệu A1, B2, ...
               // const isSelected = selectedSeats.includes(seatId);
-              const isGeted = seatMapId[rowIndex] && seatMapId[rowIndex][colIndex]?.userId !== userId &&seatMapId[rowIndex][colIndex]?.userId!=null;
-              const isSelected =isGeted?false: Array.isArray(selectedSeats) && selectedSeats.includes(seatId);
+              const isGeted = seatMapId[rowIndex] && seatMapId[rowIndex][colIndex]?.userId !== userId && seatMapId[rowIndex][colIndex]?.userId != null;
+              const isSelected = isGeted ? false : Array.isArray(selectedSeats) && selectedSeats.includes(seatId);
               return (
                 <Seat
-                  key={ seatId }
-                  seatId={ seatId }
-                  isSelected={ isSelected }
+                  key={seatId}
+                  seatId={seatId}
+                  isSelected={isSelected}
                   isGeted={isGeted}
-                  onSeatPress={ () => handleSeatPress(seatId, rowIndex, colIndex, char) }
-                  isMinimap={ isMinimap }
-                  seatType={ char } // Truyền ký tự để xác định màu sắc ghế
+                  onSeatPress={() => handleSeatPress(seatId, rowIndex, colIndex, char)}
+                  isMinimap={isMinimap}
+                  seatType={char} // Truyền ký tự để xác định màu sắc ghế
                 />
               );
             }
@@ -442,8 +442,8 @@ const SeatSelectionn = ({ route }) => {
           });
 
           return (
-            <View key={ `row-${rowIndex}` } style={ styles.seatRow }>
-              { seatRow }
+            <View key={`row-${rowIndex}`} style={styles.seatRow}>
+              {seatRow}
             </View>
           );
         }
@@ -480,40 +480,40 @@ const SeatSelectionn = ({ route }) => {
   const viewportHeight = Math.min((screenHeight * minimapScale) / zoomLevel, minimapHeight);
 
   return (
-    <GestureHandlerRootView style={ styles.container }>
-      <View style={ styles.header }>
+    <GestureHandlerRootView style={styles.container}>
+      <View style={styles.header}>
         <TouchableOpacity>
-          <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } />
+          <Ionicons name="arrow-back" size={24} color="red" style={styles.backButton} />
         </TouchableOpacity>
-        <View style={ styles.headerTitleContainer }>
-          <Text style={ styles.headerText }>{ cinemaName }</Text>
-          <Text style={ styles.showTimeTextHeader }>{ roomName }, { formattedDay }, { formattedStartTime }~{ formattedEndTime }</Text>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerText}>{cinemaName}</Text>
+          <Text style={styles.showTimeTextHeader}>{roomName}, {formattedDay}, {formattedStartTime}~{formattedEndTime}</Text>
         </View>
         <TouchableOpacity>
-          <Ionicons name="menu" size={ 24 } color="red" style={ styles.menuButton } />
+          <Ionicons name="menu" size={24} color="red" style={styles.menuButton} />
         </TouchableOpacity>
       </View>
 
       <ReactNativeZoomableView
-        ref={ zoomableViewRef }
-        maxZoom={ 4.0 }
-        minZoom={ 0.5 }
-        zoomStep={ 0.5 }
-        initialZoom={ 1 }
-        bindToBorders={ true }
-        onZoomAfter={ handleZoomAfter }
-        style={ styles.zoomableView }
+        ref={zoomableViewRef}
+        maxZoom={4.0}
+        minZoom={0.5}
+        zoomStep={0.5}
+        initialZoom={1}
+        bindToBorders={true}
+        onZoomAfter={handleZoomAfter}
+        style={styles.zoomableView}
       >
-        <View style={ styles.seatMap }>{ renderSeats() }</View>
+        <View style={styles.seatMap}>{renderSeats()}</View>
       </ReactNativeZoomableView>
 
-      <View style={ styles.minimapContainer }>
-        <View style={ [styles.minimap, { width: minimapWidth, height: minimapHeight }] }>
-          <View style={ [styles.seatMap, { transform: [{ scale: minimapScale }] }] }>
-            { renderSeats(true) }
+      <View style={styles.minimapContainer}>
+        <View style={[styles.minimap, { width: minimapWidth, height: minimapHeight }]}>
+          <View style={[styles.seatMap, { transform: [{ scale: minimapScale }] }]}>
+            {renderSeats(true)}
           </View>
           <View
-            style={ [
+            style={[
               styles.minimapViewport,
               {
                 width: viewportWidth,
@@ -523,41 +523,41 @@ const SeatSelectionn = ({ route }) => {
                   { translateY: -viewPosition.y * minimapScale },
                 ],
               },
-            ] }
+            ]}
           />
         </View>
       </View>
 
-      <View style={ styles.legendContainer }>
-        <View style={ styles.legendItem }>
-          <View style={ styles.legendColorSelected } />
-          <Text style={ styles.legendText }>Đang chọn</Text>
+      <View style={styles.legendContainer}>
+        <View style={styles.legendItem}>
+          <View style={styles.legendColorSelected} />
+          <Text style={styles.legendText}>Đang chọn</Text>
         </View>
-        <View style={ styles.legendItem }>
-          <View style={ styles.legendColorReserved } />
-          <Text style={ styles.legendText }>Đã đặt</Text>
+        <View style={styles.legendItem}>
+          <View style={styles.legendColorReserved} />
+          <Text style={styles.legendText}>Đã đặt</Text>
         </View>
-        <View style={ styles.legendItem }>
-          <View style={ styles.legendColorStandard } />
-          <Text style={ styles.legendText }>Thường</Text>
+        <View style={styles.legendItem}>
+          <View style={styles.legendColorStandard} />
+          <Text style={styles.legendText}>Thường</Text>
         </View>
-        <View style={ styles.legendItem }>
-          <View style={ styles.legendColorVIP } />
-          <Text style={ styles.legendText }>VIP</Text>
+        <View style={styles.legendItem}>
+          <View style={styles.legendColorVIP} />
+          <Text style={styles.legendText}>VIP</Text>
         </View>
-        <View style={ styles.legendItem }>
-          <View style={ styles.legendColorSweetBox } />
-          <Text style={ styles.legendText }>Sweet Box</Text>
+        <View style={styles.legendItem}>
+          <View style={styles.legendColorSweetBox} />
+          <Text style={styles.legendText}>Sweet Box</Text>
         </View>
       </View>
 
-      <View style={ styles.footer }>
-        <Text style={ styles.movieTitle }>{ movieName }</Text>
-        <Text style={ styles.movieDetails }>2D Phụ Đề Việt | Rạp STARIUM</Text>
-        <Text style={ styles.price }>{ `${totalPrice.toLocaleString()} ₫` }</Text>
-        <Text style={ styles.seatCount }>{ seatCount > 0 ? `${seatCount} ghế` : '0 ghế' }</Text>
-        <TouchableOpacity style={ styles.bookButton } onPress={ handleBook }>
-          <Text style={ styles.bookButtonText }>ĐẶT VÉ</Text>
+      <View style={styles.footer}>
+        <Text style={styles.movieTitle}>{movieName}</Text>
+        <Text style={styles.movieDetails}>2D Phụ Đề Việt | Rạp STARIUM</Text>
+        <Text style={styles.price}>{`${totalPrice.toLocaleString()} ₫`}</Text>
+        <Text style={styles.seatCount}>{seatCount > 0 ? `${seatCount} ghế` : '0 ghế'}</Text>
+        <TouchableOpacity style={styles.bookButton} onPress={handleBook}>
+          <Text style={styles.bookButtonText}>ĐẶT VÉ</Text>
         </TouchableOpacity>
       </View>
     </GestureHandlerRootView>
@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
   minimapgetorder: {
     backgroundColor: 'gray',
   },
-  getedSeat:{
+  getedSeat: {
     backgroundColor: 'gray',
   },
   minimapSelectedSeat: {

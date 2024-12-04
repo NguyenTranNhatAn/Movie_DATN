@@ -13,7 +13,7 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('https://be-movie-sooty.vercel.app/api/login', { phone, password });
+      const response = await axios.post('http://103.69.193.223:3006/api/login', { phone, password });
       const { token } = response.data;
       await AsyncStorage.setItem('token', token);
       navigation.navigate('Tab');
@@ -33,76 +33,76 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAwareScrollView contentContainerStyle={ styles.container }>
-      {/* Logo */ }
-      <View style={ styles.logoContainer }>
-        <Image source={ require('../../../image/logo.png') } />
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
+      {/* Logo */}
+      <View style={styles.logoContainer}>
+        <Image source={require('../../../image/logo.png')} />
       </View>
 
-      {/* Title */ }
-      <Text style={ styles.title }>Welcome Back</Text>
-      <Text style={ styles.subtitle }>Log in to your account using email</Text>
+      {/* Title */}
+      <Text style={styles.title}>Welcome Back</Text>
+      <Text style={styles.subtitle}>Log in to your account using email</Text>
 
-      {/* Login with Apple */ }
-      <TouchableOpacity style={ styles.socialButtonApple }>
-        <Image source={ require('../../../image/iconAP.png') } />
-        <Text style={ styles.socialButtonText }>Login with Apple</Text>
+      {/* Login with Apple */}
+      <TouchableOpacity style={styles.socialButtonApple}>
+        <Image source={require('../../../image/iconAP.png')} />
+        <Text style={styles.socialButtonText}>Login with Apple</Text>
       </TouchableOpacity>
 
-      {/* Login with Google */ }
-      <TouchableOpacity style={ styles.socialButtonGoogle }>
-        <Image source={ require('../../../image/iconGG.png') } />
-        <Text style={ styles.socialButtonText }>Login with Google</Text>
+      {/* Login with Google */}
+      <TouchableOpacity style={styles.socialButtonGoogle}>
+        <Image source={require('../../../image/iconGG.png')} />
+        <Text style={styles.socialButtonText}>Login with Google</Text>
       </TouchableOpacity>
 
-      {/* Divider */ }
-      <View style={ styles.dividerContainer }>
-        <View style={ styles.divider } />
-        <Text style={ styles.dividerText }>Or continue with social account</Text>
-        <View style={ styles.divider } />
+      {/* Divider */}
+      <View style={styles.dividerContainer}>
+        <View style={styles.divider} />
+        <Text style={styles.dividerText}>Or continue with social account</Text>
+        <View style={styles.divider} />
       </View>
 
-      {/* Mobile Number Input */ }
+      {/* Mobile Number Input */}
       <TextInput
-        style={ styles.input }
+        style={styles.input}
         placeholder="Mobile Number"
-        value={ phone }
-        onChangeText={ setPhoneNumber }
+        value={phone}
+        onChangeText={setPhoneNumber}
         keyboardType="phone-pad"
       />
 
-      {/* Password Input */ }
-      <View style={ styles.passwordContainer }>
+      {/* Password Input */}
+      <View style={styles.passwordContainer}>
         <TextInput
-          style={ styles.inputP }
+          style={styles.inputP}
           placeholder="Password"
-          secureTextEntry={ secureTextEntry }
-          value={ password }
-          onChangeText={ setPassword }
+          secureTextEntry={secureTextEntry}
+          value={password}
+          onChangeText={setPassword}
 
         />
-        <TouchableOpacity onPress={ togglePasswordVisibility }>
-          <Image source={ require('../../../image/Union.png') } />
+        <TouchableOpacity onPress={togglePasswordVisibility}>
+          <Image source={require('../../../image/Union.png')} />
         </TouchableOpacity>
       </View>
 
-      {/* Forgot Password */ }
-      <TouchableOpacity style={ styles.forgotPasswordContainer }>
-        <Text style={ styles.forgotPasswordText }>Forgot Password ?</Text>
+      {/* Forgot Password */}
+      <TouchableOpacity style={styles.forgotPasswordContainer}>
+        <Text style={styles.forgotPasswordText}>Forgot Password ?</Text>
       </TouchableOpacity>
 
-      {/* Login Button */ }
-      <TouchableOpacity style={ styles.loginButton } onPress={ handleLogin }>
-        <Text style={ styles.loginButtonText }>Login</Text>
+      {/* Login Button */}
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      {/* Register Link */ }
-      <View style={ styles.registerContainer }>
-        <Text style={ styles.registerText }>Didn't have an account?</Text>
+      {/* Register Link */}
+      <View style={styles.registerContainer}>
+        <Text style={styles.registerText}>Didn't have an account?</Text>
 
         <TouchableOpacity
-          onPress={ () => navigation.navigate('Signup') }>
-          <Text style={ styles.registerLink }> Register</Text>
+          onPress={() => navigation.navigate('Signup')}>
+          <Text style={styles.registerLink}> Register</Text>
         </TouchableOpacity>
 
       </View>
