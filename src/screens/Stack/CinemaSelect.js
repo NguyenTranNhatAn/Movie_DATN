@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   FlatList,
   ToastAndroid,
-  ActivityIndicator,
   Alert,
+  ActivityIndicator
 } from 'react-native';
 import {
   BORDERRADIUS,
@@ -49,11 +49,11 @@ const CinemaSelect = ({ navigation, route }) => {
   const [iD, setID] = useState(id);
   const [dateArray, setDateArray] = useState(getDateList("2024-11-14", "2024-12-15"));
 
-  const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
   const [expanded, setExpanded] = useState({});
   const [showTimeByMovie, setShowTimeByMovie] = useState([]);
-
+  const [seats, setSeats] = useState([]);
   const { showtimeData, showtimeStatus } = useSelector((state) => state.showTime);
   const { brandData, brandStatus } = useSelector((state) => state.brandList);
   const { getTimeData, getTimeStatus } = useSelector((state) => state.listTime);
@@ -73,46 +73,35 @@ const CinemaSelect = ({ navigation, route }) => {
   const [listBrand, setListBrand] = useState([]);
   const [dataNot, setDatanot] = useState(false);
   const [cinemaData, setCinemaData] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setSelectedDateIndex(0);
     setSelectedTimeIndex(0);
     setSelectedBrand(0);
-    setstart(0)
-   
-    setTimeARR([])
-    dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
+
   }, []);
 
-  useEffect(() => {
-    setIsLoading(true); // Start loading
-    dispatch(
-      ShowCine({ 
-        movieId: iD, 
-        day: dateArray[0].date, 
-        startHour: start ?? 0, 
-        endHour: end ?? 24, 
-        brandId: brandId 
-      })
-    )
-      .then((response) => {
-        setCinemaData(response.payload || []); // Lấy dữ liệu từ action payload
-      })
-      .finally(() => setIsLoading(false)); // Stop loading
-  }, [dispatch, iD, dateArray, start, end, brandId]);
-  
+
   useEffect(() => {
     if (showCinemaData.length === 0) {
 
       dispatch(ShowCine({ movieId: iD, day: dateArray[0].date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
 
     }
-    
 
 
     setCinemaData(showCinemaData);
   }, [dispatch, showCinemaData])
+  useEffect(() => {
+    setIsLoading(true); // Start loading
+    dispatch(ShowCine({ movieId: iD, day: dateArray[0].date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }))
+      .then(() => setCinemaData(showCinemaData))
+      .finally(() => setIsLoading(false)); // Stop loading after the fetch completes
+  }, [dispatch, showCinemaData]);
+
+
+
 
   useEffect(() => {
 
@@ -151,27 +140,40 @@ const CinemaSelect = ({ navigation, route }) => {
       setDatanot(false)
     }
 
+
   }, [dispatch, getTimeStatus, getTimeData, id]);
 
+  /*
   const toggleDate = (index) => {
-   
+
     setSelectedDateIndex(index);
-    setCinemaData([])
+
     // Lấy ngày đã chọn dựa trên chỉ mục index
     const selectedDate = dateArray[index].date;
-   
+
     dispatch(GetTime({ movieId: iD, day: selectedDate, }));
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
     dispatch(BrandList({ movieId: iD, day: selectedDate }));
 
   };
+  */
+  const toggleDate = (index) => {
+    setSelectedDateIndex(index);
+    const selectedDate = dateArray[index].date;
+
+    setIsLoading(true); // Start loading
+    dispatch(GetTime({ movieId: iD, day: selectedDate }))
+      .then(() => dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId })))
+      .finally(() => setIsLoading(false)); // Stop loading
+  };
+
   const allDate = () => {
     const selectedDate = dateArray[selectedDateIndex].date;
     setstart(0);
     setEnd(24)
     setSelectedTimeIndex(0)
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: 0, endHour: 24, brandId: brandId }));
-   
+
   }
   const toggleTime = (index, item) => {
     setstart(item.start)
@@ -180,16 +182,27 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedTimeIndex(index);
     console.log(item.start, item.end)
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: item.start, endHour: item.end, brandId: brandId }));
-   
+
     console.log(item.start, item.end, brandId)
 
   };
+  /*
   const toggleBrand = (item, index) => {
     setBrandId(item.brandId)
     setSelectedBrand(index + 1)
     const selectedDate = dateArray[selectedDateIndex].date;
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: item.brandId }));
     console.log(start ?? 0)
+  };
+*/
+  const toggleBrand = (item, index) => {
+    setBrandId(item.brandId);
+    setSelectedBrand(index + 1);
+    const selectedDate = dateArray[selectedDateIndex].date;
+
+    setIsLoading(true); // Start loading
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: item.brandId }))
+      .finally(() => setIsLoading(false)); // Stop loading
   };
 
   const allBrand = () => {
@@ -220,48 +233,57 @@ const CinemaSelect = ({ navigation, route }) => {
   }
   const toggleSeat = (item, item1, index) => {
 
-    const showtimeId= item1.showtimeId
-    const startTime=formatTime(item1.startTime)
-    const endTime=formatTime(item1.endTime)
-    const day=new Date(item1.startTime)
-    const cinemaId= item.cinema._id
-    // console.log(cinemaId)          
-    const date =`${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`;
-   
-   
-    navigation.navigate("Seat",{
-      startTime:startTime,day:date,showtimeId:showtimeId,movieId:iD,endTime:endTime,cinemaId:cinemaId})
+    const showtimeId = item1.showtimeId
+    const startTime = formatTime(item1.startTime)
+    const endTime = formatTime(item1.endTime)
+    const day = new Date(item1.startTime)
+    const cinemaId = item.cinema._id
+    console.log(cinemaId)
+    const date = `${day.getDate()}/${day.getMonth() + 1}/${day.getFullYear()}`;
+
+
+    navigation.navigate("Seat", {
+      startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId
+    })
+
   }
 
   return (
-    <ScrollView style={styles.container} bounces={false} showsVerticalScrollIndicator={false}>
-      <StatusBar hidden />
 
+
+    <ScrollView style={ styles.container } bounces={ false } showsVerticalScrollIndicator={ false }>
+      <StatusBar hidden />
       <View>
         <ImageBackground
-          source={{ uri: image[0] }}
-          style={styles.ImageBG}>
-          <LinearGradient colors={[COLORS.BlackRGB10, COLORS.Black]} style={styles.linearGradient}>
-            <View style={styles.appHeaderContainer}>
-              <AppHeader name="close" header="" action={() => goBack()} />
+          source={ { uri: image[0] } }
+          style={ styles.ImageBG }>
+          <LinearGradient colors={ [COLORS.BlackRGB10, COLORS.Black] } style={ styles.linearGradient }>
+            <View style={ styles.appHeaderContainer }>
+              <AppHeader name="close" header="" action={ () => goBack() } />
             </View>
           </LinearGradient>
         </ImageBackground>
 
       </View>
-      <View style={{ marginTop: 15 }}>
+      <View style={ { marginTop: 15 } }>
+        { isLoading && (
+          <View style={ styles.loadingContainer }>
+            <ActivityIndicator size="large" color={ COLORS.Red } />
+            <Text style={ styles.loadingText }>Loading...</Text>
+          </View>
+        ) }
         <FlatList
-          data={dateArray}
-          keyExtractor={item => item.day + item.date}
+          data={ dateArray }
+          keyExtractor={ item => item.day + item.date }
           horizontal
-          showsHorizontalScrollIndicator={false}
-          bounces={false}
-          contentContainerStyle={styles.containerGap24}
-          renderItem={({ item, index }) => {
+          showsHorizontalScrollIndicator={ false }
+          bounces={ false }
+          contentContainerStyle={ styles.containerGap24 }
+          renderItem={ ({ item, index }) => {
             return (
-              <TouchableOpacity onPress={() => toggleDate(index)}>
+              <TouchableOpacity onPress={ () => toggleDate(index) }>
                 <View
-                  style={[
+                  style={ [
                     styles.dateContainer,
                     index === 0
                       ? { marginLeft: SPACING.space_24 }
@@ -271,41 +293,35 @@ const CinemaSelect = ({ navigation, route }) => {
                     index === selectedDateIndex
                       ? { backgroundColor: COLORS.Red }
                       : {},
-                  ]}>
-                  <Text style={[styles.dateText, index === selectedDateIndex ? { color: COLORS.White } : {}]}>{item.date.getDate()}</Text>
-                  <Text style={[styles.dayText, index === selectedDateIndex ? { color: COLORS.White } : {}]}>{item.day}</Text>
+                  ] }>
+                  <Text style={ [styles.dateText, index === selectedDateIndex ? { color: COLORS.White } : {}] }>{ item.date.getDate() }</Text>
+                  <Text style={ [styles.dayText, index === selectedDateIndex ? { color: COLORS.White } : {}] }>{ item.day }</Text>
                 </View>
               </TouchableOpacity>
             );
-          }}
+          } }
         />
       </View>
-      <View style={ { marginTop: 15 } }>
-        { isLoading && (
-          <View style={ styles.loadingContainer }>
-            <ActivityIndicator size="large" color={ COLORS.Red } />
-            <Text style={ styles.loadingText }>Loading...</Text>
-          </View>
-        ) }</View>
-      {!dataNot ? <View style={styles.OutterContainer}>
+
+      { !dataNot ? <View style={ styles.OutterContainer }>
 
         <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.containerGap24, { paddingLeft: 24 }]}
+          horizontal={ true }
+          showsHorizontalScrollIndicator={ false }
+          contentContainerStyle={ [styles.containerGap24, { paddingLeft: 24 }] }
 
         >
 
-          <TouchableOpacity onPress={() => allDate()}>
+          <TouchableOpacity onPress={ () => allDate() }>
             <View
-              style={[
+              style={ [
                 styles.timeContainer,
 
                 selectedTimeIndex === 0
                   ? { backgroundColor: COLORS.Red }
                   : {},
-              ]}>
-              <Text style={[styles.timeText, 0 === selectedTimeIndex ? { color: COLORS.White } : {}]}>Tất cả</Text>
+              ] }>
+              <Text style={ [styles.timeText, 0 === selectedTimeIndex ? { color: COLORS.White } : {}] }>Tất cả</Text>
             </View>
           </TouchableOpacity>
 
@@ -313,9 +329,9 @@ const CinemaSelect = ({ navigation, route }) => {
           {
             timeARR.map((item, index) => {
               return (
-                <TouchableOpacity key={index + 1} onPress={() => toggleTime(index + 1, item)}>
+                <TouchableOpacity key={ index + 1 } onPress={ () => toggleTime(index + 1, item) }>
                   <View
-                    style={[
+                    style={ [
                       styles.timeContainer,
                       index + 1 === 0
                         ? { marginLeft: SPACING.space_24 }
@@ -325,9 +341,9 @@ const CinemaSelect = ({ navigation, route }) => {
                       index + 1 === selectedTimeIndex
                         ? { backgroundColor: COLORS.Red }
                         : {},
-                    ]}>
+                    ] }>
 
-                    <Text style={[styles.timeText, index + 1 === selectedTimeIndex ? { color: COLORS.White } : {}]}>{item.label ?? ""}</Text>
+                    <Text style={ [styles.timeText, index + 1 === selectedTimeIndex ? { color: COLORS.White } : {}] }>{ item.label ?? "" }</Text>
 
                   </View>
                 </TouchableOpacity>
@@ -339,97 +355,97 @@ const CinemaSelect = ({ navigation, route }) => {
       </View>
         : <></>
       }
-      <View style={styles.body}>
+      <View style={ styles.body }>
 
-        <View style={{ borderRadius: 10, marginTop: 20, marginHorizontal: 24, paddingVertical: 15, backgroundColor: 'white' }}>
-          {!dataNot ? <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 15, paddingLeft: 15, }}
+        <View style={ { borderRadius: 10, marginTop: 20, marginHorizontal: 24, paddingVertical: 15, backgroundColor: 'white' } }>
+          { !dataNot ? <ScrollView
+            horizontal={ true }
+            showsHorizontalScrollIndicator={ false }
+            contentContainerStyle={ { gap: 15, paddingLeft: 15, } }
           >
-            {<TouchableOpacity onPress={() => allBrand()} style={{ justifyContent: 'center', alignItems: 'center', }}>
-              <View style={{ borderColor: 0 == selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-                <Image style={{ resizeMode: 'contain', height: 40, width: 40 }} source={{ uri: "https://res.cloudinary.com/dqpwsunpc/image/upload/v1730307886/igugmco1rieyhpveixnv.jpg" }} />
+            { <TouchableOpacity onPress={ () => allBrand() } style={ { justifyContent: 'center', alignItems: 'center', } }>
+              <View style={ { borderColor: 0 == selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 } }>
+                <Image style={ { resizeMode: 'contain', height: 40, width: 40 } } source={ { uri: "https://res.cloudinary.com/dqpwsunpc/image/upload/v1730307886/igugmco1rieyhpveixnv.jpg" } } />
 
               </View>
-              <Text numberOfLines={1} style={{ textAlign: 'center', width: 70, color: 0 == selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' }}>All</Text>
-            </TouchableOpacity>}
+              <Text numberOfLines={ 1 } style={ { textAlign: 'center', width: 70, color: 0 == selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' } }>All</Text>
+            </TouchableOpacity> }
             {
               listBrand.map((item, index) => {
                 return (
-                  <TouchableOpacity key={item.logo} onPress={() => toggleBrand(item, index)} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ borderColor: index + 1 === selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-                      <Image style={{ resizeMode: 'contain', height: 40, width: 40 }} source={{ uri: item.logo }} />
+                  <TouchableOpacity key={ item.logo } onPress={ () => toggleBrand(item, index) } style={ { justifyContent: 'center', alignItems: 'center' } }>
+                    <View style={ { borderColor: index + 1 === selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 } }>
+                      <Image style={ { resizeMode: 'contain', height: 40, width: 40 } } source={ { uri: item.logo } } />
                     </View>
-                    <Text numberOfLines={1} style={{ textAlign: 'center', width: 70, color: index + 1 === selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' }}>{item.name}</Text>
+                    <Text numberOfLines={ 1 } style={ { textAlign: 'center', width: 70, color: index + 1 === selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' } }>{ item.name }</Text>
                   </TouchableOpacity>
                 );
               })
             }
-          </ScrollView> : <Text style={{ textAlign: 'center', color: 'black', fontSize: 25, fontWeight: 'bold' }}>Không có Lịch Chiếu</Text>}
+          </ScrollView> : <Text style={ { textAlign: 'center', color: 'black', fontSize: 25, fontWeight: 'bold' } }>Không có Lịch Chiếu</Text> }
 
         </View>
         {
           !dataNot ?
             <>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, marginTop: 10 }}>
-                <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>
+              <View style={ { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, marginTop: 10 } }>
+                <Text style={ { color: 'black', fontSize: 20, fontWeight: 'bold' } }>
                   CGV
                 </Text>
-                <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>
+                <Text style={ { color: 'black', fontSize: 20, fontWeight: 'bold' } }>
                   Số rạp
                 </Text>
               </View>
-              <ScrollView contentContainerStyle={{ display: 'flex', gap: 15, marginHorizontal: 24, marginTop: 10, }}>
+              <ScrollView contentContainerStyle={ { display: 'flex', gap: 15, marginHorizontal: 24, marginTop: 10, } }>
                 {
                   cinemaData.map((item, index) => {
                     return (
-                      <View key={item.cinema._id} style={{ backgroundColor: 'white', borderRadius: 10, borderRadius: 10, padding: 10, }}>
-                        <View style={{ flexDirection: 'row' }}>
-                          <View style={{ flexDirection: 'row', flex: 1 }}>
-                            <View style={{ flexDirection: 'row', flex: 1 }}>
-                              <View style={{ borderColor: COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-                                <Image style={{ height: 40, width: 40 }} source={{ uri: item.cinema.brandId.logo }} />
+                      <View key={ item.cinema._id } style={ { backgroundColor: 'white', borderRadius: 10, borderRadius: 10, padding: 10, } }>
+                        <View style={ { flexDirection: 'row' } }>
+                          <View style={ { flexDirection: 'row', flex: 1 } }>
+                            <View style={ { flexDirection: 'row', flex: 1 } }>
+                              <View style={ { borderColor: COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 } }>
+                                <Image style={ { height: 40, width: 40 } } source={ { uri: item.cinema.brandId.logo } } />
                               </View>
-                              <View style={{ marginLeft: 10, alignSelf: 'center' }}>
-                                <Text style={{ color: 'black', fontSize: 14, fontWeight: 'bold' }}>
-                                  {item.cinema.name}
+                              <View style={ { marginLeft: 10, alignSelf: 'center' } }>
+                                <Text style={ { color: 'black', fontSize: 14, fontWeight: 'bold' } }>
+                                  { item.cinema.name }
                                 </Text>
-                                <Text numberOfLines={1} style={{ color: 'black', fontSize: 12, width: '65%' }}>
-                                  {item.cinema.address}
+                                <Text numberOfLines={ 1 } style={ { color: 'black', fontSize: 12, width: '65%' } }>
+                                  { item.cinema.address }
                                 </Text>
                               </View>
                             </View>
-                            <TouchableOpacity onPress={() => toggleExpand(item.cinema._id)} style={{ height: 50, width: 50, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
-                              <Image style={{ width: 30, height: 30, }} source={require('../../../image/image.png')} />
+                            <TouchableOpacity onPress={ () => toggleExpand(item.cinema._id) } style={ { height: 50, width: 50, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' } }>
+                              <Image style={ { width: 30, height: 30, } } source={ require('../../../image/image.png') } />
                             </TouchableOpacity>
                           </View>
                         </View>
-                        {expanded[item.cinema._id] && (
-                          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginTop: 10 }}>
-                            {item.showtimes.map((item1, index) => (
+                        { expanded[item.cinema._id] && (
+                          <View style={ { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginTop: 10 } }>
+                            { item.showtimes.map((item1, index) => (
                               <TouchableOpacity
-                                onPress={() => toggleSeat(item, item1, index)}
-                                key={'Room' + index}
+                                onPress={ () => toggleSeat(item, item1, index) }
+                                key={ 'Room' + index }
                                 // onPress={() => setSelectedTimeIndex(index + 1)}
-                                style={{ flexBasis: '30%', marginBottom: 10 }}
+                                style={ { flexBasis: '30%', marginBottom: 10 } }
                               >
                                 <View
-                                  style={styles.timeContainer}
+                                  style={ styles.timeContainer }
                                 >
                                   <Text
-                                    style={[
+                                    style={ [
                                       styles.timeText,
 
-                                    ]}
+                                    ] }
                                   >
-                                    {`${formatTime(item1.startTime)}-${formatTime(item1.endTime)}` ?? ""}
+                                    { `${formatTime(item1.startTime)}-${formatTime(item1.endTime)}` ?? "" }
                                   </Text>
                                 </View>
                               </TouchableOpacity>
-                            ))}
+                            )) }
                           </View>
-                        )}
+                        ) }
                       </View>
                     );
                   })
@@ -456,7 +472,6 @@ const styles = StyleSheet.create({
   },
   body: {
     display: 'flex',
-    
     flex: 1,
     backgroundColor: COLORS.GreyFade,
   },
@@ -490,14 +505,14 @@ const styles = StyleSheet.create({
     color: 'white',
     padding: 10,
   },
-  container: {
-    display: 'flex',
-    flex: 1,
-   
-  },
   empty: {
     padding: 10,
     margin: 5,
+  },
+  container: {
+    display: 'flex',
+    flex: 1,
+    backgroundColor: COLORS.White,
   },
   ImageBG: {
     width: '100%',

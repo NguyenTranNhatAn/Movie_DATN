@@ -7,6 +7,10 @@ import { UploadUsers } from '../../reducers/UploadUserslide';
 const Profile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  handleTicket = () => {
+    //chuyển sang màn hình mytickets
+    navigation.navigate('Ticket');
+  }
 
   // Lấy dữ liệu người dùng từ Redux store
   const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
@@ -19,22 +23,22 @@ const Profile = () => {
   }, [UploadUsersStatus, dispatch]);
   const handleLogout = () => {
     // Thêm logic logout ở đây nếu cần, ví dụ: xóa token hoặc reset trạng thái
-    navigation.replace('login'); // Chuyển hướng đến màn hình 'Login'
+    navigation.navigate('Login'); // Chuyển hướng đến màn hình 'Login'
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.profileName1}>Profile</Text>
-      <View style={styles.profileSection}>
+    <ScrollView style={ styles.container }>
+      <Text style={ styles.profileName1 }>Profile</Text>
+      <View style={ styles.profileSection }>
         <Image
-          source={require('../../../Img/anhspidermen.png')}
-          style={styles.profileImage}
+          source={ require('../../../Img/anhspidermen.png') }
+          style={ styles.profileImage }
         />
-        <Text style={styles.profileName}>
-          {UploadUsersData.name || 'N/A'}
+        <Text style={ styles.profileName }>
+          { UploadUsersData.name || 'N/A' }
         </Text>
-        <Text style={styles.profilePhone}>
-          {UploadUsersData.phone || 'N/A'}
+        <Text style={ styles.profilePhone }>
+          { UploadUsersData.phone || 'N/A' }
         </Text>
       </View>
 
@@ -49,11 +53,11 @@ const Profile = () => {
             <Image style={{width:25,height:25}} source={require('../../../Img/editpencil.png')} />
             <Text style={styles.optionText}> Edit Profile</Text>
           </View>
-          <Image source={require('../../../Img/Vector.png')} />
+          <Image source={ require('../../../Img/Vector.png') } />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
-        
+        onPress={() => navigation.navigate('TicketDetails')} 
         >
           
           <View style={styles.editicon}>
@@ -64,7 +68,7 @@ const Profile = () => {
           <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}
+     {/* {   <TouchableOpacity style={styles.optionRow}
         
         >
           
@@ -74,10 +78,10 @@ const Profile = () => {
             <Text style={styles.optionText}> Change Password</Text>
           </View>
           <Image source={require('../../../Img/Vector.png')} />
-        </TouchableOpacity>
+        </TouchableOpacity>} */}
 
         <TouchableOpacity style={styles.optionRow}
-        
+        onPress={() => navigation.navigate('Policy')}  
         >
           
           <View style={styles.editicon}>
@@ -89,7 +93,7 @@ const Profile = () => {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
-        
+      onPress={() => navigation.navigate('Terns')}     
         >
           
           <View style={styles.editicon}>
@@ -133,9 +137,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: '#000',
-    
-    alignSelf:'center'
-    
+
+    alignSelf: 'center'
+
   },
   profilePhone: {
     fontSize: 16,
@@ -161,10 +165,11 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   logoutButton: {
+ 
     backgroundColor: '#ff5757',
     paddingVertical: 15,
     borderRadius: 10,
-    marginTop: 20,
+    marginTop: 120,
     alignItems: 'center',
   },
   logoutText: {
@@ -172,8 +177,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  editicon:{
-    flexDirection:'row'
+  editicon: {
+    flexDirection: 'row'
   }
 });
 

@@ -28,6 +28,8 @@ import SeatSelectionScreen from '../screens/SeatSelectionScreen';
 import Component from '../screens/Component';
 import PaymentScreen from '../screens/Payment_Screen';
 import TicketDetail from '../screens/Stack/TicketDetail';
+import SeatSelectionn from '../screens/SeatSelectionScreen copy';
+import TermsScreen from '../screens/TermsScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -55,6 +57,7 @@ const MainStackNavigation = () => {
       <Stack.Screen name="EditProfile" component={ EditProfileComponent } />
       <Stack.Screen name="Signup" component={ SignupScreen } />
       <Stack.Screen name="Policy" component={ PolicyScreen } />
+      <Stack.Screen name="Terns" component={ TermsScreen } />
     </Stack.Navigator>
   );
 };
