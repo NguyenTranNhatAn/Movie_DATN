@@ -23,7 +23,7 @@ const Profile = () => {
   }, [UploadUsersStatus, dispatch]);
   const handleLogout = () => {
     // Thêm logic logout ở đây nếu cần, ví dụ: xóa token hoặc reset trạng thái
-    navigation.replace('login'); // Chuyển hướng đến màn hình 'Login'
+    navigation.navigate('Login'); // Chuyển hướng đến màn hình 'Login'
   };
 
   return (
@@ -57,7 +57,7 @@ const Profile = () => {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
-        
+        onPress={() => navigation.navigate('TicketDetails')} 
         >
           
           <View style={styles.editicon}>
@@ -68,7 +68,7 @@ const Profile = () => {
           <Image source={require('../../../Img/Vector.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionRow}
+     {/* {   <TouchableOpacity style={styles.optionRow}
         
         >
           
@@ -78,10 +78,10 @@ const Profile = () => {
             <Text style={styles.optionText}> Change Password</Text>
           </View>
           <Image source={require('../../../Img/Vector.png')} />
-        </TouchableOpacity>
+        </TouchableOpacity>} */}
 
         <TouchableOpacity style={styles.optionRow}
-        
+        onPress={() => navigation.navigate('Policy')}  
         >
           
           <View style={styles.editicon}>
@@ -93,7 +93,7 @@ const Profile = () => {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
-        
+      onPress={() => navigation.navigate('Terns')}     
         >
           
           <View style={styles.editicon}>
@@ -165,10 +165,11 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   logoutButton: {
+ 
     backgroundColor: '#ff5757',
     paddingVertical: 15,
     borderRadius: 10,
-    marginTop: 20,
+    marginTop: 120,
     alignItems: 'center',
   },
   logoutText: {

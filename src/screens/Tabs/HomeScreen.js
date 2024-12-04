@@ -115,35 +115,35 @@ const HomeScreen = (props) => {
                         </TouchableOpacity>
                         <Text style={{ marginLeft: 12, fontSize: 18, fontWeight: 'regular' }}>Search</Text>
                     </TouchableOpacity>
-                    <View style={styles.rightSearch}>
-                        <Image style={{ height: 24, width: 24 }} source={require('../../../assets/image/adj.png')} />
-                    </View>
+            {/* {<View style={styles.rightSearch}>
+                <Image style={{ height: 24, width: 24 }} source={require('../../../assets/image/adj.png')} />
+            </View>} */}
                 </View>
                 {/* service */}
-                <View style={{ marginTop: 20, marginHorizontal: 23 }}>
-                    <Text style={[styles.title, {}]}>Service</Text>
-                    <View style={styles.menuList}>
-                        <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
-                        </View>
-                        <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/imax.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Imax</Text>
-                        </View>
-                        <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/4d.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>4kxmax</Text>
-                        </View>
-                        <View style={styles.itemMenu}>
-                            <Image style={styles.menuImg} source={require('../../../assets/image/sweet.png')} />
-                            <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Sweet Box</Text>
-                        </View>
-
+           {/* { <View style={{ marginTop: 20, marginHorizontal: 23 }}>
+                <Text style={[styles.title, {}]}>Service</Text>
+                <View style={styles.menuList}>
+                    <View style={styles.itemMenu}>
+                        <Image style={styles.menuImg} source={require('../../../assets/image/cinema.png')} />
+                        <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Retal</Text>
+                    </View>
+                    <View style={styles.itemMenu}>
+                        <Image style={styles.menuImg} source={require('../../../assets/image/imax.png')} />
+                        <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Imax</Text>
+                    </View>
+                    <View style={styles.itemMenu}>
+                        <Image style={styles.menuImg} source={require('../../../assets/image/4d.png')} />
+                        <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>4kxmax</Text>
+                    </View>
+                    <View style={styles.itemMenu}>
+                        <Image style={styles.menuImg} source={require('../../../assets/image/sweet.png')} />
+                        <Text style={{ marginTop: 20, fontSize: 16, fontWeight: 'medium', color: color.black }}>Sweet Box</Text>
                     </View>
 
                 </View>
-                {/*  */}
+
+            </View>} */}
+               
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
                     <Text onPress={() => navigation.navigate('Lastest')}  >See All</Text>
