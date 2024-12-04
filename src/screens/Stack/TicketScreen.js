@@ -24,7 +24,7 @@ const TicketScreen = ({ route, navigation }) => {
   const [ticketData, setTicketData] = useState(null);
 
   useEffect(() => {
-    fetch(`https://be-movie-sooty.vercel.app/ticket/${ticketId}`)
+    fetch(`http://103.69.193.223:3006/ticket/${ticketId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.error === 0) {
@@ -48,60 +48,60 @@ const TicketScreen = ({ route, navigation }) => {
 
 
   return (
-    <View style={ styles.container }>
+    <View style={styles.container}>
       <StatusBar hidden />
-      <View style={ styles.appHeaderContainer }>
+      <View style={styles.appHeaderContainer}>
         <AppHeader
           name="close"
           header="My Tickets"
-          action={ () => navigation.goBack() }
+          action={() => navigation.goBack()}
         />
       </View>
-      { ticketData && (
-        <View style={ styles.ticketContainer }>
+      {ticketData && (
+        <View style={styles.ticketContainer}>
           <ImageBackground
-            source={ { uri: ticketData.movieImage || 'https://i.ytimg.com/vi/jBpUvgVFuXE/hqdefault.jpg' } }
-            style={ styles.ticketBGImage }>
+            source={{ uri: ticketData.movieImage || 'https://i.ytimg.com/vi/jBpUvgVFuXE/hqdefault.jpg' }}
+            style={styles.ticketBGImage}>
             <LinearGradient
-              colors={ [COLORS.OrangeRGBA0, COLORS.Orange] }
-              style={ styles.linearGradient }>
-              <View style={ [styles.blackCircle, { position: 'absolute', bottom: -40, left: -40 }] } />
-              <View style={ [styles.blackCircle, { position: 'absolute', bottom: -40, right: -40 }] } />
+              colors={[COLORS.OrangeRGBA0, COLORS.Orange]}
+              style={styles.linearGradient}>
+              <View style={[styles.blackCircle, { position: 'absolute', bottom: -40, left: -40 }]} />
+              <View style={[styles.blackCircle, { position: 'absolute', bottom: -40, right: -40 }]} />
             </LinearGradient>
           </ImageBackground>
-          <View style={ styles.linear } />
+          <View style={styles.linear} />
 
-          <View style={ styles.ticketFooter }>
-            <View style={ [styles.blackCircle, { position: 'absolute', top: -40, left: -40 }] } />
-            <View style={ [styles.blackCircle, { position: 'absolute', top: -40, right: -40 }] } />
+          <View style={styles.ticketFooter}>
+            <View style={[styles.blackCircle, { position: 'absolute', top: -40, left: -40 }]} />
+            <View style={[styles.blackCircle, { position: 'absolute', top: -40, right: -40 }]} />
 
-            {/* Dữ liệu hiển thị */ }
-            <View style={ styles.ticketDateContainer }>
-              <View style={ styles.ticketDateContainer }>
-                { ticketData && (
+            {/* Dữ liệu hiển thị */}
+            <View style={styles.ticketDateContainer}>
+              <View style={styles.ticketDateContainer}>
+                {ticketData && (
                   <>
-                    <Text style={ styles.dateTitle }>{ formatShowDate(ticketData.showDate).weekday }</Text>
-                    <Text style={ styles.dateTitle }>{ formatShowDate(ticketData.showDate).datePart }</Text>
+                    <Text style={styles.dateTitle}>{formatShowDate(ticketData.showDate).weekday}</Text>
+                    <Text style={styles.dateTitle}>{formatShowDate(ticketData.showDate).datePart}</Text>
                   </>
-                ) }
+                )}
               </View>
 
-              <Text style={ styles.subtitle }>Cinema: { ticketData.cinemaName }</Text>
-              <Text style={ styles.subtitle }>Room: { ticketData.roomName }</Text>
+              <Text style={styles.subtitle}>Cinema: {ticketData.cinemaName}</Text>
+              <Text style={styles.subtitle}>Room: {ticketData.roomName}</Text>
             </View>
-            <View style={ styles.ticketSeatContainer }>
-              <Text style={ styles.subtitle }>Seats: { ticketData.seatsDetails.map(seat => seat.seatName).join(', ') }</Text>
-              <Text style={ styles.subtitle }>Total Price: { ticketData.totalPrice }₫</Text>
+            <View style={styles.ticketSeatContainer}>
+              <Text style={styles.subtitle}>Seats: {ticketData.seatsDetails.map(seat => seat.seatName).join(', ')}</Text>
+              <Text style={styles.subtitle}>Total Price: {ticketData.totalPrice}₫</Text>
             </View>
             <Image
-              source={ {
+              source={{
                 uri: ticketData.qrCode ? ticketData.qrCode : 'https://example.com/default-image.png',
-              } }
-              style={ styles.barcodeImage }
+              }}
+              style={styles.barcodeImage}
             />
           </View>
         </View>
-      ) }
+      )}
 
     </View>
   );
@@ -212,7 +212,7 @@ export default TicketScreen;
 //   const [tickets, setTickets] = useState([]);
 //   /*
 //   useEffect(() => {
-//     fetch(`https://be-movie-sooty.vercel.app/ticket/${ticketId}`)
+//     fetch(`http://103.69.193.223:3006/ticket/${ticketId}`)
 //       .then((response) => response.json())
 //       .then((data) => {
 //         if (data.error === 0) {
@@ -225,7 +225,7 @@ export default TicketScreen;
 //   }, [ticketId]);
 // */
 //   useEffect(() => {
-//     fetch(`https://be-movie-sooty.vercel.app/ticket/all/RE123`)
+//     fetch(`http://103.69.193.223:3006/ticket/all/RE123`)
 //       .then((response) => response.json())
 //       .then((data) => {
 //         if (data.error === 0) {

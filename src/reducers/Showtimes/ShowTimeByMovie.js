@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Async thunk for fetching movie showtimes
 export const GetMovieShowtime = createAsyncThunk('showtimeMovie', async (data) => {
-  const response = await fetch('https://be-movie-sooty.vercel.app/showtime/getMovieShowtime?movieId='+data.movieId+'&day='+data.day);
+  const response = await fetch('http://103.69.193.223:3006/showtime/getMovieShowtime?movieId=' + data.movieId + '&day=' + data.day);
   if (!response.ok) {
     // Provide more context in the error message
     const errorData = await response.json();

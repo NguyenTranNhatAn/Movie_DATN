@@ -50,7 +50,7 @@ const Profile = () => {
           
           <View style={styles.editicon}>
             
-            <Image style={{width:25,height:25}} source={require('../../../Img/editpencil.png')} />
+            <Image style={{width:25,height:25}} source={require('../../../editpencil.png')} />
             <Text style={styles.optionText}> Edit Profile</Text>
           </View>
           <Image source={ require('../../../Img/Vector.png') } />
