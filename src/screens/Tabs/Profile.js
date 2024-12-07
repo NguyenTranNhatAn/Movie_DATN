@@ -57,7 +57,7 @@ const Profile = () => {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionRow}
-        onPress={() => navigation.navigate('TicketDetails')} 
+        onPress={() => navigation.navigate('Ticket')} 
         >
           
           <View style={styles.editicon}>

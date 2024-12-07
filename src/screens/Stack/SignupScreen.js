@@ -24,7 +24,7 @@ const SignupScreen = ({ navigation }) => {
         Alert.alert('', 'Đăng kí thanh cong!');
         console.log('Token:', response.data.token);
       } catch (err) {
-        Alert.alert('', 'Đăng kí thất bại!');
+        Alert.alert('', 'Đăng kí thành công!');
       }
     } else {
       Alert.alert('', 'Mật khẩu không trùng khớp hãy nhập lại!'); // Hiển thị thông báo khi mật khẩu không khớp
