@@ -14,7 +14,7 @@ export const addToWishlist = createAsyncThunk(
       }
 
       const response = await axios.get(
-        `http://103.69.193.223:3006/movie/addWishList?movieId=${movieId}`,
+        `http://103.69.193.151:3006/movie/addWishList?movieId=${movieId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
