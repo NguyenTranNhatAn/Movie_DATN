@@ -38,9 +38,11 @@ const Stack = createStackNavigator();
 const MainStackNavigation = () => {
   return (
     <Stack.Navigator screenOptions={ { headerShown: false } }>
-      <Stack.Screen name="Login" component={ LoginScreen } />
       <Stack.Screen name="Tab" component={ MainTabNavigation } />
+      <Stack.Screen name="Cinema" component={ CinemaSelect } />
       <Stack.Screen name="Splash" component={ SplashScreen } />
+      <Stack.Screen name="Login" component={ LoginScreen } />
+
       <Stack.Screen name="History" component={ History } />
       <Stack.Screen name="Test" component={ SeatSelection } />
       <Stack.Screen name="Detail" component={ Details } />
@@ -50,7 +52,6 @@ const MainStackNavigation = () => {
       <Stack.Screen name="Pay_Screen" component={ PaymentScreen } />
       <Stack.Screen name="PaymentWebView" component={ PaymentWebView } />
       <Stack.Screen name="PaySuccess" component={ PaymentSuccess } />
-      <Stack.Screen name="Cinema" component={ CinemaSelect } />
       <Stack.Screen name="TicketDetails" component={ TicketDetail} />
       <Stack.Screen name="Favour" component={ Favour } />
       <Stack.Screen name="Checkout" component={ Checkout } />

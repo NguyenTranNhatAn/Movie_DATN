@@ -15,7 +15,7 @@ export const UploadUsers = createAsyncThunk(
 
       // Gọi API với token trong header Authorization
       const response = await axios.get(
-        'http://103.69.193.223:3006/api/user-info',
+        'http://103.130.213.92:8866/api/user-info',
         {
           headers: {
             'Content-Type': 'application/json',

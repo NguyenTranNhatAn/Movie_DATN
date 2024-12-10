@@ -38,6 +38,7 @@ import { GetMovieShowtime } from '../../reducers/Showtimes/ShowTimeByMovie';
 import { clearShowtimeData, GetTime } from '../../reducers/Showtimes/GetTimeRange';
 import { genreSlice } from '../../reducers/Genre/GenreListSlice';
 import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
+import { GetShowDays } from '../../reducers/Showtimes/GetDayShow';
 
 
 
@@ -47,7 +48,7 @@ import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
 const CinemaSelect = ({ navigation, route }) => {
   const { id, image } = route.params;
   const [iD, setID] = useState(id);
-  const [dateArray, setDateArray] = useState(getDateList("2024-11-14", "2024-12-15"));
+  const [dateArray, setDateArray] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
@@ -57,6 +58,7 @@ const CinemaSelect = ({ navigation, route }) => {
   const { showtimeData, showtimeStatus } = useSelector((state) => state.showTime);
   const { brandData, brandStatus } = useSelector((state) => state.brandList);
   const { getTimeData, getTimeStatus } = useSelector((state) => state.listTime);
+  const { showdayData, showdayStatus } = useSelector((state) => state.showdayReducer);
   const { showtimeMovieData, showtimeMovieStatus } = useSelector((state) => state.showtimebyMovie);
   const { showCinemaData, showCinemaStatus } = useSelector((state) => state.cinemaShow);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -74,26 +76,38 @@ const CinemaSelect = ({ navigation, route }) => {
   const [dataNot, setDatanot] = useState(false);
   const [cinemaData, setCinemaData] = useState([]);
 
+  useEffect(() => {
+
+    dispatch(GetShowDays());
+  }, [dispatch]);
 
   useEffect(() => {
+
+    if (showdayData?.days?.length > 0) {
+      setDateArray(showdayData.days);
+    }
+  }, [showdayData]);
+
+  useEffect(() => {
+    console.log(showdayData.days)
     setSelectedDateIndex(0);
     setSelectedTimeIndex(0);
     setSelectedBrand(0);
     setstart(0)
-   
+
     setTimeARR([])
-    dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
+    dispatch(GetTime({ movieId: iD, day: dateArray[0]?.date }));
   }, []);
 
   useEffect(() => {
     setIsLoading(true); // Start loading
     dispatch(
-      ShowCine({ 
-        movieId: iD, 
-        day: dateArray[0].date, 
-        startHour: start ?? 0, 
-        endHour: end ?? 24, 
-        brandId: brandId 
+      ShowCine({
+        movieId: iD,
+        day: dateArray[0]?.date,
+        startHour: start ?? 0,
+        endHour: end ?? 24,
+        brandId: brandId
       })
     )
       .then((response) => {
@@ -101,14 +115,14 @@ const CinemaSelect = ({ navigation, route }) => {
       })
       .finally(() => setIsLoading(false)); // Stop loading
   }, [dispatch, iD, dateArray, start, end, brandId]);
-  
+
   useEffect(() => {
     if (showCinemaData.length === 0) {
 
-      dispatch(ShowCine({ movieId: iD, day: dateArray[0].date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
+      dispatch(ShowCine({ movieId: iD, day: dateArray[0]?.date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
 
     }
-    
+
 
 
     setCinemaData(showCinemaData);
@@ -117,7 +131,7 @@ const CinemaSelect = ({ navigation, route }) => {
   useEffect(() => {
 
     if (brandStatus === 'idle' || brandData.length === 0) {
-      dispatch(BrandList({ movieId: iD, day: dateArray[0].date }));
+      dispatch(BrandList({ movieId: iD, day: dateArray[0]?.date }));
 
     }
 
@@ -137,7 +151,7 @@ const CinemaSelect = ({ navigation, route }) => {
 
     // Kiểm tra trạng thái để gọi dispatch
     if (getTimeData.length === 0 && selectedDateIndex === undefined) {
-      dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
+      dispatch(GetTime({ movieId: iD, day: dateArray[0]?.date }));
 
     }
 
@@ -154,12 +168,12 @@ const CinemaSelect = ({ navigation, route }) => {
   }, [dispatch, getTimeStatus, getTimeData, id]);
 
   const toggleDate = (index) => {
-   
+
     setSelectedDateIndex(index);
     setCinemaData([])
     // Lấy ngày đã chọn dựa trên chỉ mục index
     const selectedDate = dateArray[index].date;
-   
+    console.log(selectedDate)
     dispatch(GetTime({ movieId: iD, day: selectedDate, }));
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
     dispatch(BrandList({ movieId: iD, day: selectedDate }));
@@ -171,7 +185,7 @@ const CinemaSelect = ({ navigation, route }) => {
     setEnd(24)
     setSelectedTimeIndex(0)
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: 0, endHour: 24, brandId: brandId }));
-   
+
   }
   const toggleTime = (index, item) => {
     setstart(item.start)
@@ -180,7 +194,7 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedTimeIndex(index);
     console.log(item.start, item.end)
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: item.start, endHour: item.end, brandId: brandId }));
-   
+
     console.log(item.start, item.end, brandId)
 
   };
@@ -220,17 +234,18 @@ const CinemaSelect = ({ navigation, route }) => {
   }
   const toggleSeat = (item, item1, index) => {
 
-    const showtimeId= item1.showtimeId
-    const startTime=formatTime(item1.startTime)
-    const endTime=formatTime(item1.endTime)
-    const day=new Date(item1.startTime)
-    const cinemaId= item.cinema._id
+    const showtimeId = item1.showtimeId
+    const startTime = formatTime(item1.startTime)
+    const endTime = formatTime(item1.endTime)
+    const day = new Date(item1.startTime)
+    const cinemaId = item.cinema._id
     // console.log(cinemaId)          
-    const date =`${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`;
-   
-   
-    navigation.navigate("Seat",{
-      startTime:startTime,day:date,showtimeId:showtimeId,movieId:iD,endTime:endTime,cinemaId:cinemaId})
+    const date = `${day.getDate()}/${day.getMonth() + 1}/${day.getFullYear()}`;
+
+
+    navigation.navigate("Seat", {
+      startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId
+    })
   }
 
   return (
@@ -258,6 +273,8 @@ const CinemaSelect = ({ navigation, route }) => {
           bounces={false}
           contentContainerStyle={styles.containerGap24}
           renderItem={({ item, index }) => {
+            const date = new Date(item.date);
+            console.log(date)
             return (
               <TouchableOpacity onPress={() => toggleDate(index)}>
                 <View
@@ -272,21 +289,21 @@ const CinemaSelect = ({ navigation, route }) => {
                       ? { backgroundColor: COLORS.Red }
                       : {},
                   ]}>
-                  <Text style={[styles.dateText, index === selectedDateIndex ? { color: COLORS.White } : {}]}>{item.date.getDate()}</Text>
-                  <Text style={[styles.dayText, index === selectedDateIndex ? { color: COLORS.White } : {}]}>{item.day}</Text>
+                  <Text style={[styles.dateText, index === selectedDateIndex ? { color: COLORS.White } : {}]}>{date.getDate()}</Text>
+                  <Text style={[styles.dayText, index === selectedDateIndex ? { color: COLORS.White } : {}]}>{item?.day}</Text>
                 </View>
               </TouchableOpacity>
             );
           }}
         />
       </View>
-      <View style={ { marginTop: 15 } }>
-        { isLoading && (
-          <View style={ styles.loadingContainer }>
-            <ActivityIndicator size="large" color={ COLORS.Red } />
-            <Text style={ styles.loadingText }>Loading...</Text>
+      <View style={{ marginTop: 15 }}>
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={COLORS.Red} />
+            <Text style={styles.loadingText}>Loading...</Text>
           </View>
-        ) }</View>
+        )}</View>
       {!dataNot ? <View style={styles.OutterContainer}>
 
         <ScrollView
@@ -456,7 +473,7 @@ const styles = StyleSheet.create({
   },
   body: {
     display: 'flex',
-    
+
     flex: 1,
     backgroundColor: COLORS.GreyFade,
   },
@@ -493,7 +510,7 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flex: 1,
-   
+
   },
   empty: {
     padding: 10,

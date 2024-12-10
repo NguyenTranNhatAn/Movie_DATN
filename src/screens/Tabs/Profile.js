@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, ToastAndroid } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { UploadUsers } from '../../reducers/UploadUserslide';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -21,8 +22,9 @@ const Profile = () => {
       dispatch(UploadUsers());
     }
   }, [UploadUsersStatus, dispatch]);
-  const handleLogout = () => {
-    // Thêm logic logout ở đây nếu cần, ví dụ: xóa token hoặc reset trạng thái
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('token');
+    ToastAndroid.show("Đăng xuất thành công", ToastAndroid.SHORT);
     navigation.navigate('Login'); // Chuyển hướng đến màn hình 'Login'
   };
 

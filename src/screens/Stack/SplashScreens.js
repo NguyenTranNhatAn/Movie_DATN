@@ -1,18 +1,56 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert, ToastAndroid } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 
 const SplashScreen = ({ navigation }) => {
-  useEffect(() => {
-    // Thời gian chờ 5 giây (5000ms) trước khi chuyển màn hình
-    const timer = setTimeout(() => {
-      navigation.navigate('Login'); // Điều hướng tới màn hình chính (Home)
-    }, 5000); // 5000ms = 5 giây
+  const [token, setToken] = React.useState(null);
 
-    // Hủy bộ đếm thời gian khi component bị hủy
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('token');
+        if (storedToken) {
+          const response = await fetch('http://103.130.213.92:8866/api/protect', {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${storedToken}` },
+          });
+          console.log(response)
+          if (response.ok) {
+            setToken(storedToken); // Token hợp lệ
+          } else {
+            await AsyncStorage.removeItem('token'); // Token hết hạn
+            setToken(null);
+
+            ToastAndroid.show("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", ToastAndroid.SHORT);
+          }
+        }
+      } catch (error) {
+        console.error('Lỗi kiểm tra token:', error);
+      }
+    };
+
+    checkToken();
+  }, []);
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (token) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Tab' }], // Thay 'Tab' bằng màn hình chính của bạn
+        });
+      } else {
+        navigation.navigate('Login'); // Điều hướng tới màn hình đăng nhập nếu không có token
+      }
+    }, 5000);
+
     return () => clearTimeout(timer);
-  }, [navigation]);
+  }, [navigation, token]);
+
 
   return (
     <View style={styles.container}>

@@ -13,10 +13,13 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://103.69.193.223:3006/api/login', { phone, password });
+      const response = await axios.post('http://103.130.213.92:8866/api/login', { phone, password });
       const { token } = response.data;
       await AsyncStorage.setItem('token', token);
-      navigation.navigate('Tab');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Tab' }], // Thay 'Tab' bằng màn hình chính của bạn
+      });
 
 
       console.log('Token:', response.data.token);
@@ -24,6 +27,7 @@ const LoginScreen = ({ navigation }) => {
 
     } catch (err) {
       Alert.alert('', 'Đăng nhập thất bại!');
+      console.log(err)
 
     }
   };
