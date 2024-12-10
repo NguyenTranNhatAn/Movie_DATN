@@ -89,12 +89,12 @@ const CinemaSelect = ({ navigation, route }) => {
   }, [showdayData]);
 
   useEffect(() => {
-    console.log(showdayData.days)
+    
     setSelectedDateIndex(0);
     setSelectedTimeIndex(0);
     setSelectedBrand(0);
     setstart(0)
-
+   
     setTimeARR([])
     dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
   }, []);
@@ -147,23 +147,9 @@ const CinemaSelect = ({ navigation, route }) => {
 
 
   useEffect(() => {
-
-
-    // Kiểm tra trạng thái để gọi dispatch
-    if (getTimeData.length === 0 && selectedDateIndex === undefined) {
-      dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
-
-    }
-
-
-    if (getTimeData.length === 0) {
-      setDatanot(true)
-    }
-    if (getTimeData.length > 0) {
-
-      setTimeARR(getTimeData);
-      setDatanot(false)
-    }
+    dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
+    setTimeARR(getTimeData);
+    setDatanot(false)
 
   }, [dispatch, getTimeStatus, getTimeData, id]);
 
@@ -274,7 +260,7 @@ const CinemaSelect = ({ navigation, route }) => {
           contentContainerStyle={styles.containerGap24}
           renderItem={({ item, index }) => {
             const date = new Date(item.date);
-            console.log(date)
+           
             return (
               <TouchableOpacity onPress={() => toggleDate(index)}>
                 <View
