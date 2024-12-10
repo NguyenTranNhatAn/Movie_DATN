@@ -10,7 +10,7 @@ export const Login = createAsyncThunk(
       console.log('Dữ liệu gửi đi:', data); // Log dữ liệu đăng nhập
 
       const response = await axios.post(
-        'http://103.130.213.92:8866/api/login',
+        'http://103.69.193.151:3006/api/login',
         data, // Không cần JSON.stringify, axios tự chuyển đổi
         {
           headers: {

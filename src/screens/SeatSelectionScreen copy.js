@@ -135,7 +135,7 @@ const SeatSelectionn = ({ route }) => {
 
       if (storedToken) {
         // Gọi API để lấy userId từ token
-        const response = await fetch(`http://103.130.213.92:8866/api/user-info`, {
+        const response = await fetch(`http://103.69.193.151:3006/api/user-info`, {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 

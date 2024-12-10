@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 // Tạo hàm SearchMovie để thực hiện chức năng gọi API tìm kiếm phim
 export const SearchMovie = createAsyncThunk('listmovie', async (name) => {
   const response = await fetch(
-    `http://103.130.213.92:8866/movie/find?name=${name}`, // API lấy movie theo tên
+    `http://103.69.193.151:3006/movie/find?name=${name}`, // API lấy movie theo tên
   );
   if (!response.ok) {
     throw new Error('Failed to fetch movie');

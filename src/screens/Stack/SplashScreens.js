@@ -13,7 +13,7 @@ const SplashScreen = ({ navigation }) => {
       try {
         const storedToken = await AsyncStorage.getItem('token');
         if (storedToken) {
-          const response = await fetch('http://103.130.213.92:8866/api/protect', {
+          const response = await fetch('http://103.69.193.151:3006/api/protect', {
             method: 'GET',
             headers: { Authorization: `Bearer ${storedToken}` },
           });

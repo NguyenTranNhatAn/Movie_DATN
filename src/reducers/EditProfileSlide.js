@@ -13,7 +13,7 @@ export const EditProfile = createAsyncThunk(
       }
 
       const response = await axios.post(
-        'http://103.130.213.92:8866/api/edit-profile',
+        'http://103.69.193.151:3006/api/edit-profile',
         { name, phone, address, email },
         {
           headers: {
