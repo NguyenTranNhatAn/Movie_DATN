@@ -48,7 +48,7 @@ import { GetShowDays } from '../../reducers/Showtimes/GetDayShow';
 const CinemaSelect = ({ navigation, route }) => {
   const { id, image } = route.params;
   const [iD, setID] = useState(id);
-  const [dateArray, setDateArray] = useState(getDateList("2024-12-10", "2024-12-15"));
+  const [dateArray, setDateArray] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
@@ -96,7 +96,7 @@ const CinemaSelect = ({ navigation, route }) => {
     setstart(0)
    
     setTimeARR([])
-    dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
+    dispatch(GetTime({ movieId: iD, day: dateArray[0]?.date }));
   }, []);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const CinemaSelect = ({ navigation, route }) => {
     dispatch(
       ShowCine({
         movieId: iD,
-        day: dateArray[0].date,
+        day: dateArray[0]?.date,
         startHour: start ?? 0,
         endHour: end ?? 24,
         brandId: brandId
@@ -119,7 +119,7 @@ const CinemaSelect = ({ navigation, route }) => {
   useEffect(() => {
     if (showCinemaData.length === 0) {
 
-      dispatch(ShowCine({ movieId: iD, day: dateArray[0].date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
+      dispatch(ShowCine({ movieId: iD, day: dateArray[0]?.date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
 
     }
 
@@ -131,7 +131,7 @@ const CinemaSelect = ({ navigation, route }) => {
   useEffect(() => {
 
     if (brandStatus === 'idle' || brandData.length === 0) {
-      dispatch(BrandList({ movieId: iD, day: dateArray[0].date }));
+      dispatch(BrandList({ movieId: iD, day: dateArray[0]?.date }));
 
     }
 
@@ -147,7 +147,7 @@ const CinemaSelect = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    dispatch(GetTime({ movieId: iD, day: dateArray[0].date }));
+    dispatch(GetTime({ movieId: iD, day: dateArray[0]?.date }));
     setTimeARR(getTimeData);
     setDatanot(false)
 
