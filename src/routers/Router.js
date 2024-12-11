@@ -38,9 +38,9 @@ const Stack = createStackNavigator();
 const MainStackNavigation = () => {
   return (
     <Stack.Navigator screenOptions={ { headerShown: false } }>
+      <Stack.Screen name="Splash" component={ SplashScreen } />
       <Stack.Screen name="Tab" component={ MainTabNavigation } />
       <Stack.Screen name="Cinema" component={ CinemaSelect } />
-      <Stack.Screen name="Splash" component={ SplashScreen } />
       <Stack.Screen name="Login" component={ LoginScreen } />
 
       <Stack.Screen name="History" component={ History } />
