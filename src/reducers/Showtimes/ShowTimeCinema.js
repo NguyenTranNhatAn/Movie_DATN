@@ -11,7 +11,7 @@ export const ShowCine = createAsyncThunk('showcine', async data => {
     //console.log('run4')
   }
   if (!response.ok) {
-    throw new Error('Failed');
+    throw new Error('Failed6');
   }
   return await response.json();
 });

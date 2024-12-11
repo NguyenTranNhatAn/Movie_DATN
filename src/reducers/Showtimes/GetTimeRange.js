@@ -1,9 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const GetTime = createAsyncThunk('gettime', async data => {
-  const response = await fetch('http://103.130.213.92:3006/showtime/getFilterTime?movieId=' + data.movieId + '&day=' + data.day);
+  var response;
+  if(data.brandId==undefined){
+    response = await fetch('http://103.130.213.92:3006/showtime/getFilterTime?movieId=' + data.movieId + '&day=' + data.day);
+  
+  }
+  else{
+    response = await fetch('http://103.130.213.92:3006/showtime/getFilterTime?movieId=' + data.movieId + '&day=' + data.day + '&brandId=' +data.brandId);
+    
+    
+  }
   if (!response.ok) {
-    throw new Error('Failed');
+    throw new Error('Failed2');
   }
   return await response.json();
 });

@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 export const GetShowTime = createAsyncThunk('showtime', async data => {
   const response = await fetch('http://103.130.213.92:3006/showtimes/' + data);
   if (!response.ok) {
-    throw new Error('Failed');
+    throw new Error('Failed1');
   }
   return await response.json();
 });

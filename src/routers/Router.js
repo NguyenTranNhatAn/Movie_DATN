@@ -30,6 +30,7 @@ import PaymentScreen from '../screens/Payment_Screen';
 import TicketDetail from '../screens/Stack/TicketDetail';
 import SeatSelectionn from '../screens/SeatSelectionScreen copy';
 import TermsScreen from '../screens/TermsScreen';
+import CinemaSelectt from '../screens/Stack/CinemaSelect copy';
 
 
 const Tab = createBottomTabNavigator();
@@ -40,7 +41,7 @@ const MainStackNavigation = () => {
     <Stack.Navigator screenOptions={ { headerShown: false } }>
       <Stack.Screen name="Splash" component={ SplashScreen } />
       <Stack.Screen name="Tab" component={ MainTabNavigation } />
-      <Stack.Screen name="Cinema" component={ CinemaSelect } />
+      <Stack.Screen name="Cinema" component={ CinemaSelectt } />
       <Stack.Screen name="Login" component={ LoginScreen } />
 
       <Stack.Screen name="History" component={ History } />
