@@ -23,7 +23,7 @@
 //   const [ticketData, setTicketData] = useState(null);
 
 //   useEffect(() => {
-//     fetch(`http://103.69.193.151:3006/ticket/${ticketId}`)
+//     fetch(`http://103.130.213.92:3006/ticket/${ticketId}`)
 //       .then((response) => response.json())
 //       .then((data) => {
 //         if (data.error === 0) {
@@ -211,7 +211,7 @@ const TicketScreen = ({ route, navigation }) => {
   const [tickets, setTickets] = useState([]);
   /*
   useEffect(() => {
-    fetch(`http://103.69.193.151:3006/ticket/${ticketId}`)
+    fetch(`http://103.130.213.92:3006/ticket/${ticketId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.error === 0) {
@@ -224,7 +224,7 @@ const TicketScreen = ({ route, navigation }) => {
   }, [ticketId]);
 */
   useEffect(() => {
-    fetch(`http://103.69.193.151:3006/ticket/all/RE123`)
+    fetch(`http://103.130.213.92:3006/ticket/all/RE123`)
       .then((response) => response.json())
       .then((data) => {
         if (data.error === 0) {

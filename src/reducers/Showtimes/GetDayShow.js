@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const GetShowDays = createAsyncThunk('showday', async data => {
-  const response = await fetch('http://103.69.193.151:3006/showtime/showdays?movieId='+ data.movieId );
+  const response = await fetch('http://103.130.213.92:3006/showtime/showdays?movieId=' + data.movieId);
   if (!response.ok) {
     throw new Error('Failed');
   }
