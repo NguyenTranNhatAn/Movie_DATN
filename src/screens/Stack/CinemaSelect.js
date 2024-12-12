@@ -30,7 +30,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GetShowTime } from '../../reducers/Showtimes/GetShowTimeSlide';
 import { color } from '../../constants/color';
 import socket from '../../store/socket'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { black, white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import { BrandList } from '../../reducers/Brand/GetAllBrand';
 import { Image } from 'react-native-animatable';
@@ -41,6 +41,8 @@ import { genreSlice } from '../../reducers/Genre/GenreListSlice';
 import { ShowCine,clearmainShowtime } from '../../reducers/Showtimes/ShowTimeCinema';
 import { GetShowDays,clearDayShow } from '../../reducers/Showtimes/GetDayShow';
 import { scrollTo } from 'react-native-reanimated';
+import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
+import API_BASE_URL from '../config';
 
 
 
@@ -70,7 +72,9 @@ const CinemaSelectt = ({ navigation, route }) => {
   const [listBrand, setListBrand] = useState([]);
   const [dataNot, setDatanot] = useState(false);
   const [cinemaData, setCinemaData] = useState([]);
-
+  
+  const [userId, setUserId] = useState(null);
+  const [token, setToken] = useState(null);
   useEffect(() => {
     const resetAndGoBack = () => {
       
@@ -196,6 +200,43 @@ const CinemaSelectt = ({ navigation, route }) => {
       x: index * 120, // 120 là chiều rộng phần tử (tùy chỉnh theo thiết kế)
       animated: true,
     });
+
+  
+  const loadUserData = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem('token');
+      setToken(storedToken);
+
+      if (storedToken) {
+        const response = await fetch(`${API_BASE_URL}/api/user-info`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+
+        const data = await response.json();
+        setUserId(data._id);
+      } else {
+        Alert.alert("Error", "Không tìm thấy token, vui lòng đăng nhập lại.");
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      Alert.alert("Error", "Không thể lấy thông tin người dùng.");
+    }
+  };
+  useEffect(() => {
+    loadUserData();
+  }, []);
+  /*
+  const toggleDate = (index) => {
+
+    setSelectedDateIndex(index);
+
+    // Lấy ngày đã chọn dựa trên chỉ mục index
+    const selectedDate = dateArray[index].date;
+
+    dispatch(GetTime({ movieId: iD, day: selectedDate, }));
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
+    dispatch(BrandList({ movieId: iD, day: selectedDate }));
+
   };
   const toggleDate = (index) => {
     setSelectedDateIndex(index);
@@ -348,10 +389,11 @@ const CinemaSelectt = ({ navigation, route }) => {
     const cinemaId = item.cinema._id
     // console.log(cinemaId)          
     const date = `${day.getDate()}/${day.getMonth() + 1}/${day.getFullYear()}`;
-
+    console.log(day)
 
     navigation.navigate("Seat", {
-      startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId
+      startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId,
+      userId123: userId
     })
   }
 

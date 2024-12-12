@@ -59,18 +59,18 @@ const Favour = ({ navigation }) => {
     );
 
     const renderItem = ({ item }) => (
-        <View style={styles.container_flat}>
-            <TouchableOpacity onPress={() => navigation.navigate('Detail', { item })}>
-                <Image source={{ uri: item.images[0] }} style={styles.image_flat} />
-                <Text style={styles.text1}>{item.name}</Text>
-                <Text style={styles.text1}>{item.duration}</Text>
+        <View style={ styles.container_flat }>
+            <TouchableOpacity onPress={ () => navigation.navigate('Detail', { item }) }>
+                <Image source={ { uri: item.images[0] } } style={ styles.image_flat } />
+                <Text style={ styles.text1 }>{ item.name }</Text>
+                <Text style={ styles.text1 }>{ item.duration }</Text>
             </TouchableOpacity>
         </View>
     );
 
     if (loading) {
         return (
-            <View style={styles.container_Tong}>
+            <View style={ styles.container_Tong }>
                 <Text>Loading...</Text>
             </View>
         );
@@ -78,25 +78,25 @@ const Favour = ({ navigation }) => {
 
     if (error) {
         return (
-            <View style={styles.container_Tong}>
-                <Text style={styles.errorText}>{error}</Text>
+            <View style={ styles.container_Tong }>
+                <Text style={ styles.errorText }>{ error }</Text>
             </View>
         );
     }
 
     return (
-        <View style={styles.container_Tong}>
-            <View style={styles.head}>
+        <View style={ styles.container_Tong }>
+            <View style={ styles.head }>
                 <View></View>
-                <Text style={styles.text}>Favourite Movies</Text>
+                <Text style={ styles.text }>Favourite Movies</Text>
                 <View></View>
             </View>
 
             <FlatList
-                data={favouriteMovies}
-                keyExtractor={(item) => item._id}
-                numColumns={2}
-                renderItem={renderItem}
+                data={ favouriteMovies }
+                keyExtractor={ (item) => item._id }
+                numColumns={ 2 }
+                renderItem={ renderItem }
             />
         </View>
     );
@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         padding: 10,
-        paddingBottom: 50,
     },
     head: {
         flexDirection: 'row',

@@ -55,9 +55,10 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
 
 const SeatSelectionScreen = ({ route }) => {
 
-  const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset } = route.params;
+  const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset, userId123 } = route.params;
 
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [lockedSeats, setLockedSeats] = useState({});
   const [seatMap, setSeatMap] = useState([]);
   const [seatMapId, setSeatMapId] = useState([]);
   const [seatPrices, setSeatPrices] = useState({});
@@ -77,7 +78,37 @@ const SeatSelectionScreen = ({ route }) => {
   const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
 
   const navigation = useNavigation();
-  const socket = io(`${API_BASE_URL}`);
+  const loadUserData = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem('token');
+      setToken(storedToken);
+
+      if (storedToken) {
+        const response = await fetch(`${API_BASE_URL}/api/user-info`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+
+        const data = await response.json();
+        setUserId(data._id);
+      } else {
+        Alert.alert("Error", "Không tìm thấy token, vui lòng đăng nhập lại.");
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      Alert.alert("Error", "Không thể lấy thông tin người dùng.");
+    }
+  };
+  useEffect(() => {
+    loadSeatMap();
+  }, []);
+  console.log("(userId:", userId123);
+  // const socket = io(`${API_BASE_URL}`);
+  const socket = io(`${API_BASE_URL}`, {
+    query: {
+      showTimeID: showtimeId,
+      userID: userId123,
+    },
+  });
   const zoomableViewRef = useRef(null);
 
 
@@ -97,74 +128,11 @@ const SeatSelectionScreen = ({ route }) => {
       console.error('Lỗi khi lưu trạng thái ghế:', error);
     }
   };
-  // Hàm kiểm tra trạng thái ghế đã lưu và reset
-  const resetSeatsState = async () => {
-    /*
-    try {
-      // Lấy trạng thái ghế đã lưu từ AsyncStorage
-      const storedSeats = await AsyncStorage.getItem('selectedSeats');
-      if (storedSeats !== null) {
-        const selectedSeats = JSON.parse(storedSeats);
-        console.log('Trạng thái ghế đã lưu: ', selectedSeats);
-
-        // Tạo bản sao của seatMap từ originalSeatMap để reset
-        const updatedSeatMap = _.cloneDeep(originalSeatMap);
-
-        // Gửi socket để bỏ chọn các ghế đã chọn
-        selectedSeats.forEach(seat => {
-          const { rowIndex, colIndex } = seat;
-          if (updatedSeatMap[rowIndex] && updatedSeatMap[rowIndex][colIndex] !== '_') {
-            updatedSeatMap[rowIndex][colIndex] = '_';
-            console.log(`Reset ghế tại hàng ${rowIndex}, cột ${colIndex}`);
-          }
-
-          socket.emit('deselect_seat', {
-            showtimeId,
-            row: rowIndex,
-            col: colIndex,
-            userId,
-          });
-        });
-
-        // Cập nhật state
-        setSeatMap(updatedSeatMap);
-        setSelectedSeats([]);
-        console.log("Đã reset trạng thái ghế về ban đầu:", updatedSeatMap);
-      } else {
-        console.log("Không có trạng thái ghế nào đã lưu.");
-      }
-    } catch (error) {
-      console.error('Lỗi khi kiểm tra và reset trạng thái ghế: ', error);
-    }
-      */
-  };
-
-
-
-  useEffect(() => {
-    // Kiểm tra tham số reset và gọi hàm resetSeatsState nếu cần
-    if (reset) {
-      console.log("Reset ghế khi vào màn hình Seat");
-      resetSeatsState(); // Gọi hàm reset ghế
-    }
-  }, [reset]); // Chạy lại mỗi khi tham số reset thay đổi
-
-  useFocusEffect(
-    React.useCallback(() => {
-      if (reset) {
-        console.log("Reset ghế khi quay lại màn hình Seat");
-        resetSeatsState();
-      }
-    }, [reset])
-  );
   /// reset ghế
 
 
 
   useEffect(() => {
-
-
-
     loadUserData();
     loadSeatMap();
 
@@ -207,9 +175,12 @@ const SeatSelectionScreen = ({ route }) => {
     });
 
     return () => {
+      console.log("Socket disconnecting...");
       socket.disconnect();
     };
   }, []);
+
+
 
 
 
@@ -247,6 +218,7 @@ const SeatSelectionScreen = ({ route }) => {
     return () => {
       // Ngắt kết nối socket khi component unmount
       socket.disconnect();
+
     };
   }, []); // Lắng nghe chỉ một lần
 
@@ -256,35 +228,8 @@ const SeatSelectionScreen = ({ route }) => {
 
 
 
-
-
-
-
-  const loadUserData = async () => {
-    try {
-      const storedToken = await AsyncStorage.getItem('token');
-      setToken(storedToken);
-
-      if (storedToken) {
-        const response = await fetch(`${API_BASE_URL}/api/user-info`, {
-          headers: { Authorization: `Bearer ${storedToken}` },
-        });
-
-        const data = await response.json();
-        setUserId(data._id);
-      } else {
-        Alert.alert("Error", "Không tìm thấy token, vui lòng đăng nhập lại.");
-      }
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-      Alert.alert("Error", "Không thể lấy thông tin người dùng.");
-    }
-  };
-
-
-
   const loadSeatMap = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}`, {
         method: 'POST',
@@ -337,15 +282,10 @@ const SeatSelectionScreen = ({ route }) => {
       Alert.alert('Error', 'Lỗi khi lấy dữ liệu ghế');
       console.error('Chi tiết lỗi:', error);
     } finally {
-      setIsLoading(false);
+      //setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (reset) {
-      console.log("Reset ghế khi vào màn hình Seat");
-      resetSeatsState(); // Chỉ reset khi seat map đã được tải
-    }
-  }, [reset]);
+
   useEffect(() => {
     // Gọi hàm cập nhật seatMap
     console.log("Ghế hiện tại sau khi cập nhật123:", seatMap);
@@ -358,18 +298,6 @@ const SeatSelectionScreen = ({ route }) => {
   useEffect(() => {
     loadSeatMap();
   }, []);
-
-
-
-
-
-
-  // Gọi API để tải `seatMap` khi màn hình được mở
-  useEffect(() => {
-    loadSeatMap();
-  }, []);
-
-
 
   useEffect(() => {
     const newTotalPrice = Array.isArray(selectedSeats)
@@ -384,16 +312,80 @@ const SeatSelectionScreen = ({ route }) => {
   }, [selectedSeats, seatPrices]);
 
 
-
-
-
-
-
-
-
   const debouncedSeatPress = useDebounce((seatId, rowIndex, colIndex, seatType) => {
     handleSeatPress(seatId, rowIndex, colIndex, seatType);
-  }, 50);
+  }, 150);
+
+
+  useEffect(() => {
+    // Khi người dùng kết nối
+    socket.emit('join_showtime', { showtimeId, userId });
+
+    // Lắng nghe các sự kiện từ server
+    socket.on('seat_selected', ({ seatId, rowIndex, colIndex, userId, time }) => {
+      setSeatMap(prevMap =>
+        prevMap.map((rowSeats, rIndex) =>
+          rIndex === rowIndex
+            ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? 'P' : seat))
+            : rowSeats
+        )
+      );
+      // Lưu thời gian ghế được chọn để quản lý
+      seatMapId[rowIndex][colIndex].time = time;
+    });
+
+    socket.on('seat_deselected', ({ seatId, rowIndex, colIndex }) => {
+      setSeatMap(prevMap =>
+        prevMap.map((rowSeats, rIndex) =>
+          rIndex === rowIndex
+            ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? originalSeatMap[rowIndex][colIndex] : seat))
+            : rowSeats
+        )
+      );
+      // Xóa thời gian khi ghế bị bỏ chọn
+      seatMapId[rowIndex][colIndex].time = null;
+    });
+
+    socket.on('seat_locked', ({ seatId, userId }) => {
+      setLockedSeats(prevLockedSeats => ({
+        ...prevLockedSeats,
+        [seatId]: userId
+      }));
+    });
+
+    socket.on('seat_unlocked', ({ seatId }) => {
+      setLockedSeats(prevLockedSeats => {
+        const updatedLockedSeats = { ...prevLockedSeats };
+        delete updatedLockedSeats[seatId];
+        return updatedLockedSeats;
+      });
+    });
+
+    socket.on('seat_map', (seatMap) => {
+      setSeatMap(seatMap);
+    });
+
+    // Xử lý khi người dùng rời khỏi (disconnect)
+    socket.on('disconnect', () => {
+      Alert.alert('Thông báo', 'Kết nối bị mất');
+      socket.emit('leave_showtime', { showtimeId, userId });
+    });
+
+    // Cleanup khi component bị hủy
+    return () => {
+
+      socket.off('seat_selected');
+      socket.off('seat_deselected');
+      socket.off('seat_locked');
+      socket.off('seat_unlocked');
+      socket.off('seat_map');
+      socket.off('disconnect');
+    };
+  }, [showtimeId, userId, socket, originalSeatMap]);
+
+
+
+
 
 
   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
@@ -401,7 +393,6 @@ const SeatSelectionScreen = ({ route }) => {
       Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
       return;
     }
-
 
     if (seatType === 'P') {
       const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
@@ -413,12 +404,8 @@ const SeatSelectionScreen = ({ route }) => {
       }
     }
 
-
-
-
-
-
     const seatPrice = seatPrices[seatType] || 0;
+    const currentTime = Date.now();  // Thêm thời gian hiện tại
 
     setSelectedSeats((prevSeats) => {
       const isSeatSelected = prevSeats.some(seat => seat.seatId === seatId);
@@ -436,8 +423,8 @@ const SeatSelectionScreen = ({ route }) => {
           )
         );
       } else {
-        updatedSeats = [...prevSeats, { seatId, rowIndex, colIndex, price: seatPrice }];
-        socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
+        updatedSeats = [...prevSeats, { seatId, rowIndex, colIndex, price: seatPrice, time: currentTime }];
+        socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId, time: currentTime });  // Gửi thời gian
         setSeatMap((prevMap) =>
           prevMap.map((rowSeats, rIndex) =>
             rIndex === rowIndex
@@ -445,11 +432,76 @@ const SeatSelectionScreen = ({ route }) => {
               : rowSeats
           )
         );
+        console.log('in ra cái ghế chọn', selectedSeats);
       }
 
       return updatedSeats;
     });
   }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
+
+
+  useEffect(() => {
+    socket.on('seat_timeout', ({ seatId, rowIndex, colIndex }) => {
+      // Khi ghế hết thời gian thanh toán và bị hoàn tác
+      setSelectedSeats((prevSeats) => {
+        // Loại bỏ ghế đã hết thời gian thanh toán khỏi selectedSeats
+        return prevSeats.filter((seat) => seat.seatId !== seatId);
+      });
+
+      setSeatMap((prevMap) =>
+        prevMap.map((rowSeats, rIndex) =>
+          rIndex === rowIndex
+            ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? 'T' : seat)) // Đặt lại trạng thái ghế thành 'T'
+            : rowSeats
+        )
+      );
+
+      console.log(`Ghế (${rowIndex}, ${colIndex}) đã hết thời gian thanh toán và bị hoàn tác.`);
+    });
+
+    return () => {
+      socket.off('seat_timeout'); // Đảm bảo tắt sự kiện khi component bị unmount
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on('seat_locked', ({ row, col, userId }) => {
+      setSeatMap((prevMap) =>
+        prevMap.map((rowSeats, rIndex) =>
+          rIndex === row
+            ? rowSeats.map((seat, cIndex) => (cIndex === col ? 'P' : seat))
+            : rowSeats
+        )
+      );
+      // Cập nhật lockedSeats
+      setLockedSeats((prevLockedSeats) => ({
+        ...prevLockedSeats,
+        [`${showtimeId}-${row}-${col}`]: userId,
+      }));
+    });
+
+    socket.on('seat_unlocked', ({ row, col }) => {
+      setSeatMap((prevMap) =>
+        prevMap.map((rowSeats, rIndex) =>
+          rIndex === row
+            ? rowSeats.map((seat, cIndex) => (cIndex === col ? originalSeatMap[row][col] : seat))
+            : rowSeats
+        )
+      );
+      // Xóa khỏi lockedSeats
+      setLockedSeats((prevLockedSeats) => {
+        const updatedLockedSeats = { ...prevLockedSeats };
+        delete updatedLockedSeats[`${showtimeId}-${row}-${col}`];
+        return updatedLockedSeats;
+      });
+    });
+
+    return () => {
+      socket.off('seat_locked');
+      socket.off('seat_unlocked');
+    };
+  }, [showtimeId, originalSeatMap]);
+
 
 
 
@@ -492,8 +544,8 @@ const SeatSelectionScreen = ({ route }) => {
       movieId: movieId,
       amount: totalPrice,
       description: `Thanh toán vé phim`,
-      returnUrl: 'myapp://home123',
-      cancelUrl: 'myapp://home123'
+      returnUrl: 'myapp://Home',
+      cancelUrl: 'myapp://Home'
     };
     /*
     navigation.navigate('Combo', {
@@ -896,3 +948,17 @@ const styles = StyleSheet.create({
 });
 
 export default SeatSelectionScreen;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
