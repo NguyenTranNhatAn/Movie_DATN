@@ -7,7 +7,7 @@ import genreDetailReducer from '../reducers/Genre/GenreDetailSlice'
 import genreListReducer from '../reducers/Genre/GenreListSlice'
 import showtimeReducer from '../reducers/Showtimes/GetShowTimeSlide'
 import brandListReducer from '../reducers/Brand/GetAllBrand'
-import showTimeListMovieReducer from '../reducers/Showtimes/ShowTimeByMovie'
+
 import timeRangeMovieReducer from '../reducers/Showtimes/GetTimeRange'
 import cinemaShowtime from '../reducers/Showtimes/ShowTimeCinema'
 import wishlistReducer from '../reducers/WishlistSlice';
@@ -23,7 +23,6 @@ export const store = configureStore({
     genreList: genreListReducer,
     showTime: showtimeReducer,
     brandList: brandListReducer,
-    showtimebyMovie: showTimeListMovieReducer,
     listTime:timeRangeMovieReducer,
     cinemaShow:cinemaShowtime,
     wishlist: wishlistReducer,

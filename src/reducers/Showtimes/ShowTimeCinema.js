@@ -23,7 +23,12 @@ export const showCineSlice = createSlice({
     showCinemaData: [],
     showCinemaStatus: 'idle',
   },
-  reducers: {},
+  reducers: {
+    clearmainShowtime: (state) => {
+      state.showCinemaData = [];  // Reset dữ liệu showtime
+      state.showCinemaStatus = 'idle'; // Reset trạng thái nếu cần
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(ShowCine.pending, (state, action) => {
@@ -40,5 +45,5 @@ export const showCineSlice = createSlice({
       });
   },
 });
-
+export const { clearmainShowtime } = showCineSlice.actions;
 export default showCineSlice.reducer;

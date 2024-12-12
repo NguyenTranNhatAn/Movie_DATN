@@ -12,6 +12,7 @@ import {
   ToastAndroid,
   ActivityIndicator,
   Alert,
+  BackHandler
 } from 'react-native';
 import {
   BORDERRADIUS,
@@ -34,11 +35,11 @@ import { black, white } from 'react-native-paper/lib/typescript/styles/themes/v2
 import { BrandList } from '../../reducers/Brand/GetAllBrand';
 import { Image } from 'react-native-animatable';
 import { getDateList } from '../../utils/getListDate';
-import { GetMovieShowtime } from '../../reducers/Showtimes/ShowTimeByMovie';
+
 import { clearShowtimeData, GetTime } from '../../reducers/Showtimes/GetTimeRange';
 import { genreSlice } from '../../reducers/Genre/GenreListSlice';
-import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
-import { GetShowDays } from '../../reducers/Showtimes/GetDayShow';
+import { ShowCine,clearmainShowtime } from '../../reducers/Showtimes/ShowTimeCinema';
+import { GetShowDays,clearDayShow } from '../../reducers/Showtimes/GetDayShow';
 import { scrollTo } from 'react-native-reanimated';
 
 
@@ -69,6 +70,42 @@ const CinemaSelectt = ({ navigation, route }) => {
   const [listBrand, setListBrand] = useState([]);
   const [dataNot, setDatanot] = useState(false);
   const [cinemaData, setCinemaData] = useState([]);
+
+  useEffect(() => {
+    const resetAndGoBack = () => {
+      
+      dispatch(clearShowtimeData());
+      dispatch(clearmainShowtime());
+      dispatch(clearDayShow());
+
+
+      setDateArray([]);
+      setCinemaData([]);
+      setTimeARR([]);
+      setSelectedDateIndex(undefined);
+      setSelectedBrand(undefined);
+      setstart(undefined);
+      setEnd(undefined);
+      setSelectedTimeIndex(undefined);
+  
+      // Quay lại màn hình trước
+      navigation.goBack();
+    };
+  
+    const backAction = () => {
+      resetAndGoBack();
+      return true; // Chặn hành động back mặc định sau khi xử lý
+    };
+  
+    // Thêm sự kiện lắng nghe nút Back
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+  
+    return () => backHandler.remove(); // Cleanup khi component bị unmount
+  }, []);
+  
 
   useEffect(() => {
 
@@ -285,8 +322,22 @@ const CinemaSelectt = ({ navigation, route }) => {
     return `${hours}h`;
   };
   const goBack = () => {
+    dispatch(clearShowtimeData());
+    dispatch(clearmainShowtime());
+    dispatch(clearDayShow());
+
+
+    setDateArray([]);
+    setCinemaData([]);
+    setTimeARR([]);
+    setSelectedDateIndex(undefined);
+    setSelectedBrand(undefined);
+    setstart(undefined);
+    setEnd(undefined);
+    setSelectedTimeIndex(undefined);
+
+    // Quay lại màn hình trước
     navigation.goBack();
-    dispatch(clearShowtimeData())
   }
   const toggleSeat = (item, item1, index) => {
 

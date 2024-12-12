@@ -15,7 +15,12 @@ export const showdaySlice = createSlice({
     showdayData: [],
     showdayStatus: 'idle',
   },
-  reducers: {},
+  reducers: {
+    clearDayShow: (state) => {
+      state.showdayData = [];  // Reset dữ liệu showtime
+      state.showdayStatus = 'idle'; // Reset trạng thái nếu cần
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(GetShowDays.pending, (state, action) => {
@@ -32,5 +37,5 @@ export const showdaySlice = createSlice({
 
   },
 });
-
+export const { clearDayShow } = showdaySlice.actions;
 export default showdaySlice.reducer;
