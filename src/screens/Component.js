@@ -110,12 +110,12 @@ const Component = ({ route }) => {
     <SafeAreaView style={ styles.container }>
       {/* Header */ }
       <View style={ styles.header }>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={ () => navigation.goBack() }>
           <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } />
         </TouchableOpacity>
         <View style={ styles.headerCenter }>
-          <Text style={ styles.headerTitle }>CGV Vincom Thủ Đức</Text>
-          <Text style={ styles.headerSubtitle }>STARIUM, 10/11/24, 19:30~21:58</Text>
+          <Text style={ styles.headerTitle }>{ bookingData.cinemaName }</Text>
+          <Text style={ styles.headerSubtitle }>STARIUM, { bookingData.showDate }, { bookingData.showTime }</Text>
         </View>
       </View>
 
@@ -179,9 +179,9 @@ const Component = ({ route }) => {
       {/* Footer */ }
       <View style={ styles.footer }>
         <View style={ styles.ticketInfo }>
-          <Text style={ styles.ticketTitle }>MẬT MÃ ĐỎ</Text>
+          <Text style={ styles.ticketTitle }>{ bookingData.movieName }</Text>
           <Text style={ styles.ticketSubtitle }>2D Phụ Đề Việt | Rạp STARIUM</Text>
-          <Text style={ styles.ticketPrice }>{ totalPrice }+{ bookingData.amount }đ+{ bookingData.seats.length }ghế</Text>
+          <Text style={ styles.ticketPrice }>{ totalPrice }+{ bookingData.amount }đ ({ bookingData.seats.length }ghế)</Text>
         </View>
         <TouchableOpacity style={ styles.checkoutButton } onPress={ handlePay }>
           <Text style={ styles.checkoutButtonText }>THANH TOÁN</Text>

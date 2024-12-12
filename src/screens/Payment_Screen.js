@@ -132,7 +132,7 @@ const PaymentScreen = ({ route }) => {
     <SafeAreaView style={ styles.container }>
       {/* Header */ }
       <View style={ styles.header }>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={ () => navigation.goBack() }>
           <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } />
         </TouchableOpacity>
         <Text style={ styles.headerTitle }>Thanh toán</Text>
@@ -144,7 +144,7 @@ const PaymentScreen = ({ route }) => {
       {/* Movie Info */ }
       <View style={ styles.movieInfo }>
         <Image
-          source={ image ? { uri: image } : 'null' }
+          source={ image ? { uri: image } : require('../assets/image/avatar.png') }
           style={ styles.movieImage }
         />
         <View style={ styles.movieDetails }>

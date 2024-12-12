@@ -24,7 +24,7 @@ const TicketScreen = ({ route, navigation }) => {
   const [ticketData, setTicketData] = useState(null);
 
   useEffect(() => {
-    fetch(`https://be-movie-sooty.vercel.app/ticket/${ticketId}`)
+    fetch(`http://103.130.213.92:3006/ticket/${ticketId}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.error === 0) {
@@ -212,7 +212,7 @@ export default TicketScreen;
 //   const [tickets, setTickets] = useState([]);
 //   /*
 //   useEffect(() => {
-//     fetch(`https://be-movie-sooty.vercel.app/ticket/${ticketId}`)
+//     fetch(`http://103.130.213.92:3006/ticket/${ticketId}`)
 //       .then((response) => response.json())
 //       .then((data) => {
 //         if (data.error === 0) {
@@ -225,7 +225,7 @@ export default TicketScreen;
 //   }, [ticketId]);
 // */
 //   useEffect(() => {
-//     fetch(`https://be-movie-sooty.vercel.app/ticket/all/RE123`)
+//     fetch(`http://103.130.213.92:3006/ticket/all/RE123`)
 //       .then((response) => response.json())
 //       .then((data) => {
 //         if (data.error === 0) {

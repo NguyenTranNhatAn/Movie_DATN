@@ -13,7 +13,7 @@ export const EditProfile = createAsyncThunk(
       }
 
       const response = await axios.post(
-        'https://be-movie-sooty.vercel.app/api/edit-profile',
+        'http://103.130.213.92:3006/api/edit-profile',
         { name, phone, address, email },
         {
           headers: {
@@ -38,32 +38,32 @@ export const EditProfile = createAsyncThunk(
 
 
 
-  // Tạo Slice để quản lý trạng thái khi gọi API EditProfile
-  export const EditProfileSlice = createSlice({
-    name: 'editprofile',
-    initialState: {
-      editprofileData: {},
-      editprofileStatus: 'idle', // idle | loading | succeeded | failed
-      error: null,
-    },
-    reducers: {},
-    extraReducers: (builder) => {
-      builder
-        .addCase(EditProfile.pending, (state) => {
-          state.editprofileStatus = 'loading';
-          state.error = null;
-        })
-        .addCase(EditProfile.fulfilled, (state, action) => {
-          state.editprofileStatus = 'succeeded';
-          state.editprofileData = action.payload.user; // Cập nhật với dữ liệu user mới
-          console.log('Updated Redux Store:', state.editprofileData); // Kiểm tra Redux Store
-        })
-        .addCase(EditProfile.rejected, (state, action) => {
-          state.editprofileStatus = 'failed';
-          state.error = action.payload; // Lưu lỗi vào state
-          console.log('Error:', action.payload); // Hiển thị lỗi trong console
-        });
-    },
-  });
-  
-  export default EditProfileSlice.reducer;
+// Tạo Slice để quản lý trạng thái khi gọi API EditProfile
+export const EditProfileSlice = createSlice({
+  name: 'editprofile',
+  initialState: {
+    editprofileData: {},
+    editprofileStatus: 'idle', // idle | loading | succeeded | failed
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(EditProfile.pending, (state) => {
+        state.editprofileStatus = 'loading';
+        state.error = null;
+      })
+      .addCase(EditProfile.fulfilled, (state, action) => {
+        state.editprofileStatus = 'succeeded';
+        state.editprofileData = action.payload.user; // Cập nhật với dữ liệu user mới
+        console.log('Updated Redux Store:', state.editprofileData); // Kiểm tra Redux Store
+      })
+      .addCase(EditProfile.rejected, (state, action) => {
+        state.editprofileStatus = 'failed';
+        state.error = action.payload; // Lưu lỗi vào state
+        console.log('Error:', action.payload); // Hiển thị lỗi trong console
+      });
+  },
+});
+
+export default EditProfileSlice.reducer;

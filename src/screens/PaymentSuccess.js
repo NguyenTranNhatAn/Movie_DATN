@@ -16,7 +16,7 @@ const PaymentSuccess = ({ navigation, route }) => {
                 });
 
                 // Kiểm tra xem server có trả về JSON hay không
-                const text = await response.text(); 
+                const text = await response.text();
                 console.log("Server response:", text); // Log phản hồi để kiểm tra nội dung
 
                 const result = JSON.parse(text); // Parse JSON nếu phản hồi là JSON hợp lệ
@@ -27,7 +27,7 @@ const PaymentSuccess = ({ navigation, route }) => {
                         [
                             {
                                 text: "OK",
-                                onPress: () => navigation.replace('Tab'), // Điều hướng về Home
+                                onPress: () => navigation.navigate('Home'), // Điều hướng về Home
                             },
                         ]
                     );

@@ -21,7 +21,16 @@ function App(): React.JSX.Element {
       screens: {
         Seat: 'Seat',
         Cinema: 'Cinema',
-        home123: 'home123'
+        Tab: {
+          // Tab Navigator chứa các màn hình trong TabArr
+          screens: {
+            Home: 'Home', // Tab Home
+            Search: 'search',   // Tab Search
+            Favorite: 'favorite', // Tab Favorite
+            Ticket: 'ticket',   // Tab Ticket
+            Profile: 'profile', // Tab Profile
+          },
+        },
       },
     },
   };
