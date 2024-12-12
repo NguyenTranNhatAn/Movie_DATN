@@ -12,7 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import QRCode from 'react-native-qrcode-svg';
 import API_BASE_URL from '../config';
 
-const TicketDetail = ({ route }) => {
+const TicketDetail = ({ route,navigation83 }) => {
     const { ticketId } = route.params;
     console.log(ticketId)
     const [ticketData, setTicketData] = useState(null);
@@ -38,7 +38,7 @@ const TicketDetail = ({ route }) => {
         <SafeAreaView style={ styles.container }>
             {/* Header */ }
             <View style={ styles.header }>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=>navigation.goBack()}>
                     <Ionicons name="arrow-back" size={ 24 } color="red" style={ styles.backButton } />
                 </TouchableOpacity>
                 <Text style={ styles.headerTitle }>Thanh toán</Text>
