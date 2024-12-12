@@ -28,7 +28,7 @@ import SeatSelectionScreen from '../screens/SeatSelectionScreen';
 import Component from '../screens/Component';
 import PaymentScreen from '../screens/Payment_Screen';
 import TicketDetail from '../screens/Stack/TicketDetail';
-import SeatSelectionn from '../screens/SeatSelectionScreen copy';
+
 import TermsScreen from '../screens/TermsScreen';
 
 

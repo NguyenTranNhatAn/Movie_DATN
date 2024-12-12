@@ -41,7 +41,7 @@ import { genreSlice } from '../../reducers/Genre/GenreListSlice';
 import { ShowCine,clearmainShowtime } from '../../reducers/Showtimes/ShowTimeCinema';
 import { GetShowDays,clearDayShow } from '../../reducers/Showtimes/GetDayShow';
 import { scrollTo } from 'react-native-reanimated';
-import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
+
 import API_BASE_URL from '../config';
 
 
@@ -225,19 +225,8 @@ const CinemaSelectt = ({ navigation, route }) => {
   useEffect(() => {
     loadUserData();
   }, []);
-  /*
-  const toggleDate = (index) => {
+  
 
-    setSelectedDateIndex(index);
-
-    // Lấy ngày đã chọn dựa trên chỉ mục index
-    const selectedDate = dateArray[index].date;
-
-    dispatch(GetTime({ movieId: iD, day: selectedDate, }));
-    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
-    dispatch(BrandList({ movieId: iD, day: selectedDate }));
-
-  };
   const toggleDate = (index) => {
     setSelectedDateIndex(index);
     setCinemaData([]);
@@ -613,7 +602,7 @@ const CinemaSelectt = ({ navigation, route }) => {
       </View>
     </ScrollView>
   );
-};
+}};
 
 const styles = StyleSheet.create({
   loadingContainer: {
