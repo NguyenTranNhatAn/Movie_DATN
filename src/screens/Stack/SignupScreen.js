@@ -41,7 +41,7 @@ const SignupScreen = ({ navigation }) => {
     }
   
     try {
-      const response = await axios.post('http://103.130.213.92:3006/user/registerDanh', {
+      const response = await axios.post('http://103.130.213.92:3006/user/register', {
         name,
         phone,
         email,
@@ -49,9 +49,12 @@ const SignupScreen = ({ navigation }) => {
         address,
       });
       Alert.alert('', 'Đăng kí thành công!');
-      console.log('Token:', response.data.token);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
     } catch (err) {
-      Alert.alert('', 'Đăng kí thành công');
+      Alert.alert('', 'Đăng kí thất bại');
       console.error(err);
     }
   };

@@ -49,7 +49,7 @@ import API_BASE_URL from '../config';
 
 
 
-const CinemaSelectt = ({ navigation, route }) => {
+const CinemaSelect = ({ navigation, route }) => {
   const { id, image } = route.params;
   
   const [iD, setID] = useState(id);
@@ -797,6 +797,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CinemaSelectt;
+export default CinemaSelect;
 
 
