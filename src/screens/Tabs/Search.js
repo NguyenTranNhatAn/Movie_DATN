@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, Image, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { SearchMovie } from '../../reducers/SearchSlice';
+import { SearchMovie, clearSearchResults } from '../../reducers/SearchSlice';
 
 const Search = (props) => {
-    const { navigation } = props
+    const { navigation } = props;
     const dispatch = useDispatch();
     const { searchData, searchStatus } = useSelector((state) => state.search);
     const [searchTerm, setSearchTerm] = useState(''); // Biến lưu từ khóa tìm kiếm
@@ -12,21 +12,22 @@ const Search = (props) => {
     useEffect(() => {
         if (searchTerm) {
             dispatch(SearchMovie(searchTerm)); // Gọi API khi có từ khóa tìm kiếm
+        } else {
+            dispatch(clearSearchResults()); // Xóa kết quả tìm kiếm khi từ khóa trống
         }
     }, [dispatch, searchTerm]);
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity   onPress={()=> navigation.navigate('Detail', { item })}>
-       <View style={styles.productContainer}>
-         
-            <Image source={{ uri: item.images[0] }} style={styles.productImage} />
-            <View style={styles.productInfo}>
-                <Text style={styles.productName}>{item.name}</Text>
-                <Text style={styles.productOrigin}>Rating: {item.rating}</Text>
-                <Text style={styles.productLanguage}>Language : English </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Detail', { item })}>
+            <View style={styles.productContainer}>
+                <Image source={{ uri: item.images[0] }} style={styles.productImage} />
+                <View style={styles.productInfo}>
+                    <Text style={styles.productName}>{item.name}</Text>
+                    <Text style={styles.productOrigin}>Rating: {item.rating}</Text>
+                    <Text style={styles.productLanguage}>Language : English </Text>
+                </View>
             </View>
-            
-        </View></TouchableOpacity>
+        </TouchableOpacity>
     );
 
     return (
@@ -37,8 +38,8 @@ const Search = (props) => {
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search "
-                    value={searchTerm}  // Giá trị từ state searchTerm
-                    onChangeText={(text) => setSearchTerm(text)}  // Cập nhật state khi người dùng nhập
+                    value={searchTerm} // Giá trị từ state searchTerm
+                    onChangeText={(text) => setSearchTerm(text)} // Cập nhật state khi người dùng nhập
                 />
             </View>
 
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingHorizontal: 10,
         paddingTop: 20,
-        paddingBottom:50,
+        paddingBottom: 50,
     },
     searchContainer: {
         flexDirection: 'row',
