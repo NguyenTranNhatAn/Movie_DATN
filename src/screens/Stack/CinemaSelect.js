@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Text,
   View,
@@ -39,94 +39,91 @@ import { clearShowtimeData, GetTime } from '../../reducers/Showtimes/GetTimeRang
 import { genreSlice } from '../../reducers/Genre/GenreListSlice';
 import { ShowCine } from '../../reducers/Showtimes/ShowTimeCinema';
 import { GetShowDays } from '../../reducers/Showtimes/GetDayShow';
+import { scrollTo } from 'react-native-reanimated';
 
 
 
 
 
 
-const CinemaSelect = ({ navigation, route }) => {
+const CinemaSelectt = ({ navigation, route }) => {
   const { id, image } = route.params;
+  
   const [iD, setID] = useState(id);
   const [dateArray, setDateArray] = useState([]);
-
+  const scrollRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [expanded, setExpanded] = useState({});
-  const [showTimeByMovie, setShowTimeByMovie] = useState([]);
-
-  const { showtimeData, showtimeStatus } = useSelector((state) => state.showTime);
   const { brandData, brandStatus } = useSelector((state) => state.brandList);
   const { getTimeData, getTimeStatus } = useSelector((state) => state.listTime);
   const { showdayData, showdayStatus } = useSelector((state) => state.showdayReducer);
-  const { showtimeMovieData, showtimeMovieStatus } = useSelector((state) => state.showtimebyMovie);
   const { showCinemaData, showCinemaStatus } = useSelector((state) => state.cinemaShow);
-  const [selectedIds, setSelectedIds] = useState([]);
   const [timeARR, setTimeARR] = useState([]);
   const [selectedDateIndex, setSelectedDateIndex] = useState();
   const [selectedBrand, setSelectedBrand] = useState();
-  const [price, setPrice] = useState(0);
-  const [twoDSeatArray, setTwoDSeatArray] = useState([]);
-  const [selectedSeatArray, setSelectedSeatArray] = useState([]);
   const [start, setstart] = useState()
   const [end, setEnd] = useState()
   const [selectedTimeIndex, setSelectedTimeIndex] = useState();
-  const [brandId, setBrandId] = useState();
+  const [brandId, setBrandId] = useState(undefined);
   const [listBrand, setListBrand] = useState([]);
   const [dataNot, setDatanot] = useState(false);
   const [cinemaData, setCinemaData] = useState([]);
 
   useEffect(() => {
 
+   if(showdayStatus === "idle"){
     dispatch(GetShowDays({ movieId: iD }))
-  }, [dispatch]);
-
-  useEffect(() => {
-
+   
+   }
     if (showdayData?.days?.length > 0) {
       setDateArray(showdayData.days);
     }
-  }, [showdayData]);
+  }, [showdayStatus]);
 
   useEffect(() => {
-    
+
     setSelectedDateIndex(0);
     setSelectedTimeIndex(0);
     setSelectedBrand(0);
     setstart(0)
-   
+
     setTimeARR([])
-    dispatch(GetTime({ movieId: iD, day: dateArray[0]?.date }));
   }, []);
 
   useEffect(() => {
+   
     setIsLoading(true); // Start loading
     dispatch(
       ShowCine({
         movieId: iD,
-        day: dateArray[0]?.date,
+        day: selectedDateIndex?dateArray[selectedDateIndex]?.date:dateArray[0]?.date,
         startHour: start ?? 0,
         endHour: end ?? 24,
         brandId: brandId
       })
     )
       .then((response) => {
-        setCinemaData(response.payload || []); // Lấy dữ liệu từ action payload
+        if (response.length > 0) {
+          setCinemaData(response.payload || []);
+        }
       })
       .finally(() => setIsLoading(false)); // Stop loading
-  }, [dispatch, iD, dateArray, start, end, brandId]);
+  }, [ iD, dateArray, start, end, brandId,]);
 
   useEffect(() => {
     if (showCinemaData.length === 0) {
 
       dispatch(ShowCine({ movieId: iD, day: dateArray[0]?.date, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
-
+      console.log("run")
     }
 
 
+    if (showCinemaData.length > 0) {
+      setCinemaData(showCinemaData);
+    }
 
-    setCinemaData(showCinemaData);
-  }, [dispatch, showCinemaData])
+  }, [ showCinemaData])
 
   useEffect(() => {
 
@@ -142,31 +139,61 @@ const CinemaSelect = ({ navigation, route }) => {
 
     }
 
-  }, [dispatch, brandData, brandStatus]);
+  }, [brandData, brandStatus]);
 
 
 
   useEffect(() => {
-    dispatch(GetTime({ movieId: iD, day: dateArray[0]?.date }));
-    setTimeARR(getTimeData);
-    setDatanot(false)
+    if (getTimeData.length === 0) {
+      dispatch(GetTime({ movieId: iD, day: dateArray[0]?.date }));
+    }
+    if (getTimeData.length > 0) {
+   //   console.log(getTimeData)
+      setTimeARR(getTimeData);
+      setDatanot(false)
+    }
 
-  }, [dispatch, getTimeStatus, getTimeData, id]);
-
-  const toggleDate = (index) => {
-
-    setSelectedDateIndex(index);
-    setCinemaData([])
-    // Lấy ngày đã chọn dựa trên chỉ mục index
-    const selectedDate = dateArray[index].date;
-    console.log(selectedDate)
-    dispatch(GetTime({ movieId: iD, day: selectedDate, }));
-    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
-    dispatch(BrandList({ movieId: iD, day: selectedDate }));
-
+  }, [ getTimeStatus, getTimeData, id]);
+  const scrollToTime = (index) => {
+    scrollRef.current?.scrollTo({
+      x: index * 120, // 120 là chiều rộng phần tử (tùy chỉnh theo thiết kế)
+      animated: true,
+    });
   };
+  const toggleDate = (index) => {
+    setSelectedDateIndex(index);
+    setCinemaData([]);
+    const selectedDate = dateArray[index].date;
+    setIsLoading(true); // Start loading
+    dispatch(GetTime({ movieId: iD, day: selectedDate, brandId: brandId }))
+        .then((response) => {
+            if(selectedTimeIndex!=0){
+              const timeList = response.payload || [];
+            const isCurrentTimeRangeValid = timeList.some(
+                (time) => time.start === start && time.end === end
+            );
+
+            if (isCurrentTimeRangeValid) {
+                const selectedIndex = timeList.findIndex(
+                    (time) => time.start === start && time.end === end
+                );
+                
+                setSelectedTimeIndex(selectedIndex+1);
+                scrollToTime(selectedIndex+1)
+            } else {
+              scrollToTime(0);
+              setSelectedTimeIndex(0);
+                allDate();
+            }
+            }
+        });
+   dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour:start?? 0, endHour:end?? 24, brandId: brandId })).finally(() => setIsLoading(false)); ;
+    dispatch(BrandList({ movieId: iD, day: selectedDate }));
+};
+
   const allDate = () => {
     const selectedDate = dateArray[selectedDateIndex].date;
+    console.log(selectedDate)
     setstart(0);
     setEnd(24)
     setSelectedTimeIndex(0)
@@ -186,17 +213,59 @@ const CinemaSelect = ({ navigation, route }) => {
   };
   const toggleBrand = (item, index) => {
     setBrandId(item.brandId)
+   console.log(item.brandId)
     setSelectedBrand(index + 1)
     const selectedDate = dateArray[selectedDateIndex].date;
+    dispatch(GetTime({ movieId: iD, day: selectedDate, brandId: item.brandId }))
+    .then((response) => {
+      if(selectedTimeIndex!=0){
+        const timeList = response.payload || [];
+      const isCurrentTimeRangeValid = timeList.some(
+          (time) => time.start === start && time.end === end
+      );
+
+      if (isCurrentTimeRangeValid) {
+          const selectedIndex = timeList.findIndex(
+              (time) => time.start === start && time.end === end
+          );
+          scrollToTime(selectedIndex+1)
+          setSelectedTimeIndex(selectedIndex+1);
+      } else {
+        scrollToTime(0)
+        setSelectedTimeIndex(0);
+        allDate();
+      }
+      }
+  });
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: item.brandId }));
-    console.log(start ?? 0)
+    //console.log(start ?? 0)
   };
 
   const allBrand = () => {
     setBrandId(undefined)
     const selectedDate = dateArray[selectedDateIndex].date;
     setSelectedBrand(0);
+    dispatch(GetTime({ movieId: iD, day: selectedDate, brandId: brandId }))
+    .then((response) => {
+      if(selectedTimeIndex!=0){
+        const timeList = response.payload || [];
+      const isCurrentTimeRangeValid = timeList.some(
+          (time) => time.start === start && time.end === end
+      );
 
+      if (isCurrentTimeRangeValid) {
+          const selectedIndex = timeList.findIndex(
+              (time) => time.start === start && time.end === end
+          );
+        scrollToTime(selectedIndex+1)
+          setSelectedTimeIndex(selectedIndex+1);
+      } else {
+        scrollToTime(0)
+        setSelectedTimeIndex(0);
+        allDate();
+      }
+      }
+  });
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24 }));
 
   }
@@ -211,8 +280,9 @@ const CinemaSelect = ({ navigation, route }) => {
   const formatTime = (timeString) => {
     const date = new Date(timeString);
     const hours = date.getHours();
+    const min= date.getMinutes();
 
-    return `${hours}`;
+    return `${hours}h`;
   };
   const goBack = () => {
     navigation.goBack();
@@ -250,7 +320,7 @@ const CinemaSelect = ({ navigation, route }) => {
         </ImageBackground>
 
       </View>
-      <View style={{ marginTop: 15 }}>
+      <View style={{ marginTop: 15,}}>
         <FlatList
           data={dateArray}
           keyExtractor={item => item.day + item.date}
@@ -260,7 +330,7 @@ const CinemaSelect = ({ navigation, route }) => {
           contentContainerStyle={styles.containerGap24}
           renderItem={({ item, index }) => {
             const date = new Date(item.date);
-           
+
             return (
               <TouchableOpacity onPress={() => toggleDate(index)}>
                 <View
@@ -293,6 +363,7 @@ const CinemaSelect = ({ navigation, route }) => {
       {!dataNot ? <View style={styles.OutterContainer}>
 
         <ScrollView
+        ref={scrollRef}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={[styles.containerGap24, { paddingLeft: 24 }]}
@@ -316,7 +387,9 @@ const CinemaSelect = ({ navigation, route }) => {
           {
             timeARR.map((item, index) => {
               return (
-                <TouchableOpacity key={index + 1} onPress={() => toggleTime(index + 1, item)}>
+                <TouchableOpacity key={index + 1} onPress={() =>{ 
+                  toggleTime(index + 1, item);
+                }}>
                   <View
                     style={[
                       styles.timeContainer,
@@ -409,13 +482,17 @@ const CinemaSelect = ({ navigation, route }) => {
                           </View>
                         </View>
                         {expanded[item.cinema._id] && (
-                          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginTop: 10 }}>
+                          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", marginTop: 10 ,}}>
                             {item.showtimes.map((item1, index) => (
                               <TouchableOpacity
                                 onPress={() => toggleSeat(item, item1, index)}
                                 key={'Room' + index}
                                 // onPress={() => setSelectedTimeIndex(index + 1)}
-                                style={{ flexBasis: '30%', marginBottom: 10 }}
+                                style={{
+                                  flexBasis: '30%', // Tùy chỉnh để item chiếm khoảng 30% chiều rộng
+                                  marginBottom: 10,
+                                  marginRight: index % 3 !== 2 ? '3%' : 0, // Cách đều trừ item cuối dòng
+                                }}
                               >
                                 <View
                                   style={styles.timeContainer}
@@ -589,6 +666,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.space_20,
     borderRadius: BORDERRADIUS.radius_25,
     backgroundColor: COLORS.GreyWhite,
+    
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -637,6 +715,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CinemaSelect;
+export default CinemaSelectt;
 
 
