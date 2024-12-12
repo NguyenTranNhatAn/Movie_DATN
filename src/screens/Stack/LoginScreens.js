@@ -8,27 +8,45 @@ const LoginScreen = ({ navigation }) => {
   const [phone, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [phoneError, setPhoneError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
+  const validatePhoneNumber = () => {
+    if (!phone) {
+      setPhoneError('Điện Thoại không được để trống');
+      return false;
+    } 
+    setPhoneError('');
+    return true;
+  };
 
+  const validatePassword = () => {
+    if (!password) {
+      setPasswordError('Mật khẩu không được để trống');
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
 
   const handleLogin = async () => {
+    const isPhoneValid = validatePhoneNumber();
+    const isPasswordValid = validatePassword();
+
+    if (!isPhoneValid || !isPasswordValid) return;
+
     try {
       const response = await axios.post('http://103.130.213.92:3006/api/login', { phone, password });
       const { token } = response.data;
       await AsyncStorage.setItem('token', token);
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Tab' }], // Thay 'Tab' bằng màn hình chính của bạn
+        routes: [{ name: 'Tab' }],
       });
-
-
       console.log('Token:', response.data.token);
-
-
     } catch (err) {
-      Alert.alert('', 'Đăng nhập thất bại!');
-      console.log(err)
-
+      Alert.alert('', 'Login failed!');
+      console.log(err);
     }
   };
 
@@ -38,44 +56,39 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
-      {/* Logo */}
       <View style={styles.logoContainer}>
         <Image source={require('../../../image/logo.png')} />
       </View>
 
-      {/* Title */}
       <Text style={styles.title}>Welcome Back</Text>
       <Text style={styles.subtitle}>Log in to your account using email</Text>
 
-      {/* Login with Apple */}
       <TouchableOpacity style={styles.socialButtonApple}>
         <Image source={require('../../../image/iconAP.png')} />
         <Text style={styles.socialButtonText}>Login with Apple</Text>
       </TouchableOpacity>
 
-      {/* Login with Google */}
       <TouchableOpacity style={styles.socialButtonGoogle}>
         <Image source={require('../../../image/iconGG.png')} />
         <Text style={styles.socialButtonText}>Login with Google</Text>
       </TouchableOpacity>
 
-      {/* Divider */}
       <View style={styles.dividerContainer}>
         <View style={styles.divider} />
         <Text style={styles.dividerText}>Or continue with social account</Text>
         <View style={styles.divider} />
       </View>
 
-      {/* Mobile Number Input */}
       <TextInput
         style={styles.input}
         placeholder="Mobile Number"
         value={phone}
         onChangeText={setPhoneNumber}
         keyboardType="phone-pad"
+        onBlur={validatePhoneNumber}
       />
+      {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
 
-      {/* Password Input */}
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.inputP}
@@ -83,32 +96,27 @@ const LoginScreen = ({ navigation }) => {
           secureTextEntry={secureTextEntry}
           value={password}
           onChangeText={setPassword}
-
+          onBlur={validatePassword}
         />
         <TouchableOpacity onPress={togglePasswordVisibility}>
           <Image source={require('../../../image/Union.png')} />
         </TouchableOpacity>
       </View>
+      {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-      {/* Forgot Password */}
       <TouchableOpacity style={styles.forgotPasswordContainer}>
-        <Text style={styles.forgotPasswordText}>Forgot Password ?</Text>
+        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
       </TouchableOpacity>
 
-      {/* Login Button */}
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      {/* Register Link */}
       <View style={styles.registerContainer}>
         <Text style={styles.registerText}>Didn't have an account?</Text>
-
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Signup')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
           <Text style={styles.registerLink}> Register</Text>
         </TouchableOpacity>
-
       </View>
     </KeyboardAwareScrollView>
   );
@@ -129,7 +137,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
-    color: 'black'
+    color: 'black',
   },
   subtitle: {
     fontSize: 14,
@@ -169,7 +177,7 @@ const styles = StyleSheet.create({
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10
+    marginBottom: 10,
   },
   divider: {
     flex: 1,
@@ -186,14 +194,19 @@ const styles = StyleSheet.create({
     borderColor: '#FF3D3D',
     padding: 12,
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 10,
     fontSize: 16,
+  },
+  errorText: {
+    color: '#FF3D3D',
+    fontSize: 12,
+    marginBottom: 15,
   },
   inputP: {
     width: '95%',
     borderRadius: 8,
     fontSize: 16,
-    color: 'black'
+    color: 'black',
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -202,10 +215,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FF3D3D',
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 5,
     height: 56,
     paddingRight: 10,
-    paddingLeft: 5
+    paddingLeft: 5,
   },
   forgotPasswordContainer: {
     alignItems: 'flex-end',

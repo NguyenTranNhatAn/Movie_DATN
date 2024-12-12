@@ -15,6 +15,7 @@ import { GetMovieList } from '../../reducers/MovieSlice';
 import { converTime } from '../../utils/convertTime';
 import { GetMovieDeatil } from '../../reducers/Genre/GenreDetailSlice';
 import { GenreList } from '../../reducers/Genre/GenreListSlice';
+import { UploadUsers } from '../../reducers/UploadUserslide';
 
 
 
@@ -48,7 +49,14 @@ const HomeScreen = (props) => {
             height: PAGE_WIDTH * 0.6,
         };
 
+        const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
 
+        // Gọi API khi component được render
+        useEffect(() => {
+          if (UploadUsersStatus === 'idle') {
+            dispatch(UploadUsers());
+          }
+        }, [UploadUsersStatus, dispatch]);
         useEffect(()=>{
             if (movieData.length === 0) {
                 dispatch(GetMovieList());
@@ -100,11 +108,11 @@ const HomeScreen = (props) => {
                 {/* header */}
                 <View style={styles.header}>
                     <View>
-                        <Text style={styles.title}>Welcome NhatAn</Text>
+                        <Text style={styles.title}>Welcome {UploadUsersData.name}</Text>
                         <Text style={styles.desc}>Book your favorite movie</Text>
                     </View>
                     <View>
-                        <Image style={styles.avataImg} source={require('../../../assets/image/avataa.png')} />
+                        <Image style={styles.avataImg} source={require('../../../Img/anhspidermen.png')} />
                     </View>
                 </View>
                 {/* search bar */}

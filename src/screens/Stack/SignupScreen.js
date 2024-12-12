@@ -17,21 +17,45 @@ const SignupScreen = ({ navigation }) => {
 
 
   const handleSignUp = async () => {
-    if (password === confirmPassword) {
-      try {
-        // "raw": "{\n  \"name\": \"hao\",\n  \"phone\": 12,\n  \"email\": \"nhatan\",\n  \"password\": \"gg\",\n  \"address\":\"Lamdong\"\n}\n"
-        const response = await axios.post('http://103.130.213.92:3006/user/registerDanh', { name, phone, email, password, address });
-        Alert.alert('', 'Đăng kí thanh cong!');
-        console.log('Token:', response.data.token);
-      } catch (err) {
-        Alert.alert('', 'Đăng kí thành công!');
-      }
-    } else {
-      Alert.alert('', 'Mật khẩu không trùng khớp hãy nhập lại!'); // Hiển thị thông báo khi mật khẩu không khớp
+    // Regular expression for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+    if (!email) {
+      Alert.alert('', 'Email không được để trống!'); // Alert if email is empty
+      return;
     }
-
-
+  
+    if (!emailRegex.test(email)) {
+      Alert.alert('', 'Email không hợp lệ!'); // Alert if email format is invalid
+      return;
+    }
+  
+    if (!password) {
+      Alert.alert('', 'Mật khẩu không được để trống!'); // Alert if password is empty
+      return;
+    }
+  
+    if (password !== confirmPassword) {
+      Alert.alert('', 'Mật khẩu không trùng khớp hãy nhập lại!'); // Alert if passwords do not match
+      return;
+    }
+  
+    try {
+      const response = await axios.post('http://103.130.213.92:3006/user/registerDanh', {
+        name,
+        phone,
+        email,
+        password,
+        address,
+      });
+      Alert.alert('', 'Đăng kí thành công!');
+      console.log('Token:', response.data.token);
+    } catch (err) {
+      Alert.alert('', 'Đăng kí thất bại!');
+      console.error(err);
+    }
   };
+  
 
   const togglePasswordVisibility = () => {
     setSecureTextEntry(!secureTextEntry);
