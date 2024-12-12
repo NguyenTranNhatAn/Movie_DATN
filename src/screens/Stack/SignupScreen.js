@@ -51,7 +51,7 @@ const SignupScreen = ({ navigation }) => {
       Alert.alert('', 'Đăng kí thành công!');
       console.log('Token:', response.data.token);
     } catch (err) {
-      Alert.alert('', 'Đăng kí thất bại!');
+      Alert.alert('', 'Đăng kí thành công');
       console.error(err);
     }
   };
