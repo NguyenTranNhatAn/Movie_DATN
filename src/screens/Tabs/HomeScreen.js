@@ -154,7 +154,7 @@ const HomeScreen = (props) => {
                
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
-                    <Text onPress={() => navigation.navigate('Lastest')}  >See All</Text>
+                    <Text onPress={() => navigation.navigate('Latest')}  >See All</Text>
                 </View>
 
                 <Carousel

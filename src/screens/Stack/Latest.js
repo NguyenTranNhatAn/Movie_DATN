@@ -46,9 +46,11 @@ const Latest = ({ navigation }) => {
     return (
         <View style={styles.container_Tong}>
             <View style={styles.head}>
-                <Image style={styles.img} source={require('../../../assets/image/arrow-left.png')} />
+               <TouchableOpacity onPress={()=>navigation.goBack()}>
+               <Image style={styles.img}  source={require('../../../assets/image/arrow-left.png')} />
+               </TouchableOpacity>
                 <Text style={styles.text}>Latest Movies</Text>
-                <Image style={styles.img} source={require('../../../assets/image/arrow-left.png')} />
+                <View></View>
             </View>
 
             <FlatList

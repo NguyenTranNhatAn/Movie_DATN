@@ -30,7 +30,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GetShowTime } from '../../reducers/Showtimes/GetShowTimeSlide';
 import { color } from '../../constants/color';
 import socket from '../../store/socket'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { black, white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import { BrandList } from '../../reducers/Brand/GetAllBrand';
 import { Image } from 'react-native-animatable';
@@ -38,12 +38,11 @@ import { getDateList } from '../../utils/getListDate';
 
 import { clearShowtimeData, GetTime } from '../../reducers/Showtimes/GetTimeRange';
 import { genreSlice } from '../../reducers/Genre/GenreListSlice';
-import { ShowCine,clearmainShowtime } from '../../reducers/Showtimes/ShowTimeCinema';
-import { GetShowDays,clearDayShow } from '../../reducers/Showtimes/GetDayShow';
+import { ShowCine, clearmainShowtime } from '../../reducers/Showtimes/ShowTimeCinema';
+import { GetShowDays, clearDayShow } from '../../reducers/Showtimes/GetDayShow';
 import { scrollTo } from 'react-native-reanimated';
-
 import API_BASE_URL from '../config';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -51,7 +50,7 @@ import API_BASE_URL from '../config';
 
 const CinemaSelect = ({ navigation, route }) => {
   const { id, image } = route.params;
-  
+
   const [iD, setID] = useState(id);
   const [dateArray, setDateArray] = useState([]);
   const scrollRef = useRef(null);
@@ -72,12 +71,40 @@ const CinemaSelect = ({ navigation, route }) => {
   const [listBrand, setListBrand] = useState([]);
   const [dataNot, setDatanot] = useState(false);
   const [cinemaData, setCinemaData] = useState([]);
-  
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
+
+  const loadUserData = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem('token');
+      setToken(storedToken);
+
+      if (storedToken) {
+        const response = await fetch(`${API_BASE_URL}/api/user-info`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+
+        const data = await response.json();
+        setUserId(data._id);
+      } else {
+        Alert.alert("Error", "Không tìm thấy token, vui lòng đăng nhập lại.");
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      Alert.alert("Error", "Không thể lấy thông tin người dùng.");
+    }
+  };
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+
+
+
+
   useEffect(() => {
     const resetAndGoBack = () => {
-      
+
       dispatch(clearShowtimeData());
       dispatch(clearmainShowtime());
       dispatch(clearDayShow());
@@ -91,32 +118,32 @@ const CinemaSelect = ({ navigation, route }) => {
       setstart(undefined);
       setEnd(undefined);
       setSelectedTimeIndex(undefined);
-  
+
       // Quay lại màn hình trước
       navigation.goBack();
     };
-  
+
     const backAction = () => {
       resetAndGoBack();
       return true; // Chặn hành động back mặc định sau khi xử lý
     };
-  
+
     // Thêm sự kiện lắng nghe nút Back
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
     );
-  
+
     return () => backHandler.remove(); // Cleanup khi component bị unmount
   }, []);
-  
+
 
   useEffect(() => {
 
-   if(showdayStatus === "idle"){
-    dispatch(GetShowDays({ movieId: iD }))
-   
-   }
+    if (showdayStatus === "idle") {
+      dispatch(GetShowDays({ movieId: iD }))
+
+    }
     if (showdayData?.days?.length > 0) {
       setDateArray(showdayData.days);
     }
@@ -133,12 +160,12 @@ const CinemaSelect = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-   
+
     setIsLoading(true); // Start loading
     dispatch(
       ShowCine({
         movieId: iD,
-        day: selectedDateIndex?dateArray[selectedDateIndex]?.date:dateArray[0]?.date,
+        day: selectedDateIndex ? dateArray[selectedDateIndex]?.date : dateArray[0]?.date,
         startHour: start ?? 0,
         endHour: end ?? 24,
         brandId: brandId
@@ -150,7 +177,7 @@ const CinemaSelect = ({ navigation, route }) => {
         }
       })
       .finally(() => setIsLoading(false)); // Stop loading
-  }, [ iD, dateArray, start, end, brandId,]);
+  }, [iD, dateArray, start, end, brandId,]);
 
   useEffect(() => {
     if (showCinemaData.length === 0) {
@@ -164,7 +191,7 @@ const CinemaSelect = ({ navigation, route }) => {
       setCinemaData(showCinemaData);
     }
 
-  }, [ showCinemaData])
+  }, [showCinemaData])
 
   useEffect(() => {
 
@@ -189,74 +216,48 @@ const CinemaSelect = ({ navigation, route }) => {
       dispatch(GetTime({ movieId: iD, day: dateArray[0]?.date }));
     }
     if (getTimeData.length > 0) {
-   //   console.log(getTimeData)
+      //   console.log(getTimeData)
       setTimeARR(getTimeData);
       setDatanot(false)
     }
 
-  }, [ getTimeStatus, getTimeData, id]);
+  }, [getTimeStatus, getTimeData, id]);
   const scrollToTime = (index) => {
     scrollRef.current?.scrollTo({
       x: index * 120, // 120 là chiều rộng phần tử (tùy chỉnh theo thiết kế)
       animated: true,
     });
-
-  
-  const loadUserData = async () => {
-    try {
-      const storedToken = await AsyncStorage.getItem('token');
-      setToken(storedToken);
-
-      if (storedToken) {
-        const response = await fetch(`${API_BASE_URL}/api/user-info`, {
-          headers: { Authorization: `Bearer ${storedToken}` },
-        });
-
-        const data = await response.json();
-        setUserId(data._id);
-      } else {
-        Alert.alert("Error", "Không tìm thấy token, vui lòng đăng nhập lại.");
-      }
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-      Alert.alert("Error", "Không thể lấy thông tin người dùng.");
-    }
   };
-  useEffect(() => {
-    loadUserData();
-  }, []);
-  
-
   const toggleDate = (index) => {
     setSelectedDateIndex(index);
     setCinemaData([]);
     const selectedDate = dateArray[index].date;
     setIsLoading(true); // Start loading
     dispatch(GetTime({ movieId: iD, day: selectedDate, brandId: brandId }))
-        .then((response) => {
-            if(selectedTimeIndex!=0){
-              const timeList = response.payload || [];
-            const isCurrentTimeRangeValid = timeList.some(
-                (time) => time.start === start && time.end === end
+      .then((response) => {
+        if (selectedTimeIndex != 0) {
+          const timeList = response.payload || [];
+          const isCurrentTimeRangeValid = timeList.some(
+            (time) => time.start === start && time.end === end
+          );
+
+          if (isCurrentTimeRangeValid) {
+            const selectedIndex = timeList.findIndex(
+              (time) => time.start === start && time.end === end
             );
 
-            if (isCurrentTimeRangeValid) {
-                const selectedIndex = timeList.findIndex(
-                    (time) => time.start === start && time.end === end
-                );
-                
-                setSelectedTimeIndex(selectedIndex+1);
-                scrollToTime(selectedIndex+1)
-            } else {
-              scrollToTime(0);
-              setSelectedTimeIndex(0);
-                allDate();
-            }
-            }
-        });
-   dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour:start?? 0, endHour:end?? 24, brandId: brandId })).finally(() => setIsLoading(false)); ;
+            setSelectedTimeIndex(selectedIndex + 1);
+            scrollToTime(selectedIndex + 1)
+          } else {
+            scrollToTime(0);
+            setSelectedTimeIndex(0);
+            allDate();
+          }
+        }
+      });
+    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId })).finally(() => setIsLoading(false));;
     dispatch(BrandList({ movieId: iD, day: selectedDate }));
-};
+  };
 
   const allDate = () => {
     const selectedDate = dateArray[selectedDateIndex].date;
@@ -280,30 +281,30 @@ const CinemaSelect = ({ navigation, route }) => {
   };
   const toggleBrand = (item, index) => {
     setBrandId(item.brandId)
-   console.log(item.brandId)
+    console.log(item.brandId)
     setSelectedBrand(index + 1)
     const selectedDate = dateArray[selectedDateIndex].date;
     dispatch(GetTime({ movieId: iD, day: selectedDate, brandId: item.brandId }))
-    .then((response) => {
-      if(selectedTimeIndex!=0){
-        const timeList = response.payload || [];
-      const isCurrentTimeRangeValid = timeList.some(
-          (time) => time.start === start && time.end === end
-      );
-
-      if (isCurrentTimeRangeValid) {
-          const selectedIndex = timeList.findIndex(
-              (time) => time.start === start && time.end === end
+      .then((response) => {
+        if (selectedTimeIndex != 0) {
+          const timeList = response.payload || [];
+          const isCurrentTimeRangeValid = timeList.some(
+            (time) => time.start === start && time.end === end
           );
-          scrollToTime(selectedIndex+1)
-          setSelectedTimeIndex(selectedIndex+1);
-      } else {
-        scrollToTime(0)
-        setSelectedTimeIndex(0);
-        allDate();
-      }
-      }
-  });
+
+          if (isCurrentTimeRangeValid) {
+            const selectedIndex = timeList.findIndex(
+              (time) => time.start === start && time.end === end
+            );
+            scrollToTime(selectedIndex + 1)
+            setSelectedTimeIndex(selectedIndex + 1);
+          } else {
+            scrollToTime(0)
+            setSelectedTimeIndex(0);
+            allDate();
+          }
+        }
+      });
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: item.brandId }));
     //console.log(start ?? 0)
   };
@@ -313,26 +314,26 @@ const CinemaSelect = ({ navigation, route }) => {
     const selectedDate = dateArray[selectedDateIndex].date;
     setSelectedBrand(0);
     dispatch(GetTime({ movieId: iD, day: selectedDate, brandId: brandId }))
-    .then((response) => {
-      if(selectedTimeIndex!=0){
-        const timeList = response.payload || [];
-      const isCurrentTimeRangeValid = timeList.some(
-          (time) => time.start === start && time.end === end
-      );
-
-      if (isCurrentTimeRangeValid) {
-          const selectedIndex = timeList.findIndex(
-              (time) => time.start === start && time.end === end
+      .then((response) => {
+        if (selectedTimeIndex != 0) {
+          const timeList = response.payload || [];
+          const isCurrentTimeRangeValid = timeList.some(
+            (time) => time.start === start && time.end === end
           );
-        scrollToTime(selectedIndex+1)
-          setSelectedTimeIndex(selectedIndex+1);
-      } else {
-        scrollToTime(0)
-        setSelectedTimeIndex(0);
-        allDate();
-      }
-      }
-  });
+
+          if (isCurrentTimeRangeValid) {
+            const selectedIndex = timeList.findIndex(
+              (time) => time.start === start && time.end === end
+            );
+            scrollToTime(selectedIndex + 1)
+            setSelectedTimeIndex(selectedIndex + 1);
+          } else {
+            scrollToTime(0)
+            setSelectedTimeIndex(0);
+            allDate();
+          }
+        }
+      });
     dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24 }));
 
   }
@@ -347,7 +348,7 @@ const CinemaSelect = ({ navigation, route }) => {
   const formatTime = (timeString) => {
     const date = new Date(timeString);
     const hours = date.getHours();
-    const min= date.getMinutes();
+    const min = date.getMinutes();
 
     return `${hours}h`;
   };
@@ -378,7 +379,7 @@ const CinemaSelect = ({ navigation, route }) => {
     const cinemaId = item.cinema._id
     // console.log(cinemaId)          
     const date = `${day.getDate()}/${day.getMonth() + 1}/${day.getFullYear()}`;
-    console.log(day)
+
 
     navigation.navigate("Seat", {
       startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId,
@@ -402,7 +403,7 @@ const CinemaSelect = ({ navigation, route }) => {
         </ImageBackground>
 
       </View>
-      <View style={{ marginTop: 15,}}>
+      <View style={{ marginTop: 15, }}>
         <FlatList
           data={dateArray}
           keyExtractor={item => item.day + item.date}
@@ -445,7 +446,7 @@ const CinemaSelect = ({ navigation, route }) => {
       {!dataNot ? <View style={styles.OutterContainer}>
 
         <ScrollView
-        ref={scrollRef}
+          ref={scrollRef}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={[styles.containerGap24, { paddingLeft: 24 }]}
@@ -469,7 +470,7 @@ const CinemaSelect = ({ navigation, route }) => {
           {
             timeARR.map((item, index) => {
               return (
-                <TouchableOpacity key={index + 1} onPress={() =>{ 
+                <TouchableOpacity key={index + 1} onPress={() => {
                   toggleTime(index + 1, item);
                 }}>
                   <View
@@ -564,7 +565,7 @@ const CinemaSelect = ({ navigation, route }) => {
                           </View>
                         </View>
                         {expanded[item.cinema._id] && (
-                          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", marginTop: 10 ,}}>
+                          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", marginTop: 10, }}>
                             {item.showtimes.map((item1, index) => (
                               <TouchableOpacity
                                 onPress={() => toggleSeat(item, item1, index)}
@@ -602,7 +603,7 @@ const CinemaSelect = ({ navigation, route }) => {
       </View>
     </ScrollView>
   );
-}};
+};
 
 const styles = StyleSheet.create({
   loadingContainer: {
@@ -748,7 +749,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.space_20,
     borderRadius: BORDERRADIUS.radius_25,
     backgroundColor: COLORS.GreyWhite,
-    
+
     alignItems: 'center',
     justifyContent: 'center',
   },
