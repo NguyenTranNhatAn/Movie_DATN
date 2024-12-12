@@ -4,6 +4,9 @@ import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import API_BASE_URL from '../config';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+
+
 
 const Category = () => {
   const navigation = useNavigation();
@@ -17,7 +20,11 @@ const Category = () => {
   const [currentTicketId, setCurrentTicketId] = useState(null);
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchTickets(); // Làm mới dữ liệu mỗi khi màn hình được focus
+    }, [])
+  );
   const loadUserData = useCallback(async () => {
     try {
       const storedToken = await AsyncStorage.getItem('token');

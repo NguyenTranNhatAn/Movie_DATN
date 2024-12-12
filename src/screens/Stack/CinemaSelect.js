@@ -121,8 +121,6 @@ const CinemaSelect = ({ navigation, route }) => {
 
   }, [dispatch, brandData, brandStatus]);
 
-
-
   useEffect(() => {
 
 
@@ -144,6 +142,9 @@ const CinemaSelect = ({ navigation, route }) => {
 
 
   }, [dispatch, getTimeStatus, getTimeData, id]);
+ 
+ 
+ 
   const loadUserData = async () => {
     try {
       const storedToken = await AsyncStorage.getItem('token');
@@ -167,20 +168,7 @@ const CinemaSelect = ({ navigation, route }) => {
   useEffect(() => {
     loadUserData();
   }, []);
-  /*
-  const toggleDate = (index) => {
-
-    setSelectedDateIndex(index);
-
-    // Lấy ngày đã chọn dựa trên chỉ mục index
-    const selectedDate = dateArray[index].date;
-
-    dispatch(GetTime({ movieId: iD, day: selectedDate, }));
-    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: brandId }));
-    dispatch(BrandList({ movieId: iD, day: selectedDate }));
-
-  };
-  */
+   
   const toggleDate = (index) => {
     setSelectedDateIndex(index);
     const selectedDate = dateArray[index].date;
@@ -210,15 +198,7 @@ const CinemaSelect = ({ navigation, route }) => {
     console.log(item.start, item.end, brandId)
 
   };
-  /*
-  const toggleBrand = (item, index) => {
-    setBrandId(item.brandId)
-    setSelectedBrand(index + 1)
-    const selectedDate = dateArray[selectedDateIndex].date;
-    dispatch(ShowCine({ movieId: iD, day: selectedDate, startHour: start ?? 0, endHour: end ?? 24, brandId: item.brandId }));
-    console.log(start ?? 0)
-  };
-*/
+  
   const toggleBrand = (item, index) => {
     setBrandId(item.brandId);
     setSelectedBrand(index + 1);
