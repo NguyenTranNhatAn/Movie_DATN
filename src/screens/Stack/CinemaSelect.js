@@ -113,11 +113,11 @@ const CinemaSelect = ({ navigation, route }) => {
       setDateArray([]);
       setCinemaData([]);
       setTimeARR([]);
-      setSelectedDateIndex(undefined);
-      setSelectedBrand(undefined);
-      setstart(undefined);
-      setEnd(undefined);
-      setSelectedTimeIndex(undefined);
+      setSelectedDateIndex(0);
+      setSelectedBrand(0);
+      setstart(0);
+      setEnd(24);
+      setSelectedTimeIndex(0);
 
       // Quay lại màn hình trước
       navigation.goBack();
@@ -361,11 +361,11 @@ const CinemaSelect = ({ navigation, route }) => {
     setDateArray([]);
     setCinemaData([]);
     setTimeARR([]);
-    setSelectedDateIndex(undefined);
-    setSelectedBrand(undefined);
-    setstart(undefined);
-    setEnd(undefined);
-    setSelectedTimeIndex(undefined);
+    setSelectedDateIndex(0);
+    setSelectedBrand(0);
+    setstart(0);
+    setEnd(24);
+    setSelectedTimeIndex(0);
 
     // Quay lại màn hình trước
     navigation.goBack();
