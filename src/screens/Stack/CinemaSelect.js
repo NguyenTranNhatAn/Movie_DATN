@@ -558,7 +558,7 @@ const CinemaSelect = ({ navigation, route }) => {
                                 <Text style={{ color: 'black', fontSize: 14, fontWeight: 'bold' }}>
                                   {item.cinema.name}
                                 </Text>
-                                <Text numberOfLines={1} style={{ color: 'black', fontSize: 12, width: '65%' }}>
+                                <Text numberOfLines={1} style={{ color: 'black', fontSize: 12, width: 220 }}>
                                   {item.cinema.address}
                                 </Text>
                               </View>
