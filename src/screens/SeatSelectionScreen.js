@@ -229,7 +229,7 @@ const SeatSelectionScreen = ({ route }) => {
 
 
   const loadSeatMap = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/showtimes/${showtimeId}`, {
         method: 'POST',
@@ -282,7 +282,7 @@ const SeatSelectionScreen = ({ route }) => {
       Alert.alert('Error', 'Lỗi khi lấy dữ liệu ghế');
       console.error('Chi tiết lỗi:', error);
     } finally {
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   };
 
@@ -387,19 +387,73 @@ const SeatSelectionScreen = ({ route }) => {
 
 
 
-
-
-
+  /*
+    const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
+      if (seatType === 'U' || seatType === '_') {
+        Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
+        return;
+      }
+  
+      if (seatType === 'P') {
+        const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
+        console.log('User giữ ghế:', currentSeatUser);
+  
+        if (currentSeatUser && currentSeatUser !== userId) {
+          Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
+          return;
+        }
+      }
+  
+      const seatPrice = seatPrices[seatType] || 0;
+      const currentTime = Date.now();  // Thêm thời gian hiện tại
+  
+      setSelectedSeats((prevSeats) => {
+        const isSeatSelected = prevSeats.some(seat => seat.seatId === seatId);
+        let updatedSeats;
+  
+        if (isSeatSelected) {
+          updatedSeats = prevSeats.filter(seat => seat.seatId !== seatId);
+          socket.emit('deselect_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
+          const originalType = originalSeatMap[rowIndex][colIndex];
+          setSeatMap((prevMap) =>
+            prevMap.map((rowSeats, rIndex) =>
+              rIndex === rowIndex
+                ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? originalType : seat))
+                : rowSeats
+            )
+          );
+        } else {
+          updatedSeats = [...prevSeats, { seatId, rowIndex, colIndex, price: seatPrice, time: currentTime }];
+          socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId, time: currentTime });  // Gửi thời gian
+          setSeatMap((prevMap) =>
+            prevMap.map((rowSeats, rIndex) =>
+              rIndex === rowIndex
+                ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? 'P' : seat))
+                : rowSeats
+            )
+          );
+          console.log('in ra cái ghế chọn', selectedSeats);
+        }
+  
+        return updatedSeats;
+      });
+    }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
+  */
+  // Phần mã Client - Xử lý việc chọn ghế trên giao diện người dùng
+  // Phần mã Client - Xử lý việc chọn ghế trên giao diện người dùng
   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
+    // Kiểm tra nếu ghế không thể chọn (đã đặt hoặc không khả dụng)
     if (seatType === 'U' || seatType === '_') {
       Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
       return;
     }
 
+    // Kiểm tra nếu ghế đã được chọn và người giữ ghế không phải là người hiện tại
     if (seatType === 'P') {
       const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
       console.log('User giữ ghế:', currentSeatUser);
 
+      // Nếu ghế đã được chọn bởi người khác, hiển thị cảnh báo
       if (currentSeatUser && currentSeatUser !== userId) {
         Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
         return;
@@ -413,6 +467,7 @@ const SeatSelectionScreen = ({ route }) => {
       const isSeatSelected = prevSeats.some(seat => seat.seatId === seatId);
       let updatedSeats;
 
+      // Nếu ghế đã được chọn, hủy chọn ghế
       if (isSeatSelected) {
         updatedSeats = prevSeats.filter(seat => seat.seatId !== seatId);
         socket.emit('deselect_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
@@ -425,91 +480,22 @@ const SeatSelectionScreen = ({ route }) => {
           )
         );
       } else {
+        // Nếu ghế chưa được chọn, thêm ghế vào danh sách và gửi thông tin chọn ghế
         updatedSeats = [...prevSeats, { seatId, rowIndex, colIndex, price: seatPrice, time: currentTime }];
         socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId, time: currentTime });  // Gửi thời gian
         setSeatMap((prevMap) =>
           prevMap.map((rowSeats, rIndex) =>
             rIndex === rowIndex
-              ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? 'P' : seat))
+              ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? 'P' : seat)) // Đánh dấu ghế là đang chọn
               : rowSeats
           )
         );
-        console.log('in ra cái ghế chọn', selectedSeats);
+        console.log('in ra cái ghế chọn', updatedSeats);
       }
 
       return updatedSeats;
     });
-  }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
-
-  /*
-   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
-     if (seatType === 'U' || seatType === '_') {
-       Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
-       return;
-     }
-     if (seatType === 'P') {
-       const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
-       console.log('User giữ ghế:', currentSeatUser);
- 
-       if (currentSeatUser && currentSeatUser !== userId) {
-         Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
-         return;
-       }
-     }
- 
-     const currentTime = Date.now();
-     const seatPrice = seatPrices[seatType] || 0;
- 
-     setSelectedSeats((prevSeats) => {
-       const isSeatSelected = prevSeats.some((seat) => seat.seatId === seatId);
-       let updatedSeats;
- 
-       if (isSeatSelected) {
-         // Logic bỏ chọn ghế
-         updatedSeats = prevSeats.filter((seat) => seat.seatId !== seatId);
-         socket.emit('deselect_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
-         const originalType = originalSeatMap[rowIndex][colIndex];
-         setSeatMap((prevMap) =>
-           prevMap.map((rowSeats, rIndex) =>
-             rIndex === rowIndex
-               ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? originalType : seat))
-               : rowSeats
-           )
-         );
-       } else {
-         // Logic chọn ghế
-         updatedSeats = [
-           ...prevSeats,
-           { seatId, rowIndex, colIndex, price: seatPrice, time: currentTime },
-         ];
-         socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId, time: currentTime });
-         setSeatMap((prevMap) =>
-           prevMap.map((rowSeats, rIndex) =>
-             rIndex === rowIndex
-               ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? 'P' : seat)) // 'P' = Selected
-               : rowSeats
-           )
-         );
-       }
- 
-       return updatedSeats;
-     });
- 
-     // Xử lý phản hồi từ server
-     socket.once('seat_response', (response) => {
-       if (!response.success) {
-         Alert.alert('Thông báo', response.message || 'Ghế này đã được chọn bởi người khác.');
-         setSeatMap((prevMap) =>
-           prevMap.map((rowSeats, rIndex) =>
-             rIndex === rowIndex
-               ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? seatType : seat))
-               : rowSeats
-           )
-         );
-       }
-     });
-   }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId]);
- */
+  }, [seatMap, originalSeatMap, seatPrices, userId, debouncedSeatPress]);
 
 
 
@@ -669,7 +655,6 @@ const SeatSelectionScreen = ({ route }) => {
             setSeatMap(_.cloneDeep(originalSeatMap));
 
             // Điều hướng quay lại
-            navigation.setParams({ resetData: false });
             navigation.goBack();
           },
         },
