@@ -103,6 +103,15 @@ const Component = ({ route }) => {
     // Điều hướng sang màn hình thanh toán và truyền dữ liệu
     navigation.navigate('Pay_Screen', { paymentData });
   };
+  function formatCurrencyVND(amount) {
+    return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+    }).format(amount);
+}
+
+// Ví dụ sử dụng
+console.log(formatCurrencyVND(1000)); // Kết quả: 1.000 ₫
 
 
 
@@ -148,7 +157,7 @@ const Component = ({ route }) => {
                   />
                   <View style={ styles.comboInfo }>
                     <Text style={ styles.comboName }>{ combo.name }</Text>
-                    <Text style={ styles.comboPrice }>{ combo.price }</Text>
+                    <Text style={ styles.comboPrice }>{ formatCurrencyVND(combo.price) }</Text>
                     <Text style={ styles.comboDescription }>{ combo.description }</Text>
                     <Text style={ styles.comboNote }>{ combo.note }</Text>
                   </View>
@@ -181,7 +190,7 @@ const Component = ({ route }) => {
         <View style={ styles.ticketInfo }>
           <Text style={ styles.ticketTitle }>{ bookingData.movieName }</Text>
           <Text style={ styles.ticketSubtitle }>2D Phụ Đề Việt | Rạp STARIUM</Text>
-          <Text style={ styles.ticketPrice }>{ totalPrice }+{ bookingData.amount }đ ({ bookingData.seats.length }ghế)</Text>
+          <Text style={ styles.ticketPrice }>{ totalPrice===0?"":`${totalPrice} +` }{ formatCurrencyVND(bookingData.amount) } ({ bookingData.seats.length }ghế)</Text>
         </View>
         <TouchableOpacity style={ styles.checkoutButton } onPress={ handlePay }>
           <Text style={ styles.checkoutButtonText }>THANH TOÁN</Text>
