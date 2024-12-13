@@ -25,7 +25,10 @@ const Profile = () => {
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
     ToastAndroid.show("Đăng xuất thành công", ToastAndroid.SHORT);
-    navigation.navigate('Login'); // Chuyển hướng đến màn hình 'Login'
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
   };
 
   return (
