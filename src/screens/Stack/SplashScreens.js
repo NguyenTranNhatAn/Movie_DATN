@@ -55,7 +55,7 @@ const SplashScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../../image/Logo1.png')} // Đường dẫn tới logo của bạn
+        source={require('../../../image/logo.png')} // Đường dẫn tới logo của bạn
         style={styles.logo}
       />
     </View>

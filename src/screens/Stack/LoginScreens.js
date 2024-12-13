@@ -57,13 +57,13 @@ const LoginScreen = ({ navigation }) => {
   return (
     <KeyboardAwareScrollView contentContainerStyle={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require('../../../image/Logo1.png')} />
+        <Image source={require('../../../image/logo.png')} />
       </View>
 
       <Text style={styles.title}>Welcome Back</Text>
       <Text style={styles.subtitle}>Log in to your account using email</Text>
 
-      {/* <TouchableOpacity style={styles.socialButtonApple}>
+      <TouchableOpacity style={styles.socialButtonApple}>
         <Image source={require('../../../image/iconAP.png')} />
         <Text style={styles.socialButtonText}>Login with Apple</Text>
       </TouchableOpacity>
@@ -71,13 +71,13 @@ const LoginScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.socialButtonGoogle}>
         <Image source={require('../../../image/iconGG.png')} />
         <Text style={styles.socialButtonText}>Login with Google</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
 
-      {/* <View style={styles.dividerContainer}>
+      <View style={styles.dividerContainer}>
         <View style={styles.divider} />
         <Text style={styles.dividerText}>Or continue with social account</Text>
         <View style={styles.divider} />
-      </View> */}
+      </View>
 
       <TextInput
         style={styles.input}
@@ -104,10 +104,9 @@ const LoginScreen = ({ navigation }) => {
       </View>
       {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-      {/* <TouchableOpacity style={styles.forgotPasswordContainer}>
+      <TouchableOpacity style={styles.forgotPasswordContainer}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-      </TouchableOpacity> */}
-    
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
@@ -128,12 +127,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#F5F5F5',
-    justifyContent:'center'
   },
   logoContainer: {
     alignItems: 'center',
     marginVertical: 20,
-    marginBottom:'20%'
   },
   title: {
     fontSize: 24,
@@ -237,7 +234,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
-    marginTop:'20%',
   },
   loginButtonText: {
     color: '#fff',

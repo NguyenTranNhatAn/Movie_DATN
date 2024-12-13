@@ -596,7 +596,6 @@ const SeatSelectionScreen = ({ route }) => {
             setSeatMap(_.cloneDeep(originalSeatMap));
 
             // Điều hướng quay lại
-            navigation.setParams({ resetData: false });
             navigation.goBack();
           },
         },

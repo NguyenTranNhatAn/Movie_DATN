@@ -77,7 +77,7 @@ const SignupScreen = ({ navigation }) => {
     >
       {/* Logo */}
       <View style={styles.logoContainer}>
-        <Image source={require('../../../image/Logo1.png')} />
+        <Image source={require('../../../image/logo.png')} />
       </View>
 
       {/* Title */}
@@ -203,8 +203,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     marginVertical: 20,
-    marginTop: 10,
-    
+    marginTop: -5,
   },
   title: {
     fontSize: 24,

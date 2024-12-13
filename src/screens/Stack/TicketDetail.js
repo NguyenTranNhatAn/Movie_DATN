@@ -12,7 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import QRCode from 'react-native-qrcode-svg';
 import API_BASE_URL from '../config';
 
-const TicketDetail = ({ route,navigation}) => {
+const TicketDetail = ({ route,navigation83 }) => {
     const { ticketId } = route.params;
     console.log(ticketId)
     const [ticketData, setTicketData] = useState(null);

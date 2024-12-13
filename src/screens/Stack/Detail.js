@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { converTime } from '../../utils/convertTime';
 import Toast from 'react-native-toast-message';
-import { resetCache } from '../../../metro.config';
 
 const Details = ({ route, navigation }) => {
   const { item, viewOnly } = route.params;
@@ -139,7 +138,7 @@ const Details = ({ route, navigation }) => {
 
 
       {!viewOnly && (
-        <TouchableOpacity onPress={() => navigation.navigate('Cinema', { id: item._id, image: item.images,resetData:true })} style={styles.selectButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Cinema', { id: item._id, image: item.images })} style={styles.selectButton}>
           <Text style={styles.selectButtonText}>Select Seat</Text>
         </TouchableOpacity>
       )}

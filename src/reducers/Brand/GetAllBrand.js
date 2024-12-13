@@ -15,12 +15,7 @@ export const brandSlice = createSlice({
     brandData: [],
     brandStatus: 'idle',
   },
-  reducers: {
-    clearBrand: (state) => {
-      state.brandData = [];  // Reset dữ liệu showtime
-      state.brandStatus = 'idle'; // Reset trạng thái nếu cần
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(BrandList.pending, (state, action) => {
@@ -36,5 +31,5 @@ export const brandSlice = createSlice({
       });
   },
 });
-export const { clearBrand } = brandSlice.actions;
+
 export default brandSlice.reducer;
