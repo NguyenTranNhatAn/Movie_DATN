@@ -32,7 +32,7 @@ import { color } from '../../constants/color';
 import socket from '../../store/socket'
 
 import { black, white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
-import { BrandList } from '../../reducers/Brand/GetAllBrand';
+import { BrandList, clearBrand } from '../../reducers/Brand/GetAllBrand';
 import { Image } from 'react-native-animatable';
 import { getDateList } from '../../utils/getListDate';
 
@@ -99,7 +99,24 @@ const CinemaSelect = ({ navigation, route }) => {
   }, []);
 
 
-
+  useEffect(() => {
+    const resetData = route.params?.resetData || false;
+  
+    if (resetData) {
+      // Xóa dữ liệu cũ và tải lại từ đầu
+      dispatch(clearShowtimeData());
+      dispatch(clearmainShowtime());
+      dispatch(clearDayShow());
+      dispatch(clearBrand());
+      setDateArray([]);
+      setTimeARR([]);
+      setListBrand([]);
+      console.log("Reset data and reload fresh data");
+    } else {
+      console.log("Keep old data");
+    }
+  }, [route.params]);
+  
 
 
   useEffect(() => {
@@ -108,16 +125,9 @@ const CinemaSelect = ({ navigation, route }) => {
       dispatch(clearShowtimeData());
       dispatch(clearmainShowtime());
       dispatch(clearDayShow());
-
-
-      setDateArray([]);
-      setCinemaData([]);
+      dispatch(clearBrand());
       setTimeARR([]);
-      setSelectedDateIndex(0);
-      setSelectedBrand(0);
-      setstart(0);
-      setEnd(24);
-      setSelectedTimeIndex(0);
+      setListBrand([]);
 
       // Quay lại màn hình trước
       navigation.goBack();
@@ -154,9 +164,10 @@ const CinemaSelect = ({ navigation, route }) => {
     setSelectedDateIndex(0);
     setSelectedTimeIndex(0);
     setSelectedBrand(0);
-    setstart(0)
-
-    setTimeARR([])
+    setstart(0);
+    setID(id);
+    setTimeARR([]);
+    setListBrand([]);
   }, []);
 
   useEffect(() => {
@@ -177,7 +188,7 @@ const CinemaSelect = ({ navigation, route }) => {
         }
       })
       .finally(() => setIsLoading(false)); // Stop loading
-  }, [iD, dateArray, start, end, brandId,]);
+  }, [ dateArray, start, end, brandId,]);
 
   useEffect(() => {
     if (showCinemaData.length === 0) {
@@ -356,17 +367,10 @@ const CinemaSelect = ({ navigation, route }) => {
     dispatch(clearShowtimeData());
     dispatch(clearmainShowtime());
     dispatch(clearDayShow());
-
-
+    dispatch(clearBrand());
     setDateArray([]);
-    setCinemaData([]);
-    setTimeARR([]);
-    setSelectedDateIndex(0);
-    setSelectedBrand(0);
-    setstart(0);
-    setEnd(24);
-    setSelectedTimeIndex(0);
-
+    setTimeARR([])
+    setListBrand([])
     // Quay lại màn hình trước
     navigation.goBack();
   }
