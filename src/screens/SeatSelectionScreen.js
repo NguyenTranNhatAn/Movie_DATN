@@ -662,7 +662,27 @@ const SeatSelectionScreen = ({ route }) => {
     );
   };
 
+  socket.on(
+    `reset_selected_seats_${userId123}`,
+    ({seatId, seatType, rowIndex, colIndex}) => {
+      const seatPrice = seatPrices[seatType] || 0;
+      setSelectedSeats(prevSeats => {
+        // Nếu ghế đã được chọn, hủy chọn ghế
+        updatedSeats = Array.isArray(prevSeats)
+          ? prevSeats.filter(
+              seat =>
+                +seat.rowIndex === +rowIndex && +seat.colIndex === +colIndex,
+            )
+          : [];
 
+        return updatedSeats;
+      });
+    },
+  );
+
+  socket.on(`error_${userId123}`, ({message}) => {
+    Alert.alert('Error', message);
+  });
 
 
   //goBack
