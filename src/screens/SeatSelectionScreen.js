@@ -490,12 +490,42 @@ const SeatSelectionScreen = ({ route }) => {
               : rowSeats
           )
         );
+        // Test 2 users book seat at same time
+        // await Promise.all([
+        //   bookSeatOne(showtimeId, rowIndex, colIndex, 'userOne', currentTime), // Book first
+        //   bookSeatTwo(showtimeId, rowIndex, colIndex, userId123, currentTime) // Must throw error
+        // ]);
         console.log('in ra cái ghế chọn', updatedSeats);
       }
 
       return updatedSeats;
     });
   }, [seatMap, originalSeatMap, seatPrices, userId, debouncedSeatPress]);
+
+  const bookSeatOne = (showtimeId, rowIndex, colIndex, userId, currentTime) => {
+    console.log('bookSeatOne time: ', new Date().getTime());
+    socket.emit('select_seat', {
+      showtimeId,
+      row: rowIndex,
+      col: colIndex,
+      userId,
+      time: currentTime,
+    }); // Gửi thời gian
+  };
+
+  const bookSeatTwo = (showtimeId, rowIndex, colIndex, userId, currentTime) => {
+    console.log('bookSeatTwo time: ', new Date().getTime());
+    socket.emit('select_seat', {
+      showtimeId,
+      row: rowIndex,
+      col: colIndex,
+      userId,
+      time: currentTime,
+    }); // Gửi thời gian
+  };
+
+
+
 
 
 
@@ -661,26 +691,57 @@ const SeatSelectionScreen = ({ route }) => {
       ]
     );
   };
-
-  socket.on(
-    `reset_selected_seats_${userId123}`,
-    ({seatId, seatType, rowIndex, colIndex}) => {
-      const seatPrice = seatPrices[seatType] || 0;
-      setSelectedSeats(prevSeats => {
-        // Nếu ghế đã được chọn, hủy chọn ghế
-        updatedSeats = Array.isArray(prevSeats)
-          ? prevSeats.filter(
+  /*
+    socket.on(
+      `reset_selected_seats_${userId123}`,
+      ({ seatId, seatType, rowIndex, colIndex }) => {
+        console.log(`[Reset Ghế] Ghế được reset:`, { seatId, seatType, rowIndex, colIndex });
+        const seatPrice = seatPrices[seatType] || 0;
+        setSelectedSeats(prevSeats => {
+          // Nếu ghế đã được chọn, hủy chọn ghế
+          updatedSeats = Array.isArray(prevSeats)
+            ? prevSeats.filter(
               seat =>
                 +seat.rowIndex === +rowIndex && +seat.colIndex === +colIndex,
             )
-          : [];
+            : [];
+          console.log('ghế được hoàn tác sau 10 giây:', selectedSeats);
+          return updatedSeats;
+        });
+      },
+    );
+  */
+  socket.on(`reset_selected_seats_${userId123}`, ({ seatId, seatType, rowIndex, colIndex }) => {
+    console.log(`[Reset Ghế] Ghế được reset:`, { seatId, seatType, rowIndex, colIndex });
 
-        return updatedSeats;
-      });
-    },
-  );
+    const seatPrice = seatPrices[seatType] || 0; // Giá của ghế bị reset
+    setSelectedSeats((prevSeats) => {
+      // Loại bỏ ghế bị reset khỏi mảng `selectedSeats`
+      const updatedSeats = prevSeats.filter(
+        (seat) => seat.rowIndex !== rowIndex || seat.colIndex !== colIndex
+      );
+      return updatedSeats;
+    });
 
-  socket.on(`error_${userId123}`, ({message}) => {
+    // Cập nhật lại sơ đồ ghế
+    setSeatMap((prevMap) =>
+      prevMap.map((rowSeats, rIndex) =>
+        rIndex === rowIndex
+          ? rowSeats.map((seat, cIndex) =>
+            cIndex === colIndex ? originalSeatMap[rowIndex][colIndex] : seat
+          )
+          : rowSeats
+      )
+    );
+
+    // Tính toán lại tổng giá tiền và số ghế đã chọn
+    setTotalPrice((prevTotal) => prevTotal - seatPrice);
+    setSeatCount((prevCount) => prevCount - 1);
+  });
+
+
+
+  socket.on(`error_${userId123}`, ({ message }) => {
     Alert.alert('Error', message);
   });
 
