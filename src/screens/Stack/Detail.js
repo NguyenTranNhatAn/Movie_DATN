@@ -11,7 +11,7 @@ const Details = ({ route, navigation }) => {
   const { item, viewOnly } = route.params;
   const [isFavorite, setIsFavorite] = useState(false);
   const [token, setToken] = useState(null);
-
+  const [showVideo, setShowVideo] = useState(true); // Trạng thái hiển thị video
   useEffect(() => {
     const getToken = async () => {
       const storedToken = await AsyncStorage.getItem('token');
@@ -76,6 +76,10 @@ const Details = ({ route, navigation }) => {
       });
     }
   };
+  const handleSelectSeat = () => {
+    setShowVideo(false); // Tạm ẩn video khi nhấn Select Seat
+    navigation.navigate('Cinema', { id: item._id, image: item.images, resetData: true });
+  };
 
   return (
     <View style={styles.container}>
@@ -92,7 +96,10 @@ const Details = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: viewOnly ? 20 : 0 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: viewOnly ? 20 : 0 }}
+      showsVerticalScrollIndicator={false}
+
+      >
         {/* Movie Poster and Info */}
         <View style={styles.posterInfoContainer}>
           <Image source={{ uri: item.images[0] }} style={styles.moviePoster} />
@@ -139,7 +146,7 @@ const Details = ({ route, navigation }) => {
 
 
       {!viewOnly && (
-        <TouchableOpacity onPress={() => navigation.navigate('Cinema', { id: item._id, image: item.images,resetData:true })} style={styles.selectButton}>
+        <TouchableOpacity onPress={handleSelectSeat} style={styles.selectButton}>
           <Text style={styles.selectButtonText}>Select Seat</Text>
         </TouchableOpacity>
       )}

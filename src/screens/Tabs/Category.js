@@ -139,6 +139,7 @@ const Category = () => {
             <Text style={ styles.buttonText }>Cancel Booking</Text>
           </TouchableOpacity>
         ) }
+        
         <TouchableOpacity
           style={ selectedTab === 'Past' ? styles.reviewButton : styles.cancelButton }
           onPress={ () => navigation.navigate('TicketDetails', { ticketId: ticket.ticketId }) }
