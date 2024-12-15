@@ -33,6 +33,9 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
     case 'P':
       seatStyle = styles.legendColorSelected;
       break;
+    case 'O':
+      seatStyle = styles.legendColorSelectedAnother;
+      break;
     default:
       break;
   }
@@ -439,7 +442,36 @@ const SeatSelectionScreen = ({ route }) => {
       });
     }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
   */
-  // Phần mã Client - Xử lý việc chọn ghế trên giao diện người dùng
+  //moi them
+  // Khi một người khác chọn ghế
+  socket.on('seat_selected_by_other', ({ row, col }) => {
+    console.log(`Ghế (${row}, ${col}) đang được người khác chọn.`);
+    setSeatMap((prevMap) =>
+      prevMap.map((rowSeats, rIndex) =>
+        rIndex === row
+          ? rowSeats.map((seat, cIndex) =>
+            cIndex === col ? 'O' : seat // Đặt trạng thái "O" (Màu xanh dương)
+          )
+          : rowSeats
+      )
+    );
+  });
+
+  // Khi ghế không còn được người khác chọn (trả về trạng thái trống)
+  socket.on('seat_unselected_by_other', ({ row, col }) => {
+    console.log(`Ghế (${row}, ${col}) không còn được người khác chọn.`);
+    setSeatMap((prevMap) =>
+      prevMap.map((rowSeats, rIndex) =>
+        rIndex === row
+          ? rowSeats.map((seat, cIndex) =>
+            cIndex === col ? 'T' : seat // Trả về trạng thái trống "T"
+          )
+          : rowSeats
+      )
+    );
+  });
+
+  //moi thme
   // Phần mã Client - Xử lý việc chọn ghế trên giao diện người dùng
   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
     // Kiểm tra nếu ghế không thể chọn (đã đặt hoặc không khả dụng)
@@ -492,8 +524,12 @@ const SeatSelectionScreen = ({ route }) => {
         );
         // Test 2 users book seat at same time
         // await Promise.all([
-        //   bookSeatOne(showtimeId, rowIndex, colIndex, 'userOne', currentTime), // Book first
-        //   bookSeatTwo(showtimeId, rowIndex, colIndex, userId123, currentTime) // Must throw error
+        //   bookSeatOne(showtimeId, rowIndex, colIndex, 'userOne', Date.now())
+        //     .then(() => console.log('User One booked successfully'))
+        //     .catch((err) => console.error('User One failed:', err)),
+        //   bookSeatTwo(showtimeId, rowIndex, colIndex, 'userId123', Date.now())
+        //     .then(() => console.log('User Two booked successfully'))
+        //     .catch((err) => console.error('User Two failed:', err)),
         // ]);
         console.log('in ra cái ghế chọn', updatedSeats);
       }
@@ -691,26 +727,7 @@ const SeatSelectionScreen = ({ route }) => {
       ]
     );
   };
-  /*
-    socket.on(
-      `reset_selected_seats_${userId123}`,
-      ({ seatId, seatType, rowIndex, colIndex }) => {
-        console.log(`[Reset Ghế] Ghế được reset:`, { seatId, seatType, rowIndex, colIndex });
-        const seatPrice = seatPrices[seatType] || 0;
-        setSelectedSeats(prevSeats => {
-          // Nếu ghế đã được chọn, hủy chọn ghế
-          updatedSeats = Array.isArray(prevSeats)
-            ? prevSeats.filter(
-              seat =>
-                +seat.rowIndex === +rowIndex && +seat.colIndex === +colIndex,
-            )
-            : [];
-          console.log('ghế được hoàn tác sau 10 giây:', selectedSeats);
-          return updatedSeats;
-        });
-      },
-    );
-  */
+
   socket.on(`reset_selected_seats_${userId123}`, ({ seatId, seatType, rowIndex, colIndex }) => {
     console.log(`[Reset Ghế] Ghế được reset:`, { seatId, seatType, rowIndex, colIndex });
 
@@ -886,6 +903,10 @@ const SeatSelectionScreen = ({ route }) => {
           <View style={ styles.legendColorSweetBox } />
           <Text style={ styles.legendText }>Sweet Box</Text>
         </View>
+        <View style={ styles.legendItem }>
+          <View style={ styles.legendColorSelectedAnother } />
+          <Text style={ styles.legendText }>Ng # chọn</Text>
+        </View>
       </View>
 
       <View style={ styles.footer }>
@@ -1008,6 +1029,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     marginRight: 5,
   },
+  legendColorSelectedAnother: {
+    width: 15,
+    height: 15,
+    backgroundColor: 'blue',
+    marginRight: 5,
+  },
+
   legendColorReserved: {
     width: 15,
     height: 15,
