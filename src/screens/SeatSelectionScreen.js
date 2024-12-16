@@ -13,7 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 
 // Component ghế được memo hóa
-const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => {
+const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType, lockedByOther }) => {
   let seatStyle = styles.seat; // Mặc định là ghế thường
 
   // Xác định màu sắc ghế dựa vào loại
@@ -31,11 +31,12 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType }) => 
       seatStyle = styles.legendColorReserved;
       break;
     case 'P':
-      seatStyle = styles.legendColorSelected;
+      // seatStyle = styles.legendColorSelected;
+      seatStyle = lockedByOther
+        ? styles.legendColorSelectedAnother // Màu xanh dương khi người khác chọn
+        : styles.legendColorSelected;       // Màu xanh lá khi bạn chọn
       break;
-    case 'O':
-      seatStyle = styles.legendColorSelectedAnother;
-      break;
+
     default:
       break;
   }
@@ -133,32 +134,48 @@ const SeatSelectionScreen = ({ route }) => {
   };
   /// reset ghế
 
+  useEffect(() => {
+    socket.on('seat_map_updated', ({ seatMap }) => {
+      const updatedSeatMap = seatMap.map((row) =>
+        row.map((seat) => ({
+          ...seat,
+          lockedByOther: seat.userId && seat.userId !== userId123,
+        }))
+      );
+
+      setSeatMap(updatedSeatMap.map(row => row.map(seat => seat.status)));
+      setSeatMapId(updatedSeatMap);
+    });
+
+    return () => {
+      socket.off('seat_map_updated'); // Cleanup để tránh memory leak
+    };
+  }, [userId123, socket]);
 
 
   useEffect(() => {
     loadUserData();
     loadSeatMap();
 
-
-    socket.on('seat_map_updated', ({ seatMap }) => {
-      // Chuyển đổi seatMap từ server thành dữ liệu sử dụng tại client
-      const newSeatMapId = seatMap.map((row) =>
-        row.map((seat) => ({
-          userId: seat.userId, // ID người dùng giữ ghế
-          status: seat.status, // Trạng thái ghế (T, V, D, P, U)
-        }))
-      );
-
-      // Lưu thông tin seatMapId vào state
-      setSeatMapId(newSeatMapId);
-
-      // Cập nhật sơ đồ ghế hiển thị
-
-      setSeatMap(seatMap.map((row) => row.map((seat) => seat.status)));
-      loadSeatMap();
-    });
-
-
+    /* cũ đúng gốc
+        socket.on('seat_map_updated', ({ seatMap }) => {
+          // Chuyển đổi seatMap từ server thành dữ liệu sử dụng tại client
+          const newSeatMapId = seatMap.map((row) =>
+            row.map((seat) => ({
+              userId: seat.userId, // ID người dùng giữ ghế
+              status: seat.status, // Trạng thái ghế (T, V, D, P, U)
+            }))
+          );
+    
+          // Lưu thông tin seatMapId vào state
+          setSeatMapId(newSeatMapId);
+    
+          // Cập nhật sơ đồ ghế hiển thị
+    
+          setSeatMap(seatMap.map((row) => row.map((seat) => seat.status)));
+          loadSeatMap();
+        });
+    */
 
 
     socket.on('seat_selected', ({ row, col, userId: selectedUserId }) => {
@@ -443,33 +460,7 @@ const SeatSelectionScreen = ({ route }) => {
     }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
   */
   //moi them
-  // Khi một người khác chọn ghế
-  socket.on('seat_selected_by_other', ({ row, col }) => {
-    console.log(`Ghế (${row}, ${col}) đang được người khác chọn.`);
-    setSeatMap((prevMap) =>
-      prevMap.map((rowSeats, rIndex) =>
-        rIndex === row
-          ? rowSeats.map((seat, cIndex) =>
-            cIndex === col ? 'O' : seat // Đặt trạng thái "O" (Màu xanh dương)
-          )
-          : rowSeats
-      )
-    );
-  });
 
-  // Khi ghế không còn được người khác chọn (trả về trạng thái trống)
-  socket.on('seat_unselected_by_other', ({ row, col }) => {
-    console.log(`Ghế (${row}, ${col}) không còn được người khác chọn.`);
-    setSeatMap((prevMap) =>
-      prevMap.map((rowSeats, rIndex) =>
-        rIndex === row
-          ? rowSeats.map((seat, cIndex) =>
-            cIndex === col ? 'T' : seat // Trả về trạng thái trống "T"
-          )
-          : rowSeats
-      )
-    );
-  });
 
   //moi thme
   // Phần mã Client - Xử lý việc chọn ghế trên giao diện người dùng
@@ -757,10 +748,43 @@ const SeatSelectionScreen = ({ route }) => {
   });
 
 
+  /*gốc 
+    socket.on(`error_${userId123}`, ({ message }) => {
+      Alert.alert('Error', message);
+    });
+ gốc */
+  socket.on(`error_${userId123}`, ({ seatId, seatType, rowIndex, colIndex, message }) => {
+    console.log(`[Lỗi Ghế] Ghế lỗi:`, { seatId, seatType, rowIndex, colIndex });
 
-  socket.on(`error_${userId123}`, ({ message }) => {
+    const seatPrice = seatPrices[seatType] || 0;
+
+    // Loại bỏ ghế khỏi danh sách đã chọn
+    setSelectedSeats((prevSeats) =>
+      prevSeats.filter(
+        (seat) => seat.rowIndex !== rowIndex || seat.colIndex !== colIndex
+      )
+    );
+
+    // Cập nhật lại sơ đồ ghế
+    setSeatMap((prevMap) =>
+      prevMap.map((rowSeats, rIndex) =>
+        rIndex === rowIndex
+          ? rowSeats.map((seat, cIndex) =>
+            cIndex === colIndex ? originalSeatMap[rowIndex][colIndex] : seat
+          )
+          : rowSeats
+      )
+    );
+
+    // Giảm tổng giá tiền và số ghế đã chọn
+    setTotalPrice((prevTotal) => prevTotal - seatPrice);
+    setSeatCount((prevCount) => prevCount - 1);
+
+    // Hiển thị thông báo lỗi
     Alert.alert('Error', message);
   });
+
+
 
 
   //goBack
@@ -776,6 +800,7 @@ const SeatSelectionScreen = ({ route }) => {
             if (char !== '_') {
               const seatId = `${String.fromCharCode(65 + rowIndex)}${colIndex + 1}`;
               const isSelected = Array.isArray(selectedSeats) && selectedSeats.includes(seatId);
+              const lockedByOther = seatMapId?.[rowIndex]?.[colIndex]?.lockedByOther || false;
 
               return (
                 <Seat
@@ -785,6 +810,7 @@ const SeatSelectionScreen = ({ route }) => {
                   onSeatPress={ () => handleSeatPress(seatId, rowIndex, colIndex, char) }
                   isMinimap={ isMinimap }
                   seatType={ char }
+                  lockedByOther={ lockedByOther } // Truyền lockedByOther vào component
                 />
               );
             }
