@@ -748,11 +748,44 @@ const SeatSelectionScreen = ({ route }) => {
   });
 
 
-  /*gốc 
+  /*gốc
     socket.on(`error_${userId123}`, ({ message }) => {
       Alert.alert('Error', message);
     });
- gốc */
+  gốc */
+  /* gần đúng
+   socket.on(`error_${userId123}`, ({ seatId, seatType, rowIndex, colIndex, message }) => {
+     console.log(`[Lỗi Ghế] Ghế lỗi:`, { seatId, seatType, rowIndex, colIndex });
+  
+     const seatPrice = seatPrices[seatType] || 0;
+  
+     // Loại bỏ ghế khỏi danh sách đã chọn
+     setSelectedSeats((prevSeats) =>
+       prevSeats.filter(
+         (seat) => seat.rowIndex !== rowIndex || seat.colIndex !== colIndex
+       )
+     );
+  
+     // Cập nhật lại sơ đồ ghế
+     setSeatMap((prevMap) =>
+       prevMap.map((rowSeats, rIndex) =>
+         rIndex === rowIndex
+           ? rowSeats.map((seat, cIndex) =>
+             cIndex === colIndex ? originalSeatMap[rowIndex][colIndex] : seat
+           )
+           : rowSeats
+       )
+     );
+  
+     // Giảm tổng giá tiền và số ghế đã chọn
+     setTotalPrice((prevTotal) => prevTotal - seatPrice);
+     setSeatCount((prevCount) => prevCount - 1);
+  
+     // Hiển thị thông báo lỗi
+     Alert.alert('Error', message);
+   });
+  
+  */
   socket.on(`error_${userId123}`, ({ seatId, seatType, rowIndex, colIndex, message }) => {
     console.log(`[Lỗi Ghế] Ghế lỗi:`, { seatId, seatType, rowIndex, colIndex });
 
@@ -765,12 +798,12 @@ const SeatSelectionScreen = ({ route }) => {
       )
     );
 
-    // Cập nhật lại sơ đồ ghế
+    // Cập nhật lại sơ đồ ghế: đổi màu ghế thành "được người khác chọn"
     setSeatMap((prevMap) =>
       prevMap.map((rowSeats, rIndex) =>
         rIndex === rowIndex
           ? rowSeats.map((seat, cIndex) =>
-            cIndex === colIndex ? originalSeatMap[rowIndex][colIndex] : seat
+            cIndex === colIndex ? 'P' : seat // 'P' biểu thị ghế được người khác chọn
           )
           : rowSeats
       )
@@ -781,9 +814,8 @@ const SeatSelectionScreen = ({ route }) => {
     setSeatCount((prevCount) => prevCount - 1);
 
     // Hiển thị thông báo lỗi
-    Alert.alert('Error', message);
+    Alert.alert('Thông báo', message);
   });
-
 
 
 
