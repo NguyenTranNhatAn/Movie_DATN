@@ -11,7 +11,7 @@ export const UploadUsers = createAsyncThunk(
       const token = await AsyncStorage.getItem('token');
       console.log('Token:', token); // Log token để kiểm tra
 
-    
+      if (!token) throw new Error('Token không tồn tại');
 
       // Gọi API với token trong header Authorization
       const response = await axios.get(
@@ -32,7 +32,7 @@ export const UploadUsers = createAsyncThunk(
 
       return response.data; // Trả về dữ liệu người dùng
     } catch (error) {
-      //console.error('API Error:', error); // Log lỗi nếu có
+      console.error('API Error:', error); // Log lỗi nếu có
       // Xử lý lỗi chính xác và trả về rejectWithValue
       return rejectWithValue(
         error.response?.data?.message || error.message || 'Lỗi không xác định'
@@ -49,12 +49,7 @@ export const UploadUserslide = createSlice({
     UploadUsersStatus: 'idle', // idle | loading | succeeded | failed
     error: null, // Thêm để lưu lỗi nếu có
   },
-  reducers: {
-    clearProfile: (state) => {
-      state.UploadUsersData = [];  // Reset dữ liệu showtime
-      state.UploadUsersStatus = 'idle'; // Reset trạng thái nếu cần
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(UploadUsers.pending, (state) => {
@@ -68,9 +63,9 @@ export const UploadUserslide = createSlice({
       .addCase(UploadUsers.rejected, (state, action) => {
         state.UploadUsersStatus = 'failed';
         state.error = action.payload; // Lưu lỗi vào state
-       // console.error('Fetch user info failed:', action.payload); // Log lỗi
+        console.error('Fetch user info failed:', action.payload); // Log lỗi
       });
   },
 });
-export const { clearProfile } = UploadUserslide.actions;
+
 export default UploadUserslide.reducer;

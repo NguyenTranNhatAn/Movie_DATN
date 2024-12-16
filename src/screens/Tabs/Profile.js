@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, ToastAndroid } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { UploadUsers,clearProfile } from '../../reducers/UploadUserslide';
+import { UploadUsers } from '../../reducers/UploadUserslide';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
@@ -25,7 +25,6 @@ const Profile = () => {
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
     ToastAndroid.show("Đăng xuất thành công", ToastAndroid.SHORT);
-    dispatch(clearProfile())
     navigation.reset({
       index: 0,
       routes: [{ name: 'Login' }],
