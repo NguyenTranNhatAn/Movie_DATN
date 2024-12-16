@@ -471,9 +471,26 @@ const SeatSelectionScreen = ({ route }) => {
       return;
     }
 
-    // Kiểm tra nếu ghế đã được chọn và người giữ ghế không phải là người hiện tại
+
+    /*
+        // Kiểm tra nếu ghế đã được chọn và người giữ ghế không phải là người hiện tại
+        if (seatType === 'P') {
+          const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
+          console.log('User giữ ghế:', currentSeatUser);
+    
+          // Nếu ghế đã được chọn bởi người khác, hiển thị cảnh báo
+          if (currentSeatUser && currentSeatUser !== userId) {
+            Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
+            return;
+          }
+        }
+    */
     if (seatType === 'P') {
-      const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
+      const currentSeatUser =
+        seatMapId[rowIndex] && seatMapId[rowIndex][colIndex]
+          ? seatMapId[rowIndex][colIndex].userId
+          : null; // Đảm bảo không bị undefined
+
       console.log('User giữ ghế:', currentSeatUser);
 
       // Nếu ghế đã được chọn bởi người khác, hiển thị cảnh báo
@@ -482,6 +499,8 @@ const SeatSelectionScreen = ({ route }) => {
         return;
       }
     }
+
+
 
     const seatPrice = seatPrices[seatType] || 0;
     const currentTime = Date.now();  // Thêm thời gian hiện tại
