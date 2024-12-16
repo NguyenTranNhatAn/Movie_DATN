@@ -54,6 +54,7 @@ const Latest = ({ navigation }) => {
             </View>
 
             <FlatList
+             showsVerticalScrollIndicator={false}
                 data={listMovie}
                 keyExtractor={(item) => item._id}
                 numColumns={2}

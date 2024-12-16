@@ -209,7 +209,7 @@ const HomeScreen = (props) => {
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20, marginBottom: 24 }}>
                     <Text style={styles.title}>Coming Soon</Text>
-                    <Text>See All</Text>
+                    {/* <Text>See All</Text> */}
                 </View>
                 <FlatList
                     data={listMovie}

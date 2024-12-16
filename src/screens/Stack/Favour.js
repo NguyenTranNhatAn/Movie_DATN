@@ -93,6 +93,8 @@ const Favour = ({ navigation }) => {
             </View>
 
             <FlatList
+                  showsVerticalScrollIndicator={false}
+
                 data={ favouriteMovies }
                 keyExtractor={ (item) => item._id }
                 numColumns={ 2 }
@@ -109,6 +111,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         padding: 10,
+        marginBottom:40,
     },
     head: {
         flexDirection: 'row',

@@ -89,7 +89,8 @@ const EditProfileComponent = () => {
       {/* Ảnh đại diện với icon chỉnh sửa */}
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: 'https://randomuser.me/api/portraits/men/1.jpg' }}
+             source={ require('../../../Img/anhspidermen.png') }
+             
           style={styles.profileImage}
         />
         
