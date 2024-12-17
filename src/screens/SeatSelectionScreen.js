@@ -60,7 +60,7 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType, locke
 const SeatSelectionScreen = ({ route }) => {
 
   const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset, userId123, roomId } = route.params;
-
+  
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [lockedSeats, setLockedSeats] = useState({});
   const [seatMap, setSeatMap] = useState([]);
@@ -80,6 +80,7 @@ const SeatSelectionScreen = ({ route }) => {
   const [seatCount, setSeatCount] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
+  const [showtimeUser, setshowtimeUser] = useState(showtimeId)
 
   const navigation = useNavigation();
   const loadUserData = async () => {
@@ -106,6 +107,7 @@ const SeatSelectionScreen = ({ route }) => {
     loadSeatMap();
   }, []);
   console.log("(userId:", userId123);
+  console.log("roomId", roomId);
   // const socket = io(`${API_BASE_URL}`);
   const socket = io(`${API_BASE_URL}`, {
     query: {
@@ -135,16 +137,20 @@ const SeatSelectionScreen = ({ route }) => {
   /// reset ghế
 
   useEffect(() => {
-    socket.on('seat_map_updated', ({ seatMap }) => {
-      const updatedSeatMap = seatMap.map((row) =>
-        row.map((seat) => ({
-          ...seat,
-          lockedByOther: seat.userId && seat.userId !== userId123,
-        }))
-      );
-
-      setSeatMap(updatedSeatMap.map(row => row.map(seat => seat.status)));
-      setSeatMapId(updatedSeatMap);
+    socket.on('seat_map_updated', ({showtimeId, seatMap }) => {
+      if(showtimeId ==showtimeUser){
+        const updatedSeatMap = seatMap.map((row) =>
+          row.map((seat) => ({
+            ...seat,
+            lockedByOther: seat.userId && seat.userId !== userId123,
+          }))
+        );
+  
+        setSeatMap(updatedSeatMap.map(row => row.map(seat => seat.status)));
+        setSeatMapId(updatedSeatMap);
+      }
+     
+     
     });
 
     return () => {
@@ -314,19 +320,19 @@ const SeatSelectionScreen = ({ route }) => {
 
 
 
-  // Gọi API để tải sơ đồ ghế khi màn hình được mở
-  // useEffect(() => {
-  //   loadSeatMap();
-  // }, []);
+  //Gọi API để tải sơ đồ ghế khi màn hình được mở
   useEffect(() => {
-    // Tạo interval gọi loadSeatMap mỗi 1 giây
-    const intervalId = setInterval(() => {
-      loadSeatMap();
-    }, 1000); // 1000 ms = 1 giây
+    loadSeatMap();
+  }, []);
+  // useEffect(() => {
+  //   // Tạo interval gọi loadSeatMap mỗi 1 giây
+  //   const intervalId = setInterval(() => {
+  //     loadSeatMap();
+  //   }, 1000); // 1000 ms = 1 giây
 
-    // Cleanup: Xóa interval khi component bị unmount
-    return () => clearInterval(intervalId);
-  }, []); // Chạy một lần khi component mount
+  //   // Cleanup: Xóa interval khi component bị unmount
+  //   return () => clearInterval(intervalId);
+  // }, []); // Chạy một lần khi component mount
 
 
 
