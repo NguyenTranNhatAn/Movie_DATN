@@ -29,7 +29,7 @@ const HomeScreen = (props) => {
     const { genreData, genreStatus } = useSelector((state) => state.genreList);
     const { movieData, movieStatus } = useSelector((state) => state.movieList);
     const [listMovie, setListMovie] = useState([]);
-    
+
 
     const { navigation } = props;
     const PAGE_WIDTH = Dimensions.get('window').width;
@@ -49,55 +49,49 @@ const HomeScreen = (props) => {
             height: PAGE_WIDTH * 0.6,
         };
 
-        const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
+    const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
 
-        // Gọi API khi component được render
-        useEffect(() => {
-          if (UploadUsersStatus === 'idle') {
+    // Gọi API khi component được render
+    useEffect(() => {
+        if (UploadUsersStatus === 'idle') {
             dispatch(UploadUsers());
-          }
-        }, [UploadUsersStatus, dispatch]);
-        useEffect(()=>{
-            if (movieData.length === 0) {
-                dispatch(GetMovieList());
-            }
+        }
+    }, [UploadUsersStatus, dispatch]);
+    useEffect(() => {
+        if (movieData.length === 0) {
+            dispatch(GetMovieList());
+        }
 
-            if (genreData.length === 0) {
-                dispatch(GenreList());
-            }
+        if (genreData.length === 0) {
+            dispatch(GenreList());
+        }
 
-            if (movieData.length > 0 && genreData.length > 0) {
-                const updatedMovies = movieData.map(movie => {
-                    const genre = genreData.find(genre => genre._id === movie.genreId);
-                    return {
-                        ...movie,
-                        genreName: genre ? genre.name : "Unknown"
-                    };
-                });
+        if (movieData.length > 0 && genreData.length > 0) {
+            const updatedMovies = movieData.map(movie => {
+                const genre = genreData.find(genre => genre._id === movie.genreId);
+                return {
+                    ...movie,
+                    genreName: genre ? genre.name : "Unknown"
+                };
+            });
 
-                setListMovie(updatedMovies);
-            }
-        },[dispatch,movieData,genreData])
+            setListMovie(updatedMovies);
+        }
+    }, [dispatch, movieData, genreData])
     const renderComingSoon = ({ item }) => {
         return (
-            <TouchableOpacity  onPress={()=> navigation.navigate('Detail', { item })} style={{ width: 173, paddingHorizontal: 10, alignItems: 'flex-start' }}>
-                <Image style={{ width: '100%',height:244,  borderRadius: 16 }} source={{ uri: item.images[0] }} />
-            <Text  style={[styles.nameMovie,{textAlign:'left'}]}>
-                {item.name}
-               </Text>
-               <Text  style={[styles.desc,{textAlign:'left'}]}>
-                {item.genreName}
-               </Text>
-               <Text  style={[styles.desc,{textAlign:'left'}]}>
-                {item.duration}
-               </Text>
-
-
-
+            <TouchableOpacity 
+                onPress={() => navigation.navigate('Detail', { item, viewOnly: true })} // Pass viewOnly as true
+                style={{ width: 173, paddingHorizontal: 10, alignItems: 'flex-start' }}
+            >
+                <Image style={{ width: '100%', height: 244, borderRadius: 16 }} source={{ uri: item.images[0] }} />
+                <Text style={[styles.nameMovie, { textAlign: 'left' }]}>{item.name}</Text>
+                <Text style={[styles.desc, { textAlign: 'left' }]}>{item.genreName}</Text>
+                <Text style={[styles.desc, { textAlign: 'left' }]}>{item.duration}</Text>
             </TouchableOpacity>
-        )
-
-    }
+        );
+    };
+    
 
 
 
@@ -123,12 +117,12 @@ const HomeScreen = (props) => {
                         </TouchableOpacity>
                         <Text style={{ marginLeft: 12, fontSize: 18, fontWeight: 'regular' }}>Search</Text>
                     </TouchableOpacity>
-            {/* {<View style={styles.rightSearch}>
+                    {/* {<View style={styles.rightSearch}>
                 <Image style={{ height: 24, width: 24 }} source={require('../../../assets/image/adj.png')} />
             </View>} */}
                 </View>
                 {/* service */}
-           {/* { <View style={{ marginTop: 20, marginHorizontal: 23 }}>
+                {/* { <View style={{ marginTop: 20, marginHorizontal: 23 }}>
                 <Text style={[styles.title, {}]}>Service</Text>
                 <View style={styles.menuList}>
                     <View style={styles.itemMenu}>
@@ -151,7 +145,7 @@ const HomeScreen = (props) => {
                 </View>
 
             </View>} */}
-               
+
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 23, marginTop: 20 }}>
                     <Text style={styles.title}>Now Playing</Text>
                     <Text onPress={() => navigation.navigate('Latest')}  >See All</Text>
@@ -179,7 +173,7 @@ const HomeScreen = (props) => {
                     scrollAnimationDuration={1000}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                        onPress={()=> navigation.navigate('Detail', { item })}
+                            onPress={() => navigation.navigate('Detail', { item })}
                             style={{
 
                                 flex: 1,
@@ -213,7 +207,7 @@ const HomeScreen = (props) => {
                 </View>
                 <FlatList
                     data={listMovie}
-                    style={{ marginLeft: 13, paddingRight: 23, flex: 1}}
+                    style={{ marginLeft: 13, paddingRight: 23, flex: 1 }}
 
                     renderItem={renderComingSoon}
                     horizontal={true}
@@ -333,7 +327,7 @@ const styles = StyleSheet.create({
         paddingTop: 40,
         backgroundColor: 'white',
         flex: 1,
-        paddingBottom:60
+        paddingBottom: 60
 
 
     }

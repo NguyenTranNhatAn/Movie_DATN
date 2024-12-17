@@ -376,7 +376,8 @@ const CinemaSelect = ({ navigation, route }) => {
     navigation.goBack();
   }
   const toggleSeat = (item, item1, index) => {
-
+    const roomId= item1.roomId;
+    console.log("room"+roomId)
     const showtimeId = item1.showtimeId
     const roomId = item1.roomId;
     const startTime = formatTime(item1.startTime)
@@ -388,9 +389,8 @@ const CinemaSelect = ({ navigation, route }) => {
 
 
     navigation.navigate("Seat", {
-      startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId,
-      userId123: userId,
-      roomId: roomId
+      startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId,roomId:roomId,
+      userId123: userId
     })
   }
 

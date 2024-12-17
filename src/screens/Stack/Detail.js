@@ -77,10 +77,8 @@ const Details = ({ route, navigation }) => {
     }
   };
   const handleSelectSeat = () => {
-    setShowVideo(false); // Tạm ẩn video khi nhấn Select Seat
     navigation.navigate('Cinema', { id: item._id, image: item.images, resetData: true });
   };
-
   return (
     <View style={styles.container}>
       {/* Header */}
