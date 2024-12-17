@@ -315,9 +315,20 @@ const SeatSelectionScreen = ({ route }) => {
 
 
   // Gọi API để tải sơ đồ ghế khi màn hình được mở
+  // useEffect(() => {
+  //   loadSeatMap();
+  // }, []);
   useEffect(() => {
-    loadSeatMap();
-  }, []);
+    // Tạo interval gọi loadSeatMap mỗi 1 giây
+    const intervalId = setInterval(() => {
+      loadSeatMap();
+    }, 1000); // 1000 ms = 1 giây
+
+    // Cleanup: Xóa interval khi component bị unmount
+    return () => clearInterval(intervalId);
+  }, []); // Chạy một lần khi component mount
+
+
 
   useEffect(() => {
     const newTotalPrice = Array.isArray(selectedSeats)
