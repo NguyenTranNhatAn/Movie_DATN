@@ -59,7 +59,7 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType, locke
 
 const SeatSelectionScreen = ({ route }) => {
 
-  const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset, userId123 } = route.params;
+  const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset, userId123, roomId } = route.params;
 
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [lockedSeats, setLockedSeats] = useState({});
@@ -82,6 +82,7 @@ const SeatSelectionScreen = ({ route }) => {
   const [viewPosition, setViewPosition] = useState({ x: 0, y: 0 });
 
   const navigation = useNavigation();
+  console.log('roomid', roomId);
   const loadUserData = async () => {
     try {
       const storedToken = await AsyncStorage.getItem('token');
@@ -259,7 +260,7 @@ const SeatSelectionScreen = ({ route }) => {
         body: JSON.stringify({ cinemaId })
       });
       const data = await response.json();
-
+      console.log("data", data);
       const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN', {
@@ -313,10 +314,18 @@ const SeatSelectionScreen = ({ route }) => {
   }, [seatMap]); // Gây vòng lặp vô hạn vì loadSeatMap cập nhật seatMap
 
 
-
-  // Gọi API để tải sơ đồ ghế khi màn hình được mở
+  /*
+    // Gọi API để tải sơ đồ ghế khi màn hình được mở
+    useEffect(() => {
+      loadSeatMap();
+    }, []);
+  */
   useEffect(() => {
-    loadSeatMap();
+    const intervalId = setInterval(() => {
+      loadSeatMap();
+    }, 5000);  // Gọi lại mỗi 5 giây
+
+    return () => clearInterval(intervalId);  // Dọn dẹp interval khi component bị unmount
   }, []);
 
   useEffect(() => {
@@ -668,6 +677,7 @@ const SeatSelectionScreen = ({ route }) => {
     }));
 
     const bookingData = {
+      roomId: roomId,
       showtimeId: showtimeId,
       seats: seatsData,
       cinemaName: cinemaName,
