@@ -52,11 +52,21 @@ const HomeScreen = (props) => {
     const { UploadUsersData, UploadUsersStatus } = useSelector((state) => state.UploadUsers);
 
     // Gọi API khi component được render
-    useEffect(() => {
-        if (UploadUsersStatus === 'idle') {
-            dispatch(UploadUsers());
-        }
-    }, [UploadUsersStatus, dispatch]);
+     useEffect(() => {
+        const loadUserInfo = async () => {
+          try {
+            
+            console.log('Gọi API UploadUsers');
+            await dispatch(UploadUsers());
+          
+          } catch (error) {
+            console.error('Lỗi khi gọi API UploadUsers:', error);
+            Alert.alert('Lỗi', 'Không thể tải thông tin người dùng.');
+          } 
+        };
+    
+        loadUserInfo();
+      }, [dispatch]);
     useEffect(() => {
         if (movieData.length === 0) {
             dispatch(GetMovieList());
