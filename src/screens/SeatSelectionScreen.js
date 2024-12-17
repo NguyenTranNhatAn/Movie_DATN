@@ -59,7 +59,7 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType, locke
 
 const SeatSelectionScreen = ({ route }) => {
 
-  const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset, userId123 } = route.params;
+  const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset, userId123, roomId } = route.params;
 
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [lockedSeats, setLockedSeats] = useState({});
@@ -668,6 +668,7 @@ const SeatSelectionScreen = ({ route }) => {
     }));
 
     const bookingData = {
+      roomId: roomId,
       showtimeId: showtimeId,
       seats: seatsData,
       cinemaName: cinemaName,

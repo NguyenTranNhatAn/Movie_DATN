@@ -101,7 +101,7 @@ const CinemaSelect = ({ navigation, route }) => {
 
   useEffect(() => {
     const resetData = route.params?.resetData || false;
-  
+
     if (resetData) {
       // Xóa dữ liệu cũ và tải lại từ đầu
       dispatch(clearShowtimeData());
@@ -116,7 +116,7 @@ const CinemaSelect = ({ navigation, route }) => {
       console.log("Keep old data");
     }
   }, [route.params]);
-  
+
 
 
   useEffect(() => {
@@ -188,7 +188,7 @@ const CinemaSelect = ({ navigation, route }) => {
         }
       })
       .finally(() => setIsLoading(false)); // Stop loading
-  }, [ dateArray, start, end, brandId,]);
+  }, [dateArray, start, end, brandId,]);
 
   useEffect(() => {
     if (showCinemaData.length === 0) {
@@ -377,6 +377,7 @@ const CinemaSelect = ({ navigation, route }) => {
   const toggleSeat = (item, item1, index) => {
 
     const showtimeId = item1.showtimeId
+    const roomId = item1.roomId;
     const startTime = formatTime(item1.startTime)
     const endTime = formatTime(item1.endTime)
     const day = new Date(item1.startTime)
@@ -387,41 +388,42 @@ const CinemaSelect = ({ navigation, route }) => {
 
     navigation.navigate("Seat", {
       startTime: startTime, day: date, showtimeId: showtimeId, movieId: iD, endTime: endTime, cinemaId: cinemaId,
-      userId123: userId
+      userId123: userId,
+      roomId: roomId
     })
   }
 
   return (
-    <ScrollView style={styles.container} bounces={false} showsVerticalScrollIndicator={false}>
+    <ScrollView style={ styles.container } bounces={ false } showsVerticalScrollIndicator={ false }>
       <StatusBar hidden />
 
       <View>
         <ImageBackground
-          source={{ uri: image[0] }}
-          style={styles.ImageBG}>
-          <LinearGradient colors={[COLORS.BlackRGB10, COLORS.Black]} style={styles.linearGradient}>
-            <View style={styles.appHeaderContainer}>
-              <AppHeader name="close" header="" action={() => goBack()} />
+          source={ { uri: image[0] } }
+          style={ styles.ImageBG }>
+          <LinearGradient colors={ [COLORS.BlackRGB10, COLORS.Black] } style={ styles.linearGradient }>
+            <View style={ styles.appHeaderContainer }>
+              <AppHeader name="close" header="" action={ () => goBack() } />
             </View>
           </LinearGradient>
         </ImageBackground>
 
       </View>
-      <View style={{ marginTop: 15, }}>
+      <View style={ { marginTop: 15, } }>
         <FlatList
-          data={dateArray}
-          keyExtractor={item => item.day + item.date}
+          data={ dateArray }
+          keyExtractor={ item => item.day + item.date }
           horizontal
-          showsHorizontalScrollIndicator={false}
-          bounces={false}
-          contentContainerStyle={styles.containerGap24}
-          renderItem={({ item, index }) => {
+          showsHorizontalScrollIndicator={ false }
+          bounces={ false }
+          contentContainerStyle={ styles.containerGap24 }
+          renderItem={ ({ item, index }) => {
             const date = new Date(item.date);
 
             return (
-              <TouchableOpacity onPress={() => toggleDate(index)}>
+              <TouchableOpacity onPress={ () => toggleDate(index) }>
                 <View
-                  style={[
+                  style={ [
                     styles.dateContainer,
                     index === 0
                       ? { marginLeft: SPACING.space_24 }
@@ -431,42 +433,42 @@ const CinemaSelect = ({ navigation, route }) => {
                     index === selectedDateIndex
                       ? { backgroundColor: COLORS.Red }
                       : {},
-                  ]}>
-                  <Text style={[styles.dateText, index === selectedDateIndex ? { color: COLORS.White } : {}]}>{date.getDate()}</Text>
-                  <Text style={[styles.dayText, index === selectedDateIndex ? { color: COLORS.White } : {}]}>{item?.day}</Text>
+                  ] }>
+                  <Text style={ [styles.dateText, index === selectedDateIndex ? { color: COLORS.White } : {}] }>{ date.getDate() }</Text>
+                  <Text style={ [styles.dayText, index === selectedDateIndex ? { color: COLORS.White } : {}] }>{ item?.day }</Text>
                 </View>
               </TouchableOpacity>
             );
-          }}
+          } }
         />
       </View>
-      <View style={{ marginTop: 15 }}>
-        {isLoading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={COLORS.Red} />
-            <Text style={styles.loadingText}>Loading...</Text>
+      <View style={ { marginTop: 15 } }>
+        { isLoading && (
+          <View style={ styles.loadingContainer }>
+            <ActivityIndicator size="large" color={ COLORS.Red } />
+            <Text style={ styles.loadingText }>Loading...</Text>
           </View>
-        )}</View>
-      {!dataNot ? <View style={styles.OutterContainer}>
+        ) }</View>
+      { !dataNot ? <View style={ styles.OutterContainer }>
 
         <ScrollView
-          ref={scrollRef}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={[styles.containerGap24, { paddingLeft: 24 }]}
+          ref={ scrollRef }
+          horizontal={ true }
+          showsHorizontalScrollIndicator={ false }
+          contentContainerStyle={ [styles.containerGap24, { paddingLeft: 24 }] }
 
         >
 
-          <TouchableOpacity onPress={() => allDate()}>
+          <TouchableOpacity onPress={ () => allDate() }>
             <View
-              style={[
+              style={ [
                 styles.timeContainer,
 
                 selectedTimeIndex === 0
                   ? { backgroundColor: COLORS.Red }
                   : {},
-              ]}>
-              <Text style={[styles.timeText, 0 === selectedTimeIndex ? { color: COLORS.White } : {}]}>Tất cả</Text>
+              ] }>
+              <Text style={ [styles.timeText, 0 === selectedTimeIndex ? { color: COLORS.White } : {}] }>Tất cả</Text>
             </View>
           </TouchableOpacity>
 
@@ -474,11 +476,11 @@ const CinemaSelect = ({ navigation, route }) => {
           {
             timeARR.map((item, index) => {
               return (
-                <TouchableOpacity key={index + 1} onPress={() => {
+                <TouchableOpacity key={ index + 1 } onPress={ () => {
                   toggleTime(index + 1, item);
-                }}>
+                } }>
                   <View
-                    style={[
+                    style={ [
                       styles.timeContainer,
                       index + 1 === 0
                         ? { marginLeft: SPACING.space_24 }
@@ -488,9 +490,9 @@ const CinemaSelect = ({ navigation, route }) => {
                       index + 1 === selectedTimeIndex
                         ? { backgroundColor: COLORS.Red }
                         : {},
-                    ]}>
+                    ] }>
 
-                    <Text style={[styles.timeText, index + 1 === selectedTimeIndex ? { color: COLORS.White } : {}]}>{item.label ?? ""}</Text>
+                    <Text style={ [styles.timeText, index + 1 === selectedTimeIndex ? { color: COLORS.White } : {}] }>{ item.label ?? "" }</Text>
 
                   </View>
                 </TouchableOpacity>
@@ -502,101 +504,101 @@ const CinemaSelect = ({ navigation, route }) => {
       </View>
         : <></>
       }
-      <View style={styles.body}>
+      <View style={ styles.body }>
 
-        <View style={{ borderRadius: 10, marginTop: 20, marginHorizontal: 24, paddingVertical: 15, backgroundColor: 'white' }}>
-          {!dataNot ? <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 15, paddingLeft: 15, }}
+        <View style={ { borderRadius: 10, marginTop: 20, marginHorizontal: 24, paddingVertical: 15, backgroundColor: 'white' } }>
+          { !dataNot ? <ScrollView
+            horizontal={ true }
+            showsHorizontalScrollIndicator={ false }
+            contentContainerStyle={ { gap: 15, paddingLeft: 15, } }
           >
-            {<TouchableOpacity onPress={() => allBrand()} style={{ justifyContent: 'center', alignItems: 'center', }}>
-              <View style={{ borderColor: 0 == selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-                <Image style={{ resizeMode: 'contain', height: 40, width: 40 }} source={{ uri: "https://res.cloudinary.com/dqpwsunpc/image/upload/v1730307886/igugmco1rieyhpveixnv.jpg" }} />
+            { <TouchableOpacity onPress={ () => allBrand() } style={ { justifyContent: 'center', alignItems: 'center', } }>
+              <View style={ { borderColor: 0 == selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 } }>
+                <Image style={ { resizeMode: 'contain', height: 40, width: 40 } } source={ { uri: "https://res.cloudinary.com/dqpwsunpc/image/upload/v1730307886/igugmco1rieyhpveixnv.jpg" } } />
 
               </View>
-              <Text numberOfLines={1} style={{ textAlign: 'center', width: 70, color: 0 == selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' }}>All</Text>
-            </TouchableOpacity>}
+              <Text numberOfLines={ 1 } style={ { textAlign: 'center', width: 70, color: 0 == selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' } }>All</Text>
+            </TouchableOpacity> }
             {
               listBrand.map((item, index) => {
                 return (
-                  <TouchableOpacity key={item.logo} onPress={() => toggleBrand(item, index)} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ borderColor: index + 1 === selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-                      <Image style={{ resizeMode: 'contain', height: 40, width: 40 }} source={{ uri: item.logo }} />
+                  <TouchableOpacity key={ item.logo } onPress={ () => toggleBrand(item, index) } style={ { justifyContent: 'center', alignItems: 'center' } }>
+                    <View style={ { borderColor: index + 1 === selectedBrand ? COLORS.Red : COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 } }>
+                      <Image style={ { resizeMode: 'contain', height: 40, width: 40 } } source={ { uri: item.logo } } />
                     </View>
-                    <Text numberOfLines={1} style={{ textAlign: 'center', width: 70, color: index + 1 === selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' }}>{item.name}</Text>
+                    <Text numberOfLines={ 1 } style={ { textAlign: 'center', width: 70, color: index + 1 === selectedBrand ? COLORS.Red : 'grey', fontWeight: 'bold' } }>{ item.name }</Text>
                   </TouchableOpacity>
                 );
               })
             }
-          </ScrollView> : <Text style={{ textAlign: 'center', color: 'black', fontSize: 25, fontWeight: 'bold' }}>Không có Lịch Chiếu</Text>}
+          </ScrollView> : <Text style={ { textAlign: 'center', color: 'black', fontSize: 25, fontWeight: 'bold' } }>Không có Lịch Chiếu</Text> }
 
         </View>
         {
           !dataNot ?
             <>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, marginTop: 10 }}>
-                <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>
+              <View style={ { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, marginTop: 10 } }>
+                <Text style={ { color: 'black', fontSize: 20, fontWeight: 'bold' } }>
                   CGV
                 </Text>
-                <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>
+                <Text style={ { color: 'black', fontSize: 20, fontWeight: 'bold' } }>
                   Số rạp
                 </Text>
               </View>
-              <ScrollView contentContainerStyle={{ display: 'flex', gap: 15, marginHorizontal: 24, marginTop: 10, }}>
+              <ScrollView contentContainerStyle={ { display: 'flex', gap: 15, marginHorizontal: 24, marginTop: 10, } }>
                 {
                   cinemaData.map((item, index) => {
                     return (
-                      <View key={item.cinema._id} style={{ backgroundColor: 'white', borderRadius: 10, borderRadius: 10, padding: 10, }}>
-                        <View style={{ flexDirection: 'row' }}>
-                          <View style={{ flexDirection: 'row', flex: 1 }}>
-                            <View style={{ flexDirection: 'row', flex: 1 }}>
-                              <View style={{ borderColor: COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 }}>
-                                <Image style={{ height: 40, width: 40 }} source={{ uri: item.cinema.brandId.logo }} />
+                      <View key={ item.cinema._id } style={ { backgroundColor: 'white', borderRadius: 10, borderRadius: 10, padding: 10, } }>
+                        <View style={ { flexDirection: 'row' } }>
+                          <View style={ { flexDirection: 'row', flex: 1 } }>
+                            <View style={ { flexDirection: 'row', flex: 1 } }>
+                              <View style={ { borderColor: COLORS.GreyWhite, borderWidth: 2, padding: 5, borderRadius: 10 } }>
+                                <Image style={ { height: 40, width: 40 } } source={ { uri: item.cinema.brandId.logo } } />
                               </View>
-                              <View style={{ marginLeft: 10, alignSelf: 'center' }}>
-                                <Text style={{ color: 'black', fontSize: 14, fontWeight: 'bold' }}>
-                                  {item.cinema.name}
+                              <View style={ { marginLeft: 10, alignSelf: 'center' } }>
+                                <Text style={ { color: 'black', fontSize: 14, fontWeight: 'bold' } }>
+                                  { item.cinema.name }
                                 </Text>
-                                <Text numberOfLines={1} style={{ color: 'black', fontSize: 12, width: 220 }}>
-                                  {item.cinema.address}
+                                <Text numberOfLines={ 1 } style={ { color: 'black', fontSize: 12, width: 220 } }>
+                                  { item.cinema.address }
                                 </Text>
                               </View>
                             </View>
-                            <TouchableOpacity onPress={() => toggleExpand(item.cinema._id)} style={{ height: 50, width: 50, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}>
-                              <Image style={{ width: 30, height: 30, }} source={require('../../../image/image.png')} />
+                            <TouchableOpacity onPress={ () => toggleExpand(item.cinema._id) } style={ { height: 50, width: 50, alignSelf: 'center', justifyContent: 'center', alignItems: 'center' } }>
+                              <Image style={ { width: 30, height: 30, } } source={ require('../../../image/image.png') } />
                             </TouchableOpacity>
                           </View>
                         </View>
-                        {expanded[item.cinema._id] && (
-                          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", marginTop: 10, }}>
-                            {item.showtimes.map((item1, index) => (
+                        { expanded[item.cinema._id] && (
+                          <View style={ { flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", marginTop: 10, } }>
+                            { item.showtimes.map((item1, index) => (
                               <TouchableOpacity
-                                onPress={() => toggleSeat(item, item1, index)}
-                                key={'Room' + index}
+                                onPress={ () => toggleSeat(item, item1, index) }
+                                key={ 'Room' + index }
                                 // onPress={() => setSelectedTimeIndex(index + 1)}
-                                style={{
+                                style={ {
                                   flexBasis: '30%', // Tùy chỉnh để item chiếm khoảng 30% chiều rộng
                                   marginBottom: 10,
                                   marginRight: index % 3 !== 2 ? '3%' : 0, // Cách đều trừ item cuối dòng
-                                }}
+                                } }
                               >
                                 <View
-                                  style={styles.timeContainer}
+                                  style={ styles.timeContainer }
                                 >
                                   <Text
-                                    style={[
+                                    style={ [
                                       styles.timeText,
 
-                                    ]}
+                                    ] }
                                   >
-                                    {`${formatTime(item1.startTime)}-${formatTime(item1.endTime)}` ?? ""}
+                                    { `${formatTime(item1.startTime)}-${formatTime(item1.endTime)}` ?? "" }
                                   </Text>
                                 </View>
                               </TouchableOpacity>
-                            ))}
+                            )) }
                           </View>
-                        )}
+                        ) }
                       </View>
                     );
                   })
