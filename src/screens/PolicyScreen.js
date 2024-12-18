@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import React from 'react'
 import AppHeader from '../components/AppHeader';
 
-const PolicyScreen = () => {
+const PolicyScreen = ({navigation}) => {
     return (
         <View style={ styles.container }>
             <ScrollView>
