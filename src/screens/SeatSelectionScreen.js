@@ -60,7 +60,7 @@ const Seat = memo(({ seatId, isSelected, onSeatPress, isMinimap, seatType, locke
 const SeatSelectionScreen = ({ route }) => {
 
   const { startTime, day, showtimeId, movieId, endTime, cinemaId, reset, userId123, roomId } = route.params;
-  
+
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [lockedSeats, setLockedSeats] = useState({});
   const [seatMap, setSeatMap] = useState([]);
@@ -103,9 +103,29 @@ const SeatSelectionScreen = ({ route }) => {
       Alert.alert("Error", "Không thể lấy thông tin người dùng.");
     }
   };
+  /*
   useEffect(() => {
     loadSeatMap();
   }, []);
+  */
+
+
+  useEffect(() => {
+    // Gọi loadSeatMap ngay khi màn hình được render
+    loadSeatMap();
+
+    // Thiết lập setInterval để gọi loadSeatMap mỗi 5 giây
+    const interval = setInterval(() => {
+      console.log('Đang tải lại sơ đồ ghế...');
+      loadSeatMap();
+    }, 5000); // 5 giây
+
+    // Dọn dẹp interval khi component bị unmount
+    return () => clearInterval(interval);
+  }, []);
+
+
+
   console.log("(userId:", userId123);
   console.log("roomId", roomId);
   // const socket = io(`${API_BASE_URL}`);
@@ -137,20 +157,20 @@ const SeatSelectionScreen = ({ route }) => {
   /// reset ghế
 
   useEffect(() => {
-    socket.on('seat_map_updated', ({showtimeId, seatMap }) => {
-      if(showtimeId ==showtimeUser){
+    socket.on('seat_map_updated', ({ showtimeId, seatMap }) => {
+      if (showtimeId == showtimeUser) {
         const updatedSeatMap = seatMap.map((row) =>
           row.map((seat) => ({
             ...seat,
             lockedByOther: seat.userId && seat.userId !== userId123,
           }))
         );
-  
+
         setSeatMap(updatedSeatMap.map(row => row.map(seat => seat.status)));
         setSeatMapId(updatedSeatMap);
       }
-     
-     
+
+
     });
 
     return () => {
@@ -324,15 +344,6 @@ const SeatSelectionScreen = ({ route }) => {
   useEffect(() => {
     loadSeatMap();
   }, []);
-  // useEffect(() => {
-  //   // Tạo interval gọi loadSeatMap mỗi 1 giây
-  //   const intervalId = setInterval(() => {
-  //     loadSeatMap();
-  //   }, 1000); // 1000 ms = 1 giây
-
-  //   // Cleanup: Xóa interval khi component bị unmount
-  //   return () => clearInterval(intervalId);
-  // }, []); // Chạy một lần khi component mount
 
 
 
@@ -424,62 +435,6 @@ const SeatSelectionScreen = ({ route }) => {
 
 
 
-  /*
-    const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
-      if (seatType === 'U' || seatType === '_') {
-        Alert.alert('Thông báo', 'Ghế này đã được đặt hoặc không thể chọn.');
-        return;
-      }
-  
-      if (seatType === 'P') {
-        const currentSeatUser = seatMapId[rowIndex][colIndex]?.userId; // Lấy userId từ seatMapId
-        console.log('User giữ ghế:', currentSeatUser);
-  
-        if (currentSeatUser && currentSeatUser !== userId) {
-          Alert.alert('Thông báo', 'Ghế này đã được chọn bởi người dùng khác.');
-          return;
-        }
-      }
-  
-      const seatPrice = seatPrices[seatType] || 0;
-      const currentTime = Date.now();  // Thêm thời gian hiện tại
-  
-      setSelectedSeats((prevSeats) => {
-        const isSeatSelected = prevSeats.some(seat => seat.seatId === seatId);
-        let updatedSeats;
-  
-        if (isSeatSelected) {
-          updatedSeats = prevSeats.filter(seat => seat.seatId !== seatId);
-          socket.emit('deselect_seat', { showtimeId, row: rowIndex, col: colIndex, userId });
-          const originalType = originalSeatMap[rowIndex][colIndex];
-          setSeatMap((prevMap) =>
-            prevMap.map((rowSeats, rIndex) =>
-              rIndex === rowIndex
-                ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? originalType : seat))
-                : rowSeats
-            )
-          );
-        } else {
-          updatedSeats = [...prevSeats, { seatId, rowIndex, colIndex, price: seatPrice, time: currentTime }];
-          socket.emit('select_seat', { showtimeId, row: rowIndex, col: colIndex, userId, time: currentTime });  // Gửi thời gian
-          setSeatMap((prevMap) =>
-            prevMap.map((rowSeats, rIndex) =>
-              rIndex === rowIndex
-                ? rowSeats.map((seat, cIndex) => (cIndex === colIndex ? 'P' : seat))
-                : rowSeats
-            )
-          );
-          console.log('in ra cái ghế chọn', selectedSeats);
-        }
-  
-        return updatedSeats;
-      });
-    }, [seatMap, originalSeatMap, seatPrices, showtimeId, userId, debouncedSeatPress]);
-  */
-  //moi them
-
-
-  //moi thme
   // Phần mã Client - Xử lý việc chọn ghế trên giao diện người dùng
   const handleSeatPress = useCallback((seatId, rowIndex, colIndex, seatType) => {
     // Kiểm tra nếu ghế không thể chọn (đã đặt hoặc không khả dụng)
@@ -834,21 +789,45 @@ const SeatSelectionScreen = ({ route }) => {
         (seat) => seat.rowIndex !== rowIndex || seat.colIndex !== colIndex
       )
     );
-
-    // Cập nhật lại sơ đồ ghế: đổi màu ghế thành "được người khác chọn"
-    setSeatMap((prevMap) =>
-      prevMap.map((rowSeats, rIndex) =>
-        rIndex === rowIndex
-          ? rowSeats.map((seat, cIndex) =>
-            cIndex === colIndex ? 'P' : seat // 'P' biểu thị ghế được người khác chọn
+    /*
+        // Cập nhật lại sơ đồ ghế: đổi màu ghế thành "được người khác chọn"
+        setSeatMap((prevMap) =>
+          prevMap.map((rowSeats, rIndex) =>
+            rIndex === rowIndex
+              ? rowSeats.map((seat, cIndex) =>
+                cIndex === colIndex ? 'P' : seat // 'P' biểu thị ghế được người khác chọn
+              )
+              : rowSeats
           )
-          : rowSeats
+        );
+    */
+    // setSeatMap((prevMap) =>
+    //   prevMap.map((rowSeats, rIndex) =>
+    //     rIndex === rowIndex
+    //       ? rowSeats.map((seat, cIndex) =>
+    //         cIndex === colIndex
+    //           ? { status: 'P', lockedByOther: true } // Ghế bị khóa bởi người khác
+    //           : seat
+    //       )
+    //       : rowSeats
+    //   )
+    // );
+    setSeatMapId((prevSeatMapId) =>
+      prevSeatMapId.map((row, rIndex) =>
+        rIndex === rowIndex
+          ? row.map((seat, cIndex) =>
+            cIndex === colIndex
+              ? { ...seat, lockedByOther: true } // Cập nhật lockedByOther
+              : seat
+          )
+          : row
       )
     );
 
     // Giảm tổng giá tiền và số ghế đã chọn
     setTotalPrice((prevTotal) => prevTotal - seatPrice);
     setSeatCount((prevCount) => prevCount - 1);
+
 
     // Hiển thị thông báo lỗi
     Alert.alert('Thông báo', message);

@@ -41,7 +41,7 @@ const MainStackNavigation = () => {
     <Stack.Navigator screenOptions={ { headerShown: false } }>
       <Stack.Screen name="Splash" component={ SplashScreen } />
       <Stack.Screen name="Tab" component={ MainTabNavigation } />
-    
+
       <Stack.Screen name="Login" component={ LoginScreen } />
 
       <Stack.Screen name="History" component={ History } />
@@ -53,7 +53,7 @@ const MainStackNavigation = () => {
       <Stack.Screen name="Pay_Screen" component={ PaymentScreen } />
       <Stack.Screen name="PaymentWebView" component={ PaymentWebView } />
       <Stack.Screen name="PaySuccess" component={ PaymentSuccess } />
-      <Stack.Screen name="TicketDetails" component={ TicketDetail} />
+      <Stack.Screen name="TicketDetails" component={ TicketDetail } />
       <Stack.Screen name="Cinema" component={ CinemaSelect } />
       <Stack.Screen name="Favour" component={ Favour } />
       <Stack.Screen name="Checkout" component={ Checkout } />
@@ -61,7 +61,7 @@ const MainStackNavigation = () => {
       <Stack.Screen name="Signup" component={ SignupScreen } />
       <Stack.Screen name="Policy" component={ PolicyScreen } />
       <Stack.Screen name="Terns" component={ TermsScreen } />
-      {/* <Stack.Screen name="home123" component={ HomeScreen } /> */}
+      {/* <Stack.Screen name="home123" component={ HomeScreen } /> */ }
       <Stack.Screen name="ticket_nice" component={ TicketScreen } />
     </Stack.Navigator>
   );

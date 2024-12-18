@@ -105,13 +105,13 @@ const Component = ({ route }) => {
   };
   function formatCurrencyVND(amount) {
     return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
+      style: 'currency',
+      currency: 'VND',
     }).format(amount);
-}
+  }
 
-// Ví dụ sử dụng
-console.log(formatCurrencyVND(1000)); // Kết quả: 1.000 ₫
+  // Ví dụ sử dụng
+  console.log(formatCurrencyVND(1000)); // Kết quả: 1.000 ₫
 
 
 
@@ -190,7 +190,7 @@ console.log(formatCurrencyVND(1000)); // Kết quả: 1.000 ₫
         <View style={ styles.ticketInfo }>
           <Text style={ styles.ticketTitle }>{ bookingData.movieName }</Text>
           <Text style={ styles.ticketSubtitle }>2D Phụ Đề Việt | Rạp STARIUM</Text>
-          <Text style={ styles.ticketPrice }>{ totalPrice===0?"":`${totalPrice} +` }{ formatCurrencyVND(bookingData.amount) } ({ bookingData.seats.length }ghế)</Text>
+          <Text style={ styles.ticketPrice }>{ totalPrice === 0 ? "" : `${totalPrice} +` }{ formatCurrencyVND(bookingData.amount) } ({ bookingData.seats.length }ghế)</Text>
         </View>
         <TouchableOpacity style={ styles.checkoutButton } onPress={ handlePay }>
           <Text style={ styles.checkoutButtonText }>THANH TOÁN</Text>
