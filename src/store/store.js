@@ -13,7 +13,7 @@ import cinemaShowtime from '../reducers/Showtimes/ShowTimeCinema'
 import wishlistReducer from '../reducers/WishlistSlice';
 import UploadUsersReduce from '../reducers/UploadUserslide'
 import showDayReducer from '../reducers/Showtimes/GetDayShow';
-
+import comboReducer from '../reducers/ComboSlice';
 export const store = configureStore({
   reducer: {
     search: searchReducer,
@@ -23,12 +23,12 @@ export const store = configureStore({
     genreList: genreListReducer,
     showTime: showtimeReducer,
     brandList: brandListReducer,
-    listTime:timeRangeMovieReducer,
-    cinemaShow:cinemaShowtime,
+    listTime: timeRangeMovieReducer,
+    cinemaShow: cinemaShowtime,
     wishlist: wishlistReducer,
     UploadUsers: UploadUsersReduce,
     showdayReducer: showDayReducer,
-    
+    combos: comboReducer,
   },
 });
 

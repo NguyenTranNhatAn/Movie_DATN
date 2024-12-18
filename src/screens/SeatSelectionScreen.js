@@ -103,26 +103,26 @@ const SeatSelectionScreen = ({ route }) => {
       Alert.alert("Error", "Không thể lấy thông tin người dùng.");
     }
   };
-  /*
+
   useEffect(() => {
     loadSeatMap();
   }, []);
-  */
 
 
-  useEffect(() => {
-    // Gọi loadSeatMap ngay khi màn hình được render
-    loadSeatMap();
 
-    // Thiết lập setInterval để gọi loadSeatMap mỗi 5 giây
-    const interval = setInterval(() => {
-      console.log('Đang tải lại sơ đồ ghế...');
-      loadSeatMap();
-    }, 5000); // 5 giây
+  // useEffect(() => {
+  //   // Gọi loadSeatMap ngay khi màn hình được render
+  //   loadSeatMap();
 
-    // Dọn dẹp interval khi component bị unmount
-    return () => clearInterval(interval);
-  }, []);
+  //   // Thiết lập setInterval để gọi loadSeatMap mỗi 5 giây
+  //   const interval = setInterval(() => {
+  //     console.log('Đang tải lại sơ đồ ghế...');
+  //     loadSeatMap();
+  //   }, 5000); // 5 giây
+
+  //   // Dọn dẹp interval khi component bị unmount
+  //   return () => clearInterval(interval);
+  // }, []);
 
 
 
